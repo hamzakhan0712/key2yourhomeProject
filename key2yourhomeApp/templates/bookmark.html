@@ -1,0 +1,503 @@
+{% extends "base/_base.html" %}
+{% load static humanize %}
+
+{% block title %}My Saved Items | Key2YourHome{% endblock %}
+
+{% block content %}
+<div class="bg-blue-50 min-h-screen mt-14">
+    <!-- Header -->
+    
+        <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8 bg-white rounded-lg shadow-sm">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between">
+                <h1 class="text-2xl font-bold text-blue-600 flex items-center gap-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bookmark-icon lucide-bookmark"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>
+                    Saved Items</h1>
+                <div class="mt-4 md:mt-0 flex space-x-2">
+                    <button id="filterButton" class="inline-flex items-center px-6 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <svg class="-ml-1 mr-2 h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M3 3a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-.293.707L12 11.414V15a1 1 0 01-.293.707l-2 2A1 1 0 018 17v-5.586L3.293 6.707A1 1 0 013 6V3z" clip-rule="evenodd" />
+                        </svg>
+                        Filter
+                    </button>
+                    <div id="filterDropdown" class="hidden absolute mt-10 z-10 w-56 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5">
+                        <div class="py-1">
+                            <button type="button" data-filter="all" class="filter-option block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left">All Items</button>
+                            <button type="button" data-filter="property" class="filter-option block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left">Properties Only</button>
+                            <button type="button" data-filter="project" class="filter-option block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left">Projects Only</button>
+                        </div>
+                    </div>
+                    <button id="sortButton" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <svg class="-ml-1 mr-2 h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M3 3a1 1 0 000 2h11a1 1 0 100-2H3zM3 7a1 1 0 000 2h5a1 1 0 000-2H3zM3 11a1 1 0 100 2h4a1 1 0 100-2H3zM13 16a1 1 0 102 0v-5.586l1.293 1.293a1 1 0 001.414-1.414l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 101.414 1.414L13 10.414V16z" />
+                        </svg>
+                        Sort
+                    </button>
+                    <div id="sortDropdown" class="hidden absolute mt-10 z-10 w-56 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5">
+                        <div class="py-1">
+                            <button type="button" data-sort="recent" class="sort-option block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left">Recently Added</button>
+                            <button type="button" data-sort="price-high" class="sort-option block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left">Price: High to Low</button>
+                            <button type="button" data-sort="price-low" class="sort-option block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left">Price: Low to High</button>
+                            <button type="button" data-sort="rating" class="sort-option block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left">Highest Rated</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+   
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+        <!-- Empty State -->
+        <div id="emptyState" class="text-center py-12 {% if bookmarks %}hidden{% endif %}">
+            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+            </svg>
+            <h3 class="mt-2 text-lg font-medium text-gray-900">No saved items yet</h3>
+            <p class="mt-1 text-sm text-gray-500">Start browsing properties and projects to save your favorites.</p>
+            <div class="mt-6">
+                <a href="{% url 'property_list' %}" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    <svg class="-ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+                    </svg>
+                    Browse Properties
+                </a>
+            </div>
+        </div>
+
+        <!-- Bookmarks Grid -->
+        <div id="bookmarksContainer" class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {% for bookmark in bookmarks %}
+                {% if bookmark.property %}
+                    <!-- Property Card -->
+                    <div class="bookmark-item property bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                        <div class="relative">
+                            <div>
+                                {% with bookmark.property.media.all|first as first_media %}
+                                    {% if first_media and first_media.file %}
+                                    <img class="h-full w-full object-cover" src="{{ first_media.file.url }}" alt="{{ first_media.title|default:bookmark.property.name }}">
+                                    {% else %}
+                                    <div class="w-full h-full flex items-center justify-center text-gray-500 dark:text-gray-400">
+                                        <div class="text-center">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-full w-full mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                            </svg>
+                                            <p class="mt-2">No media available for this property</p>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                {% endwith %}
+                            </div>
+                            <div class="absolute top-2 right-2">
+                                <button class="remove-bookmark p-2 bg-white rounded-full shadow-md text-gray-700 hover:text-red-500" data-id="{{ bookmark.id }}" data-type="property">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="absolute bottom-6 left-2">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                    {{ bookmark.property.get_property_type_display }}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="p-4">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <h3 class="text-lg font-medium text-gray-900">
+                                        <span class="text-blue-600">
+                                            {{ bookmark.property.society_name }}
+                                        </span>
+                                    </h3>
+                                    <p class="text-sm text-gray-500">{{ bookmark.property.city }}, {{ bookmark.property.state }}</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-lg font-semibold text-blue-600">₹{{ bookmark.property.price_in_rs|intcomma }}</p>
+                                    <p class="text-xs text-gray-500">{{ bookmark.property.per_sq_ft_price|intcomma }}/sq.ft</p>
+                                </div>
+                            </div>
+                            <div class="mt-4 flex items-center justify-between">
+                                <div class="flex space-x-2">
+                                    <span class="inline-flex items-center text-sm">
+                                        <svg class="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a1 1 0 110 2h-3a1 1 0 01-1-1v-2a1 1 0 00-1-1H9a1 1 0 00-1 1v2a1 1 0 01-1 1H4a1 1 0 110-2V4zm3 1h2v2H7V5zm2 4H7v2h2V9zm2-4h2v2h-2V5zm2 4h-2v2h2V9z" clip-rule="evenodd" />
+                                        </svg>
+                                        {{ bookmark.property.get_number_of_bedrooms_display }}
+                                    </span>
+                                    <span class="inline-flex items-center text-sm">
+                                        <svg class="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                                        </svg>
+                                        {{ bookmark.property.get_construction_status_display }}
+                                    </span>
+                                </div>
+                                {% if bookmark.property.verified %}
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                    Verified
+                                </span>
+                                {% endif %}
+                            </div>
+                            <div class="mt-4 flex justify-between items-center">
+                               
+                                <p class="text-sm text-gray-500">
+                                    <span class="font-medium text-gray-900">{{ bookmark.property.carpet_area|default:"-" }}</span> sq.ft (carpet)
+                                </p>
+                                <p class="text-sm text-gray-500">
+                                    <span class="font-medium text-gray-900">{{ bookmark.property.build_up_area|default:"-" }}</span> sq.ft (built-up)
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                {% elif bookmark.project %}
+                    <!-- Project Card -->
+                    <div class="bookmark-item project bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                        <div class="relative">
+                            <a href="{% url 'project_detail' bookmark.project.id %}">
+                                {% with bookmark.project.media.all|first as first_media %}
+                                    {% if first_media and first_media.file %}
+                                    <img class="h-full w-full object-cover" src="{{ first_media.file.url }}" alt="{{ first_media.title|default:bookmark.project.name }}">
+                                    {% else %}
+                                    <div class="w-full h-full flex items-center justify-center text-gray-500 dark:text-gray-400">
+                                        <div class="text-center">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                            </svg>
+                                            <p class="mt-2">No media available for this property</p>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                {% endwith %}
+                            </a>
+                            <div class="absolute top-2 right-2">
+                                <button class="remove-bookmark p-2 bg-white rounded-full shadow-md text-gray-700 hover:text-red-500" data-id="{{ bookmark.id }}" data-type="project">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="absolute bottom-2 left-2">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
+                                    {{ bookmark.project.get_project_type_display }}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="p-4">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <h3 class="text-lg font-medium text-gray-900">
+                                        <a href="{% url 'project_detail' bookmark.project.id %}" class="hover:text-blue-600">
+                                            {{ bookmark.project.name }}
+                                        </a>
+                                    </h3>
+                                    <p class="text-sm text-gray-500">{{ bookmark.project.locality }}, {{ bookmark.project.city }}</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-sm font-semibold text-blue-600">₹{{ bookmark.project.price_range_start|intcomma }} - ₹{{ bookmark.project.price_range_end|intcomma }}</p>
+                                    <p class="text-xs text-gray-500">{{ bookmark.project.per_sq_ft_price|intcomma }}/sq.ft</p>
+                                </div>
+                            </div>
+                            <div class="mt-4 flex items-center justify-between">
+                                <div class="flex space-x-2">
+                                    <span class="inline-flex items-center text-sm">
+                                        <svg class="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd" />
+                                        </svg>
+                                        Possession: {{ bookmark.project.possession|date:"M Y" }}
+                                    </span>
+                                </div>
+                                {% if bookmark.project.rera_approved %}
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                    RERA Approved
+                                </span>
+                                {% endif %}
+                            </div>
+                            <div class="mt-4">
+                                <div class="flex justify-between">
+                                    <span class="text-sm text-gray-500">
+                                        <span class="font-medium text-gray-900">{{ bookmark.project.total_number_of_towers }}</span> Towers
+                                    </span>
+                                    <span class="text-sm text-gray-500">
+                                        <span class="font-medium text-gray-900">{{ bookmark.project.total_number_of_floors }}</span> Floors
+                                    </span>
+                                    <span class="text-sm text-gray-500">
+                                        <span class="font-medium text-gray-900">{{ bookmark.project.total_rooms }}</span> Units
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="mt-4">
+                                <a href="{% url 'project_detail' bookmark.project.id %}" class="w-full flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                    View Project
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+
+        <!-- Pagination -->
+        {% if is_paginated %}
+        <div class="mt-8 flex items-center justify-between">
+            <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                <div>
+                    <p class="text-sm text-gray-700">
+                        Showing <span class="font-medium">{{ page_obj.start_index }}</span> to <span class="font-medium">{{ page_obj.end_index }}</span> of <span class="font-medium">{{ paginator.count }}</span> results
+                    </p>
+                </div>
+                <div>
+                    <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                        {% if page_obj.has_previous %}
+                            <a href="?page=1" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                <span class="sr-only">First</span>
+                                <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                    <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                </svg>
+                            </a>
+                            <a href="?page={{ page_obj.previous_page_number }}" class="relative inline-flex items-center px-2 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                <span class="sr-only">Previous</span>
+                                <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                    <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                </svg>
+                            </a>
+                        {% endif %}
+
+                        {% for num in page_obj.paginator.page_range %}
+                            {% if page_obj.number == num %}
+                                <a href="?page={{ num }}" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-blue-600 text-sm font-medium text-white">
+                                    {{ num }}
+                                </a>
+                            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                                <a href="?page={{ num }}" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
+                                    {{ num }}
+                                </a>
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if page_obj.has_next %}
+                            <a href="?page={{ page_obj.next_page_number }}" class="relative inline-flex items-center px-2 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                <span class="sr-only">Next</span>
+                                <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                    <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                                </svg>
+                            </a>
+                            <a href="?page={{ page_obj.paginator.num_pages }}" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                <span class="sr-only">Last</span>
+                                <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                    <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                                </svg>
+                            </a>
+                        {% endif %}
+                    </nav>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Confirmation Modal -->
+<div id="confirmationModal"class="hidden fixed z-999 inset-0 overflow-y-auto bg-black/30 backdrop-blur-sm" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+    <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+       
+        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+        <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+            <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                <div class="sm:flex sm:items-start">
+                    <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
+                        <svg class="h-6 w-6 text-red-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                        </svg>
+                    </div>
+                    <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                        <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">Remove from saved items?</h3>
+                        <div class="mt-2">
+                            <p class="text-sm text-gray-500">Are you sure you want to remove this item from your saved items? You can always save it again later.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                <button type="button" id="confirmRemove" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm">
+                    Remove
+                </button>
+                <button type="button" id="cancelRemove" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Filter and Sort Dropdowns
+        const filterButton = document.getElementById('filterButton');
+        const filterDropdown = document.getElementById('filterDropdown');
+        const sortButton = document.getElementById('sortButton');
+        const sortDropdown = document.getElementById('sortDropdown');
+        
+        // Toggle filter dropdown
+        filterButton.addEventListener('click', function() {
+            const isExpanded = filterDropdown.classList.toggle('hidden');
+            sortDropdown.classList.add('hidden');
+            
+            // Close when clicking outside
+            if (!isExpanded) {
+                document.addEventListener('click', function closeDropdown(e) {
+                    if (!filterButton.contains(e.target) && !filterDropdown.contains(e.target)) {
+                        filterDropdown.classList.add('hidden');
+                        document.removeEventListener('click', closeDropdown);
+                    }
+                });
+            }
+        });
+        
+        // Toggle sort dropdown
+        sortButton.addEventListener('click', function() {
+            const isExpanded = sortDropdown.classList.toggle('hidden');
+            filterDropdown.classList.add('hidden');
+            
+            // Close when clicking outside
+            if (!isExpanded) {
+                document.addEventListener('click', function closeDropdown(e) {
+                    if (!sortButton.contains(e.target) && !sortDropdown.contains(e.target)) {
+                        sortDropdown.classList.add('hidden');
+                        document.removeEventListener('click', closeDropdown);
+                    }
+                });
+            }
+        });
+        
+        // Filter functionality
+        const filterOptions = document.querySelectorAll('.filter-option');
+        filterOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                const filterValue = this.getAttribute('data-filter');
+                const items = document.querySelectorAll('.bookmark-item');
+                
+                items.forEach(item => {
+                    if (filterValue === 'all') {
+                        item.style.display = 'block';
+                    } else {
+                        if (item.classList.contains(filterValue)) {
+                            item.style.display = 'block';
+                        } else {
+                            item.style.display = 'none';
+                        }
+                    }
+                });
+                
+                filterButton.innerHTML = this.textContent + '<svg class="ml-1 mr-2 h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 3a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-.293.707L12 11.414V15a1 1 0 01-.293.707l-2 2A1 1 0 018 17v-5.586L3.293 6.707A1 1 0 013 6V3z" clip-rule="evenodd" /></svg>';
+                filterDropdown.classList.add('hidden');
+            });
+        });
+        
+        // Sort functionality
+        const sortOptions = document.querySelectorAll('.sort-option');
+        sortOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                const sortValue = this.getAttribute('data-sort');
+                const container = document.getElementById('bookmarksContainer');
+                const items = Array.from(document.querySelectorAll('.bookmark-item'));
+                
+                items.sort((a, b) => {
+                    if (sortValue === 'recent') {
+                        // Assuming we have a data attribute for timestamp
+                        const aTime = a.getAttribute('data-added') || 0;
+                        const bTime = b.getAttribute('data-added') || 0;
+                        return bTime - aTime;
+                    } else if (sortValue === 'price-high') {
+                        const aPrice = parseFloat(a.querySelector('.text-blue-600').textContent.replace(/[^0-9.]/g, '')) || 0;
+                        const bPrice = parseFloat(b.querySelector('.text-blue-600').textContent.replace(/[^0-9.]/g, '')) || 0;
+                        return bPrice - aPrice;
+                    } else if (sortValue === 'price-low') {
+                        const aPrice = parseFloat(a.querySelector('.text-blue-600').textContent.replace(/[^0-9.]/g, '')) || 0;
+                        const bPrice = parseFloat(b.querySelector('.text-blue-600').textContent.replace(/[^0-9.]/g, '')) || 0;
+                        return aPrice - bPrice;
+                    } else if (sortValue === 'rating') {
+                        const aRating = parseFloat(a.querySelector('.text-yellow-400') ? a.querySelector('.text-yellow-400').parentElement.nextElementSibling.textContent.split(' ')[0] : 0);
+                        const bRating = parseFloat(b.querySelector('.text-yellow-400') ? b.querySelector('.text-yellow-400').parentElement.nextElementSibling.textContent.split(' ')[0] : 0);
+                        return bRating - aRating;}
+                    });
+                    
+                // Clear the container
+                container.innerHTML = '';
+
+                // Append sorted items
+                items.forEach(item => {
+                    container.appendChild(item);
+                });
+
+                sortButton.innerHTML = this.textContent + '<svg class="ml-1 mr-2 h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M3 3a1 1 0 000 2h11a1 1 0 100-2H3zM3 7a1 1 0 000 2h5a1 1 0 000-2H3zM3 11a1 1 0 100 2h4a1 1 0 100-2H3zM13 16a1 1 0 102 0v-5.586l1.293 1.293a1 1 0 001.414-1.414l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 101.414 1.414L13 10.414V16z" /></svg>';
+                sortDropdown.classList.add('hidden');
+            });
+        });
+
+
+            // Remove Bookmark functionality
+        const removeButtons = document.querySelectorAll('.remove-bookmark');
+        const confirmationModal = document.getElementById('confirmationModal');
+        const confirmRemove = document.getElementById('confirmRemove');
+        const cancelRemove = document.getElementById('cancelRemove');
+
+        let currentBookmarkToRemove = null;
+        let csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+        removeButtons.forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                currentBookmarkToRemove = {
+                    id: this.getAttribute('data-id'),
+                    type: this.getAttribute('data-type'),
+                    element: this.closest('.bookmark-item')
+                };
+                confirmationModal.classList.remove('hidden');
+            });
+        });
+
+        confirmRemove.addEventListener('click', function() {
+            if (currentBookmarkToRemove) {
+                fetch(`/bookmarks/remove/${currentBookmarkToRemove.id}/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': csrfToken,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({})
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Remove the item from DOM
+                        currentBookmarkToRemove.element.remove();
+                        
+                        // Show empty state if no bookmarks left
+                        if (document.querySelectorAll('.bookmark-item').length === 0) {
+                            document.getElementById('emptyState').classList.remove('hidden');
+                        }
+                    } else {
+                        alert('Error removing bookmark: ' + data.message);
+                    }
+                    confirmationModal.classList.add('hidden');
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    confirmationModal.classList.add('hidden');
+                });
+            }
+        });
+
+        cancelRemove.addEventListener('click', function() {
+            confirmationModal.classList.add('hidden');
+            currentBookmarkToRemove = null;
+        });
+
+        // Close modal when clicking outside
+        confirmationModal.addEventListener('click', function(e) {
+            if (e.target === confirmationModal) {
+                confirmationModal.classList.add('hidden');
+            }
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,1247 @@
+{% extends "base/_base.html" %}
+{% load static %}
+{% load humanize %}
+{% load bookmark_tags %}
+
+
+{% block title %}Properties | Key2YourHome{% endblock %}
+
+{% block content %}
+
+<!-- Expose Django static path to JavaScript -->
+<script>
+    const VIDEO_PLACEHOLDER_URL = "{% static 'images/placeholder-video.jpeg' %}";
+</script>
+
+<!-- Include the gallery script -->
+<script src="{% static 'js/property-gallery.js' %}"></script>
+
+<div class="h-screen flex flex-col overflow-hidden">
+    <!-- Inner Container for Content -->
+    <div class="flex-1 flex flex-col container mx-auto pt-6 mt-8 overflow-hidden">
+        <div class="flex flex-col md:flex-row gap-4 h-full w-full">
+
+        
+            <!-- Filters Section (Left Sidebar) -->
+            <div class="lg:flex-1/4 h-0 md:h-full overflow-y-auto shadow-lg" style="scrollbar-width: none; -ms-overflow-style: none;">
+                <!-- Mobile Filter Toggle Button (Fixed at bottom on mobile) -->
+                <div class="lg:hidden fixed bottom-6 right-6 z-50">
+                    <button id="mobile-filter-toggle" class="bg-blue-600 text-white p-4 rounded-full shadow-lg hover:bg-blue-700 transition-all">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                        </svg>
+                        <span class="sr-only">Open filters</span>
+                    </button>
+                </div>
+
+                <!-- Filter Panel -->
+                <div id="filter-panel"
+                    class="bg-white ml-18 md:ml-0 rounded-xl shadow-md p-4 pt-0 
+                        lg:sticky lg:top-4 lg:h-[calc(100vh-32px)] lg:overflow-y-auto 
+                        fixed inset-0 z-40 translate-x-full lg:translate-x-0 
+                        transition-transform duration-300 ease-in-out overflow-y-auto">
+           
+                    <!-- Close Button (Mobile Only) -->
+                    <div class="flex justify-end lg:hidden p-2">
+                        <button id="close-filters" class="text-gray-500 hover:text-gray-700">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+                    
+                    <!-- Mobile Header -->
+                    <div class="flex justify-between items-center mb-4 lg:hidden border-b pb-4">
+                        <h2 class="text-xl font-semibold text-gray-800">Filters</h2>
+                        <button onclick="resetFilters()" class="text-blue-600 hover:text-blue-800 text-sm">
+                            Reset All
+                        </button>
+                    </div>
+
+                    <form id="property-filter-form" method="GET" action="{% url 'property_list' %}">
+                        <div id="filters-container" class="lg:block relative h-full">
+                            <!-- Sticky Header with Action Buttons and Applied Filters -->
+                            <div class="sticky top-0 z-10 bg-white pb-4 pt-2 border-b">
+                                <!-- Action Buttons -->
+                                <div class="flex gap-3 mb-3">
+                                    <button type="submit" 
+                                            class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                                        Apply Filters
+                                    </button>
+                                    <button type="button" onclick="resetFilters()"
+                                           class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-800 py-2 px-4 rounded-md text-sm font-medium text-center transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
+                                        Reset All
+                                    </button>
+                                </div>
+                        
+                                <!-- Applied Filters Chips -->
+                                <div id="applied-filters" class="flex flex-wrap gap-2">
+                                    {% if selected_filters.city %}
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                            {{ selected_filters.city }}
+                                            <button type="button" onclick="removeFilter('city')" class="ml-1.5 inline-flex text-green-400 hover:text-green-600 focus:outline-none">
+                                                <svg class="h-2 w-2" stroke="currentColor" fill="none" viewBox="0 0 8 8">
+                                                    <path stroke-linecap="round" stroke-width="1.5" d="M1 1l6 6m0-6L1 7" />
+                                                </svg>
+                                            </button>
+                                        </span>
+                                    {% endif %}
+                                    
+                                    {% if selected_filters.property_type %}
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                            {{ selected_filters.property_type }}
+                                            <button type="button" onclick="removeFilter('property_type')" class="ml-1.5 inline-flex text-blue-400 hover:text-blue-600 focus:outline-none">
+                                                <svg class="h-2 w-2" stroke="currentColor" fill="none" viewBox="0 0 8 8">
+                                                    <path stroke-linecap="round" stroke-width="1.5" d="M1 1l6 6m0-6L1 7" />
+                                                </svg>
+                                            </button>
+                                        </span>
+                                    {% endif %}
+                                    
+                                    {% if selected_filters.min_price or selected_filters.max_price %}
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                                            ₹{% if selected_filters.min_price %}{{ selected_filters.min_price }}{% else %}0{% endif %} - ₹{% if selected_filters.max_price %}{{ selected_filters.max_price }}{% else %}Any{% endif %}
+                                            <button type="button" onclick="removePriceFilter()" class="ml-1.5 inline-flex text-purple-400 hover:text-purple-600 focus:outline-none">
+                                                <svg class="h-2 w-2" stroke="currentColor" fill="none" viewBox="0 0 8 8">
+                                                    <path stroke-linecap="round" stroke-width="1.5" d="M1 1l6 6m0-6L1 7" />
+                                                </svg>
+                                            </button>
+                                        </span>
+                                    {% endif %}
+                                    
+                                    {% if selected_filters.bedrooms %}
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                            {{ selected_filters.bedrooms }}
+                                            <button type="button" onclick="removeFilter('bedrooms')" class="ml-1.5 inline-flex text-yellow-400 hover:text-yellow-600 focus:outline-none">
+                                                <svg class="h-2 w-2" stroke="currentColor" fill="none" viewBox="0 0 8 8">
+                                                    <path stroke-linecap="round" stroke-width="1.5" d="M1 1l6 6m0-6L1 7" />
+                                                </svg>
+                                            </button>
+                                        </span>
+                                    {% endif %}
+                                    
+                                    {% if selected_filters.min_area or selected_filters.max_area %}
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
+                                            {% if selected_filters.min_area %}{{ selected_filters.min_area }}{% else %}0{% endif %} - {% if selected_filters.max_area %}{{ selected_filters.max_area }}{% else %}Any{% endif %} sq.ft
+                                            <button type="button" onclick="removeAreaFilter()" class="ml-1.5 inline-flex text-indigo-400 hover:text-indigo-600 focus:outline-none">
+                                                <svg class="h-2 w-2" stroke="currentColor" fill="none" viewBox="0 0 8 8">
+                                                    <path stroke-linecap="round" stroke-width="1.5" d="M1 1l6 6m0-6L1 7" />
+                                                </svg>
+                                            </button>
+                                        </span>
+                                    {% endif %}
+                                    
+                                    {% if selected_construction_statuses %}
+                                        {% for status in selected_construction_statuses %}
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-pink-100 text-pink-800">
+                                                {{ status }}
+                                                <button type="button" onclick="removeConstructionStatus('{{ status }}')" class="ml-1.5 inline-flex text-pink-400 hover:text-pink-600 focus:outline-none">
+                                                    <svg class="h-2 w-2" stroke="currentColor" fill="none" viewBox="0 0 8 8">
+                                                        <path stroke-linecap="round" stroke-width="1.5" d="M1 1l6 6m0-6L1 7" />
+                                                    </svg>
+                                                </button>
+                                            </span>
+                                        {% endfor %}
+                                    {% endif %}
+                                    
+                                    <!-- In the applied filters chips section -->
+                                    {% if selected_furnishing_statuses %}
+                                        {% for status in selected_furnishing_statuses %}
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-teal-100 text-teal-800">
+                                                {{ status }}
+                                                <button type="button" onclick="removeFurnishingStatus('{{ status }}')" class="ml-1.5 inline-flex text-teal-400 hover:text-teal-600 focus:outline-none">
+                                                    <svg class="h-2 w-2" stroke="currentColor" fill="none" viewBox="0 0 8 8">
+                                                        <path stroke-linecap="round" stroke-width="1.5" d="M1 1l6 6m0-6L1 7" />
+                                                    </svg>
+                                                </button>
+                                            </span>
+                                        {% endfor %}
+                                    {% endif %}
+                                    
+                                    {% if selected_amenities %}
+                                        {% for amenity in amenities %}
+                                            {% if amenity.id in selected_amenities %}
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                                    {{ amenity.name }}
+                                                    <button type="button" onclick="removeAmenityFilter({{ amenity.id }})" class="ml-1.5 inline-flex text-red-400 hover:text-red-600 focus:outline-none">
+                                                        <svg class="h-2 w-2" stroke="currentColor" fill="none" viewBox="0 0 8 8">
+                                                            <path stroke-linecap="round" stroke-width="1.5" d="M1 1l6 6m0-6L1 7" />
+                                                        </svg>
+                                                    </button>
+                                                </span>
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% endif %}
+                                </div>
+                            </div>
+                        
+                            <!-- Filter Content - Scrollable Area -->
+                            <div class="overflow-y-auto h-[calc(100%-120px)] pb-6 space-y-6 mt-4 pr-2">
+                                <!-- Location Filter -->
+                                <div class="space-y-2">
+                                    <h3 class="text-base font-semibold text-gray-900 flex items-center">
+                                        <svg class="w-5 h-5 mr-2 text-gray-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        </svg>
+                                        Location
+                                    </h3>
+                                    <div class="space-y-2">
+                                        <select name="city" class="w-full bg-white border border-gray-200 text-gray-700 text-sm rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 block p-2.5">
+                                            <option value="">Select City</option>
+                                            {% for city in cities %}
+                                            <option value="{{ city }}" {% if selected_filters.city == city %}selected{% endif %}>{{ city }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <input type="text" name="locality" placeholder="Locality/Area" 
+                                            value="{{ selected_filters.locality }}"
+                                            class="w-full bg-white border border-gray-200 text-gray-700 text-sm rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 block p-2.5">
+                                    </div>
+                                </div>
+                                
+                                <div class="space-y-2" id="property-type-options">
+                                    {% for value, label in property_types %}
+                                    <div class="flex items-center {% if forloop.counter > 5 %}hidden extra-property-type{% endif %}">
+                                        <input id="property-type-{{ value }}" name="property_type" type="radio" value="{{ value }}"
+                                            class="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                                            {% if selected_filters.property_type == value %}checked{% endif %}>
+                                        <label for="property-type-{{ value }}" class="ml-2 text-sm text-gray-700">{{ label }}</label>
+                                    </div>
+                                    {% endfor %}
+                                    {% if property_types|length > 5 %}
+                                    <button type="button" id="toggle-property-types" class="text-blue-600 text-sm font-medium hover:underline mt-2">
+                                        Show More
+                                    </button>
+                                    {% endif %}
+                                </div>
+                                
+                                
+                                <!-- Price Range -->
+                                <div class="space-y-2">
+                                    <h3 class="text-base font-semibold text-gray-900 flex items-center">
+                                        <svg class="w-5 h-5 mr-2 text-gray-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                        Price Range
+                                    </h3>
+                                    <div class="px-1">
+                                        <div class="flex justify-between text-xs text-gray-500 mb-1 px-1">
+                                            <span>₹10L</span>
+                                            <span>₹10Cr+</span>
+                                        </div>
+                                        <div class="relative">
+                                            <input type="range" name="price_range" min="1000000" max="100000000" step="500000" 
+                                                value="{{ selected_filters.price_range }}"
+                                                class="w-full h-1.5 bg-gray-200 rounded-full appearance-none cursor-pointer accent-blue-600"
+                                                oninput="updatePriceRangeValue(this.value)">
+                                            <div id="price-range-value" class="absolute top-0 text-xs text-blue-600 font-medium -mt-6" 
+                                                 style="left: calc(50% - 20px);">
+                                                ₹{{ selected_filters.price_range|floatformat:"0" }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-3 mt-2">
+                                        <div>
+                                            <label class="block text-xs font-medium text-gray-500 mb-1">Min (₹)</label>
+                                            <input type="text" name="min_price" placeholder="Min" 
+                                                value="{{ selected_filters.min_price }}"
+                                                class="w-full bg-white border border-gray-200 text-gray-700 text-sm rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 block p-2.5">
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs font-medium text-gray-500 mb-1">Max (₹)</label>
+                                            <input type="text" name="max_price" placeholder="Max" 
+                                                value="{{ selected_filters.max_price }}"
+                                                class="w-full bg-white border border-gray-200 text-gray-700 text-sm rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 block p-2.5">
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- BHK Configuration -->
+                                <div class="space-y-2">
+                                    <h3 class="text-base font-semibold text-gray-900 flex items-center">
+                                        <svg class="w-5 h-5 mr-2 text-gray-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                                        </svg>
+                                        BHK Configuration
+                                    </h3>
+                                    <div class="grid grid-cols-3 gap-2">
+                                        {% for value, label in bedroom_choices %}
+                                        <div class="flex items-center">
+                                            <input id="bedroom-{{ value }}" name="bedrooms" type="radio" value="{{ value }}"
+                                                class="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                                                {% if selected_filters.bedrooms == value %}checked{% endif %}>
+                                            <label for="bedroom-{{ value }}" class="ml-2 text-sm text-gray-700">{{ label }}</label>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                
+                                <!-- Area Range -->
+                                <div class="space-y-2">
+                                    <h3 class="text-base font-semibold text-gray-900 flex items-center">
+                                        <svg class="w-5 h-5 mr-2 text-gray-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+                                        </svg>
+                                        Area (sq.ft)
+                                    </h3>
+                                    <div class="grid grid-cols-2 gap-3">
+                                        <div>
+                                            <input type="number" name="min_area" placeholder="Min" 
+                                                value="{{ selected_filters.min_area }}"
+                                                class="w-full bg-white border border-gray-200 text-gray-700 text-sm rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 block p-2.5">
+                                        </div>
+                                        <div>
+                                            <input type="number" name="max_area" placeholder="Max" 
+                                                value="{{ selected_filters.max_area }}"
+                                                class="w-full bg-white border border-gray-200 text-gray-700 text-sm rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 block p-2.5">
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Construction Status -->
+                                <div class="space-y-2">
+                                    <h3 class="text-base font-semibold text-gray-900 flex items-center">
+                                        <svg class="w-5 h-5 mr-2 text-gray-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                                        </svg>
+                                        Construction Status
+                                    </h3>
+                                    <div class="space-y-2">
+                                        {% for value, label in construction_statuses %}
+                                        <div class="flex items-center">
+                                            <input id="construction-{{ value }}" name="construction_status" type="checkbox" value="{{ value }}"
+                                                class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
+                                                {% if value in selected_construction_statuses %}checked{% endif %}>
+                                            <label for="construction-{{ value }}" class="ml-2 text-sm text-gray-700">{{ label }}</label>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                
+                                <!-- Furnishing Status -->
+                                <div class="space-y-2">
+                                    <h3 class="text-base font-semibold text-gray-900 flex items-center">
+                                        <svg class="w-5 h-5 mr-2 text-gray-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                                        </svg>
+                                        Furnishing Status
+                                    </h3>
+                                    <div class="space-y-2">
+                                        {% for value, label in furnishing_statuses %}
+                                        <div class="flex items-center">
+                                            <input id="furnishing-{{ value }}" name="furnishing" type="checkbox" value="{{ value }}"
+                                                class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
+                                                {% if value in selected_furnishing_statuses %}checked{% endif %}>
+                                            <label for="furnishing-{{ value }}" class="ml-2 text-sm text-gray-700">{{ label }}</label>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                
+                                <!-- Amenities -->
+                                <div class="space-y-3">
+                                    <h3 class="text-base font-semibold text-gray-900 flex items-center">
+                                        <svg class="w-5 h-5 mr-2 text-gray-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                                        </svg>
+                                        Amenities
+                                    </h3>
+                                    <div class="grid grid-cols-2 gap-2">
+                                        {% for amenity in amenities %}
+                                        <div class="flex items-center">
+                                            <input id="amenity-{{ amenity.id }}" name="amenities" type="checkbox" value="{{ amenity.id }}"
+                                                class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
+                                                {% if amenity.id in selected_amenities %}checked{% endif %}>
+                                            <label for="amenity-{{ amenity.id }}" class="ml-2 text-sm text-gray-700">{{ amenity.name }}</label>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                
+                                <!-- Additional Boolean Filters -->
+                                <div class="space-y-2">
+                                    <h3 class="text-base font-semibold text-gray-900">Additional Filters</h3>
+                                    <div class="space-y-2">
+                                        <div class="flex items-center">
+                                            <input id="rera-approved" name="rera_approved" type="checkbox" 
+                                                class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
+                                                {% if selected_filters.rera_approved %}checked{% endif %}>
+                                            <label for="rera-approved" class="ml-2 text-sm text-gray-700">RERA Approved</label>
+                                        </div>
+                                        <div class="flex items-center">
+                                            <input id="gated-community" name="gated_community" type="checkbox" 
+                                                class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
+                                                {% if selected_filters.gated_community %}checked{% endif %}>
+                                            <label for="gated-community" class="ml-2 text-sm text-gray-700">Gated Community</label>
+                                        </div>
+                                        <div class="flex items-center">
+                                            <input id="pet-friendly" name="pet_friendly" type="checkbox" 
+                                                class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
+                                                {% if selected_filters.pet_friendly %}checked{% endif %}>
+                                            <label for="pet-friendly" class="ml-2 text-sm text-gray-700">Pet Friendly</label>
+                                        </div>
+                                        <div class="flex items-center">
+                                            <input id="negotiable" name="negotiable" type="checkbox" 
+                                                class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
+                                                {% if selected_filters.negotiable %}checked{% endif %}>
+                                            <label for="negotiable" class="ml-2 text-sm text-gray-700">Negotiable</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Overlay for mobile -->
+            <div id="filter-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-30 hidden lg:hidden"></div>
+
+
+            <script>
+
+                // Mobile filter toggle functionality
+                document.addEventListener('DOMContentLoaded', function() {
+                    const filterPanel = document.getElementById('filter-panel');
+                    const filterToggle = document.getElementById('mobile-filter-toggle');
+                    const closeFilters = document.getElementById('close-filters');
+                    const filterOverlay = document.getElementById('filter-overlay');
+                    
+                    // Toggle filters on mobile
+                    filterToggle.addEventListener('click', function() {
+                        filterPanel.classList.remove('translate-x-full');
+                        filterOverlay.classList.remove('hidden');
+                        document.body.style.overflow = 'hidden'; // Prevent scrolling
+                    });
+                    
+                    // Close filters
+                    closeFilters.addEventListener('click', closeFilterPanel);
+                    filterOverlay.addEventListener('click', closeFilterPanel);
+                    
+                    function closeFilterPanel() {
+                        filterPanel.classList.add('translate-x-full');
+                        filterOverlay.classList.add('hidden');
+                        document.body.style.overflow = ''; // Re-enable scrolling
+                    }
+                    
+                    // Initialize price range display
+                    const priceRange = document.querySelector('input[name="price_range"]');
+                    if (priceRange) {
+                        updatePriceRangeValue(priceRange.value);
+                    }
+
+
+                    const toggleButton = document.getElementById('toggle-property-types');
+                    if (toggleButton) {
+                        toggleButton.addEventListener('click', function () {
+                            const hiddenItems = document.querySelectorAll('.extra-property-type');
+                            const isHidden = hiddenItems[0].classList.contains('hidden');
+                
+                            hiddenItems.forEach(item => {
+                                item.classList.toggle('hidden');
+                            });
+                
+                            toggleButton.textContent = isHidden ? 'Show Less' : 'Show More';
+                        });
+                    }
+
+                });
+
+                // Update price range value display
+                function updatePriceRangeValue(value) {
+                    const displayValue = value >= 10000000 ? 
+                        (value / 10000000).toFixed(1) + 'Cr' : 
+                        (value / 100000).toFixed(0) + 'L';
+                    document.getElementById('price-range-value').textContent = '₹' + displayValue;
+                    document.getElementById('price-range-value').style.left = `calc(${(value - 1000000) / (100000000 - 1000000) * 100}% - 20px)`;
+                }
+            
+                // Filter removal functions - ensure they work even when no results
+                function removeFilter(filterName) {
+                    const url = new URL(window.location.href);
+                    url.searchParams.delete(filterName);
+                    window.location.href = url.toString();
+                }
+
+                function removePriceFilter() {
+                    const url = new URL(window.location.href);
+                    url.searchParams.delete('min_price');
+                    url.searchParams.delete('max_price');
+                    url.searchParams.delete('price_range');
+                    window.location.href = url.toString();
+                }
+
+                function removeAreaFilter() {
+                    const url = new URL(window.location.href);
+                    url.searchParams.delete('min_area');
+                    url.searchParams.delete('max_area');
+                    window.location.href = url.toString();
+                }
+
+                function removeConstructionStatus(status) {
+                    const url = new URL(window.location.href);
+                    let statuses = url.searchParams.getAll('construction_status');
+                    statuses = statuses.filter(s => s !== status);
+                    url.searchParams.delete('construction_status');
+                    statuses.forEach(s => url.searchParams.append('construction_status', s));
+                    window.location.href = url.toString();
+                }
+
+                // Add this to your existing JavaScript functions
+                function removeFurnishingStatus(status) {
+                    const url = new URL(window.location.href);
+                    let statuses = url.searchParams.getAll('furnishing');
+                    statuses = statuses.filter(s => s !== status);
+                    url.searchParams.delete('furnishing');
+                    statuses.forEach(s => url.searchParams.append('furnishing', s));
+                    window.location.href = url.toString();
+                }
+
+                function removeAmenityFilter(amenityId) {
+                    const url = new URL(window.location.href);
+                    let amenities = url.searchParams.getAll('amenities');
+                    amenities = amenities.filter(id => id != amenityId);
+                    url.searchParams.delete('amenities');
+                    amenities.forEach(id => url.searchParams.append('amenities', id));
+                    window.location.href = url.toString();
+                }
+
+                // Reset all filters
+                function resetFilters() {
+                    const url = new URL(window.location.href);
+                    // Clear all query parameters except 'page' if you want to keep pagination
+                    const page = url.searchParams.get('page');
+                    url.search = '';
+                    if (page) {
+                        url.searchParams.set('page', page);
+                    }
+                    window.location.href = url.toString();
+                }
+            
+                // Initialize price range display
+                document.addEventListener('DOMContentLoaded', function() {
+                    const priceRange = document.querySelector('input[name="price_range"]');
+                    if (priceRange) {
+                        updatePriceRangeValue(priceRange.value);
+                    }
+                });
+            </script>
+
+            <!-- Main Content Area -->
+            <div class="flex-3/4 flex flex-col  h-full overflow-hidden w-full">
+                <div class="flex-1 overflow-hidden">
+                    <div class="h-full flex flex-col">
+
+                        <div class="overflow-y-auto w-full space-y-6" style="scrollbar-width: none; -ms-overflow-style: none;">
+                            {% for property in properties %}
+                            <div class="flex flex-col md:flex-row w-full bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition duration-200 border border-gray-200 gap-2">
+                                <!-- Media Gallery Section -->
+                                <div class="flex flex-col flex-1 relative p-4 h-full">
+                                    <!-- Badges Section -->
+                                    <div class="absolute top-6 left-6 z-10 flex flex-wrap gap-2 ">
+                                        <!-- RERA Badge -->
+                                        {% if property.rera_approved %}
+                                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-50 text-green-800 shadow-sm">
+                                            <svg class="-ml-0.5 mr-1 h-3 w-3 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                            </svg>
+                                            RERA Approved
+                                        </span>
+                                        {% endif %}
+                                        
+                                        <!-- Negotiable Badge -->
+                                        {% if property.negotiable %}
+                                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-50 text-blue-800 shadow-sm">
+                                            <svg class="-ml-0.5 mr-1 h-3 w-3 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+                                            </svg>
+                                            Price Negotiable
+                                        </span>
+                                        {% endif %}
+
+                                        {% if property.verified %}
+                                            <span class="text-xs font-semibold px-2 py-1 bg-green-100 text-green-800 rounded-full flex items-center">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                                                    <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                                </svg>
+                                                Verified
+                                            </span>
+                                            {% endif %}
+                                    </div>
+
+                                    <!-- Media Gallery -->
+                                    <div class="h-full">
+                                        <!-- Main Preview -->
+                                        <div class="relative w-full bg-gray-100 dark:bg-gray-800 rounded-lg overflow-hidden aspect-video mb-4">
+                                            <div id="main-preview-{{ property.id }}" class="flex items-center justify-center w-full h-full">
+                                                <div class="text-center p-8">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                                    </svg>
+                                                    <p class="mt-2 text-gray-500 dark:text-gray-400">Loading media...</p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Thumbnail Carousel -->
+                                        <div class="relative">
+                                            <div id="media-thumbnails-{{ property.id }}" class="flex gap-2 overflow-x-auto py-2 h-full scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 scrollbar-track-transparent">
+                                                <!-- Thumbnails will be dynamically inserted here -->
+                                            </div>
+                                            
+                                            <!-- Navigation Arrows -->
+                                            <button id="thumb-prev-{{ property.id }}" class="absolute left-0 top-1/2 -translate-y-1/2 -ml-4 dark:bg-gray-100 rounded-full p-2 shadow-lg hover:text-white hover:bg-gray-100 dark:hover:bg-gray-400 transition-colors hidden">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                                    <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                                </svg>
+                                            </button>
+                                            <button id="thumb-next-{{ property.id }}" class="absolute right-0 top-1/2 -translate-y-1/2 -mr-4 bg-white dark:bg-gray-100 rounded-full p-2 hover:text-white shadow-lg hover:bg-gray-100 dark:hover:bg-gray-400 transition-colors hidden">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                                    <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                                                </svg>
+                                            </button>
+                                        </div>
+
+                                       <!-- Modern Action Buttons -->
+                                        <div class="mt-4 flex gap-4 ">
+                                            <!-- Primary Action Button - WhatsApp (Consistent across both) -->
+                                            <a href="https://wa.me/917039363611" target="_blank" rel="noopener noreferrer"
+                                                class="group flex-1 flex items-center justify-center bg-green-500 hover:bg-green-600 text-white py-3 px-4 rounded-xl text-sm font-medium shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5 active:translate-y-0">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 30 30" fill="currentColor" class="mr-2">
+                                                    <path d="M 15 3 C 8.373 3 3 8.373 3 15 C 3 17.251208 3.6323415 19.350068 4.7109375 21.150391 L 3.1074219 27 L 9.0820312 25.431641 C 10.829354 26.425062 12.84649 27 15 27 C 21.627 27 27 21.627 27 15 C 27 8.373 21.627 3 15 3 z M 10.892578 9.4023438 C 11.087578 9.4023438 11.287937 9.4011562 11.460938 9.4101562 C 11.674938 9.4151563 11.907859 9.4308281 12.130859 9.9238281 C 12.395859 10.509828 12.972875 11.979906 13.046875 12.128906 C 13.120875 12.277906 13.173313 12.453437 13.070312 12.648438 C 12.972312 12.848437 12.921344 12.969484 12.777344 13.146484 C 12.628344 13.318484 12.465078 13.532109 12.330078 13.662109 C 12.181078 13.811109 12.027219 13.974484 12.199219 14.271484 C 12.371219 14.568484 12.968563 15.542125 13.851562 16.328125 C 14.986562 17.342125 15.944188 17.653734 16.242188 17.802734 C 16.540187 17.951734 16.712766 17.928516 16.884766 17.728516 C 17.061766 17.533516 17.628125 16.864406 17.828125 16.566406 C 18.023125 16.268406 18.222188 16.319969 18.492188 16.417969 C 18.766188 16.515969 20.227391 17.235766 20.525391 17.384766 C 20.823391 17.533766 21.01875 17.607516 21.09375 17.728516 C 21.17075 17.853516 21.170828 18.448578 20.923828 19.142578 C 20.676828 19.835578 19.463922 20.505734 18.919922 20.552734 C 18.370922 20.603734 17.858562 20.7995 15.351562 19.8125 C 12.327563 18.6215 10.420484 15.524219 10.271484 15.324219 C 10.122484 15.129219 9.0605469 13.713906 9.0605469 12.253906 C 9.0605469 10.788906 9.8286563 10.071437 10.097656 9.7734375 C 10.371656 9.4754375 10.692578 9.4023438 10.892578 9.4023438 z"></path>
+                                                </svg>
+                                                WhatsApp
+                                                <span class="ml-auto opacity-0 group-hover:opacity-100 transition-opacity duration-300">→</span>
+                                            </a>
+
+                                            <!-- Save Button - Dynamic for both project/property -->
+                                            <button class="bookmark-btn group flex-1 flex items-center justify-center px-4 py-3 rounded-xl transition-all duration-300 border-2 border-gray-200 hover:border-blue-400 bg-white hover:bg-blue-50 text-gray-700 hover:text-blue-700"
+                                                data-type="{% if project %}project{% else %}property{% endif %}"  
+                                                data-id="{% if project %}{{ project.id }}{% else %}{{ property.id }}{% endif %}" 
+                                                data-bookmarked="{% if request.user.is_authenticated %}{% if project %}{% if project in request.user.bookmarked_projects.all %}true{% else %}false{% endif %}{% else %}{% if property in request.user.bookmarked_properties.all %}true{% else %}false{% endif %}{% endif %}{% else %}false{% endif %}">
+                                                
+                                                <!-- Animated Bookmark Icon -->
+                                                <svg class="w-5 h-5 mr-2 transition-all duration-300 group-hover:fill-blue-100 group-hover:stroke-blue-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" 
+                                                        d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0111.186 0z" />
+                                                </svg>
+
+                                                <!-- Dynamic Button Text -->
+                                                <span class="text-sm font-medium">
+                                                    {% if request.user.is_authenticated %}
+                                                        {% if project %}
+                                                            {% if project in request.user.bookmarked_projects.all %}Saved{% else %}Save Project{% endif %}
+                                                        {% else %}
+                                                            {% if property in request.user.bookmarked_properties.all %}Saved{% else %}Save Property{% endif %}
+                                                        {% endif %}
+                                                    {% else %}
+                                                        {% if project %}Save Project{% else %}Save Property{% endif %}
+                                                    {% endif %}
+                                                </span>
+                                            </button>
+
+                                        </div>
+
+                                        <script>
+                                            document.addEventListener('DOMContentLoaded', function() {
+                                                document.querySelectorAll('.bookmark-btn').forEach(button => {
+                                                    // Set initial styles
+                                                    updateButtonAppearance(button);
+
+                                                    button.addEventListener('click', function(e) {
+                                                        e.preventDefault();
+                                                        
+                                                        const type = this.getAttribute('data-type');
+                                                        const id = this.getAttribute('data-id');
+                                                        const isBookmarked = this.getAttribute('data-bookmarked') === 'true';
+                                                        
+                                                        if (!type || !id) return;
+                                                        
+                                                        // Add click animation
+                                                        this.classList.add('active:scale-95');
+                                                        setTimeout(() => this.classList.remove('active:scale-95'), 150);
+                                                        
+                                                        // Optimistic UI update
+                                                        this.setAttribute('data-bookmarked', (!isBookmarked).toString());
+                                                        updateButtonAppearance(this);
+                                                        
+                                                        // Get CSRF token
+                                                        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value;
+                                                        if (!csrfToken) {
+                                                            console.error('CSRF token not found');
+                                                            revertButtonState(this, isBookmarked);
+                                                            return;
+                                                        }
+                                                        
+                                                        // Unified endpoint for both adding and removing
+                                                        const endpoint = `/bookmarks/${type}/${id}/bookmark/`;
+                                                        
+                                                        fetch(endpoint, {
+                                                            method: 'POST',
+                                                            headers: {
+                                                                'X-CSRFToken': csrfToken,
+                                                                'Content-Type': 'application/json'
+                                                            },
+                                                            body: JSON.stringify({})
+                                                        })
+                                                        .then(response => {
+                                                            if (!response.ok) throw new Error('Network response was not ok');
+                                                            return response.json();
+                                                        })
+                                                        .then(data => {
+                                                            if (!data.success) {
+                                                                throw new Error(data.message || 'Operation failed');
+                                                            }
+                                                            // Update bookmark ID if needed
+                                                            if (data.bookmark_id) {
+                                                                this.setAttribute('data-bookmark-id', data.bookmark_id);
+                                                            }
+                                                        })
+                                                        .catch(error => {
+                                                            console.error('Error:', error);
+                                                            revertButtonState(this, isBookmarked);
+                                                        });
+                                                    });
+                                                });
+
+                                                function updateButtonAppearance(button) {
+                                                    const isBookmarked = button.getAttribute('data-bookmarked') === 'true';
+                                                    const icon = button.querySelector('svg');
+                                                    const text = button.querySelector('span');
+
+                                                    if (isBookmarked) {
+                                                        button.classList.add('bg-blue-50', 'text-blue-600', 'border-blue-200', 'hover:border-blue-300');
+                                                        button.classList.remove('border-gray-200', 'text-gray-700', 'hover:text-gray-900');
+                                                        icon.classList.add('fill-blue-600');
+                                                        icon.classList.remove('fill-none');
+                                                        text.textContent = 'Saved';
+                                                    } else {
+                                                        button.classList.remove('bg-blue-50', 'text-blue-600', 'border-blue-200', 'hover:border-blue-300');
+                                                        button.classList.add('border-gray-200', 'text-gray-700', 'hover:text-gray-900');
+                                                        icon.classList.remove('fill-blue-600');
+                                                        icon.classList.add('fill-none');
+                                                        text.textContent = 'Save';
+                                                    }
+                                                }
+
+                                                function revertButtonState(button, originalState) {
+                                                    button.setAttribute('data-bookmarked', originalState.toString());
+                                                    updateButtonAppearance(button);
+                                                }
+                                            });
+                                        </script>
+
+                                        
+
+                                    </div>
+
+                                    
+
+                                    
+                                    <!-- Fullscreen Modal -->
+                                    <div id="fullscreen-modal-{{ property.id }}" class="fixed inset-0 z-50 hidden bg-black bg-opacity-90 items-center justify-center p-4">
+                                        <!-- Top Controls Bar -->
+                                        <div class="absolute mt-20 left-0 right-0 z-50 flex justify-between items-center p-4 bg-gradient-to-b from-black/70 to-transparent">
+                                            <div class="max-w-2xl pr-4 transition-opacity duration-300 hover:opacity-100">
+                                                <h3 id="fullscreen-title-{{ property.id }}" 
+                                                    class="text-2xl font-semibold text-white tracking-tight truncate"
+                                                    aria-live="polite">
+                                                    <!-- Title will be inserted here -->
+                                                </h3>
+                                                <p id="fullscreen-about-{{ property.id }}" 
+                                                class="mt-1 text-sm text-white/80 line-clamp-2 transition-all duration-200"
+                                                aria-live="polite">
+                                                    <!-- Description will be inserted here -->
+                                                </p>
+                                            </div>
+                                                                                    
+                                                                                    <!-- Close button with modern interaction -->
+                                            <button id="close-fullscreen-{{ property.id }}"
+                                                    class="p-2 rounded-full backdrop-blur-sm bg-white/10 hover:bg-white/20 transition-all duration-200
+                                                        focus:outline-none focus:ring-2 focus:ring-white/50 focus:ring-offset-2 focus:ring-offset-black/50
+                                                        group"
+                                                    aria-label="Close fullscreen view">
+                                                <svg xmlns="http://www.w3.org/2000/svg" 
+                                                    class="h-6 w-6 text-white group-hover:scale-110 transition-transform"
+                                                    viewBox="0 0 24 24" 
+                                                    fill="none" 
+                                                    stroke="currentColor" 
+                                                    stroke-width="2">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                                </svg>
+                                            </button>
+                                        </div>
+                                        
+                                        <!-- Navigation Arrows -->
+                                        <button id="fs-prev-{{ property.id }}" class="absolute left-4 z-50 p-3 rounded-full bg-black/50 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" viewBox="0 0 20 20" fill="currentColor">
+                                                <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                            </svg>
+                                        </button>
+                                        
+                                        <button id="fs-next-{{ property.id }}" class="absolute right-4 z-50 p-3 rounded-full bg-black/50 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" viewBox="0 0 20 20" fill="currentColor">
+                                                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                                            </svg>
+                                        </button>
+                                        
+                                        <!-- Media Counter -->
+                                        <div class="absolute top-1/2 right-4 transform -translate-y-1/2 z-50 px-3 py-1 bg-black/50 rounded-full text-white text-sm hidden md:block">
+                                            <span id="current-index-{{ property.id }}">1</span> / <span id="total-media-{{ property.id }}">{{ property.media.count }}</span>
+                                        </div>
+                                        
+                                        
+                                        <!-- Main Content Container -->
+                                        <div class="relative w-full h-full flex flex-col max-w-6xl mx-auto group">
+                                            <!-- Fullscreen Preview -->
+                                            <div id="fullscreen-preview-{{ property.id }}" class="flex items-center justify-center relative">
+                                                <!-- Fullscreen content will be inserted here -->
+                                            </div>
+                                            
+                                            <div class="absolute inset-y-0 left-0 top-50 w-24 z-50 flex flex-col items-center bg-gradient-to-t from-black/70 to-transparent p-4">
+                                                <!-- Fullscreen Thumbnails Carousel -->
+                                                <div class="flex-1 px-2 overflow-y-auto">
+                                                    <div class="w-full p-2">
+                                                        <div 
+                                                            class="flex flex-col gap-4 w-full bg-blue-50 p-2 rounded-xl backdrop-blur-sm"
+                                                            id="fullscreen-thumbnails-{{ property.id}}"
+                                                            aria-label="Property image thumbnails"
+                                                        >
+                                                            <!-- Thumbnails will be dynamically inserted here -->
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                
+                                                <!-- Video Controls (hidden by default) -->
+                                                <div id="video-controls-{{ property.id }}" class="hidden w-full max-w-xl mt-2">
+                                                    <div class="flex items-center gap-4 text-white">
+                                                        <button id="play-pause-{{ property.id }}" class="p-2" aria-label="Play/Pause">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" />
+                                                            </svg>
+                                                        </button>
+                                                        <div class="flex-1 bg-white/20 h-1 rounded-full overflow-hidden">
+                                                            <div id="progress-bar-{{ property.id }}" class="bg-blue-500 h-full" style="width: 0%"></div>
+                                                        </div>
+                                                        <span id="current-time-{{ property.id }}" class="text-xs">0:00</span>
+                                                        <span class="text-xs opacity-50">/</span>
+                                                        <span id="duration-{{ property.id }}" class="text-xs">0:00</span>
+                                                        <button id="mute-{{ property.id }}" class="p-2" aria-label="Mute/Unmute">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                                                <path fill-rule="evenodd" d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.707.707L4.586 13H2a1 1 0 01-1-1V8a1 1 0 011-1h2.586l3.707-3.707a1 1 0 011.09-.217zM14.657 2.929a1 1 0 011.414 0A9.972 9.972 0 0119 10a9.972 9.972 0 01-2.929 7.071 1 1 0 01-1.414-1.414A7.971 7.971 0 0017 10c0-2.21-.894-4.208-2.343-5.657a1 1 0 010-1.414zm-2.829 2.828a1 1 0 011.415 0A5.983 5.983 0 0115 10a5.984 5.984 0 01-1.757 4.243 1 1 0 01-1.415-1.415A3.984 3.984 0 0013 10a3.983 3.983 0 00-1.172-2.828 1 1 0 010-1.415z" clip-rule="evenodd" />
+                                                            </svg>
+                                                        </button>
+                                                        <button id="fullscreen-video-{{ property.id }}" class="p-2" aria-label="Fullscreen">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                                                <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h4a1 1 0 010 2H6.414l2.293 2.293a1 1 0 01-1.414 1.414L5 6.414V8a1 1 0 01-2 0V4zm9 1a1 1 0 010-2h4a1 1 0 011 1v4a1 1 0 01-2 0V6.414l-2.293 2.293a1 1 0 11-1.414-1.414L13.586 5H12zm-9 7a1 1 0 012 0v1.586l2.293-2.293a1 1 0 111.414 1.414L6.414 15H8a1 1 0 010 2H4a1 1 0 01-1-1v-4zm13-1a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 010-2h1.586l-2.293-2.293a1 1 0 111.414-1.414L15 13.586V12a1 1 0 011-1z" clip-rule="evenodd" />
+                                                            </svg>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+
+
+                                    </div>
+                                    
+
+                                    <!-- Pass media data to JavaScript -->
+                                    <script>
+                                        document.addEventListener('DOMContentLoaded', function() {
+                                            const mediaData{{ property.id }} = [
+                                                {% for media in property.media.all %}
+                                                {
+                                                    id: {{ media.id }},
+                                                    type: "{{ media.media_type|lower }}",
+                                                    url: "{{ media.file.url }}",
+                                                    title: "{{ media.title|escapejs }}",
+                                                    about: "{{ media.about|escapejs }}",
+                                                    thumb: "{{ media.file.url }}",
+                                                    alt: "{{ media.title|escapejs }}"
+                                                }{% if not forloop.last %},{% endif %}
+                                                {% endfor %}
+                                            ];
+                                            const VIDEO_PLACEHOLDER_URL = "{% static 'images/placeholder-video.jpeg' %}";
+                                            // Initialize gallery for this property
+                                            initPropertyGallery(
+                                                VIDEO_PLACEHOLDER_URL,
+                                                {{ property.id }},
+                                                mediaData{{ property.id }},
+                                                {
+                                                    mainPreview: document.getElementById('main-preview-{{ property.id }}'),
+                                                    mediaThumbnails: document.getElementById('media-thumbnails-{{ property.id }}'),
+                                                    fullscreenModal: document.getElementById('fullscreen-modal-{{ property.id }}'),
+                                                    fullscreenPreview: document.getElementById('fullscreen-preview-{{ property.id }}'),
+                                                    fullscreenThumbnails: document.getElementById('fullscreen-thumbnails-{{ property.id }}'),
+                                                    closeFullscreen: document.getElementById('close-fullscreen-{{ property.id }}'),
+                                                    thumbPrev: document.getElementById('thumb-prev-{{ property.id }}'),
+                                                    thumbNext: document.getElementById('thumb-next-{{ property.id }}'),
+                                                    fsPrev: document.getElementById('fs-prev-{{ property.id }}'),
+                                                    fsNext: document.getElementById('fs-next-{{ property.id }}')
+                                                }
+                                            );
+                                        });
+                                    </script>
+                                </div>    
+
+                                <!-- Vertical Divider -->
+                                <div class="hidden md:block w-1 rounded-2xl bg-gray-200 my-6"></div>
+
+                                <!-- Content Section -->
+                                <div class="p-4 w-full flex flex-col flex-1 relative">
+
+                                    <!-- Title and Basic Info -->
+                                    <div class="mb-3 flex flex-row items-start justify-between ">
+                                        <div class="flex flex-col items-start justify-between mt-1 gap-1">
+                                            <h1 class="text-xl font-bold text-gray-800">{{ property.get_property_type_display }} - <span class="text-sm text-gray-600 font-normal" >By {{property.project.name}}</span> </h1>
+                                            <div class="flex items-start">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-500 mr-1 mt-1" viewBox="0 0 20 20" fill="currentColor">
+                                                    <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
+                                                </svg>
+                                                <div class="flex flex-col">
+                                                    <span class="text-sm text-gray-700">{{ property.address }}</span>
+                                                    <span class="text-sm text-gray-600">
+                                                        {% if property.society_name %}{{ property.society_name }}, {% endif %}
+                                                        {{ property.city }}, {{ property.district }}, {{ property.state }}
+                                                        {% if property.landmark %} • Landmark: {{ property.landmark }}{% endif %}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                            <span class="absolute top-1 right-1 text-xs text-center font-semibold px-3 py-1 bg-blue-700 text-white rounded-full">{{ property.get_transaction_type_display }}</span>
+                                    
+                                    </div>
+
+
+                                    <!-- Price and Area -->
+                                    <div class="flex items-center justify-between mb-3 hidden md:flex">
+                                        <div>
+                                            <div class="text-lg font-bold text-gray-900">₹ {{ property.price_in_rs|floatformat:0|intcomma }}/-</div>
+                                            <div class="text-xs text-gray-500">₹ {{ property.per_sq_ft_price|floatformat:0|intcomma }} per sq.ft</div>
+                                        </div>
+                                        <div class="text-right">
+                                            <div class="text-sm font-medium text-gray-800">
+                                                {% if property.carpet_area %}{{ property.carpet_area|floatformat:0|intcomma }} sq.ft (Carpet){% endif %}
+                                                {% if property.build_up_area %} / {{ property.build_up_area|floatformat:0|intcomma }} sq.ft (Built-up){% endif %}
+                                            </div>
+                                            <div class="text-xs text-gray-500 flex items-center mt-1">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-land-plot-icon lucide-land-plot h-3 w-3 mr-1"><path d="m12 8 6-3-6-3v10"/><path d="m8 11.99-5.5 3.14a1 1 0 0 0 0 1.74l8.5 4.86a2 2 0 0 0 2 0l8.5-4.86a1 1 0 0 0 0-1.74L16 12"/><path d="m6.49 12.85 11.02 6.3"/><path d="M17.51 12.85 6.5 19.15"/></svg>
+                                                Total Area
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Property Highlights -->
+                                    <div class="mb-6 p-2 rounded-lg hidden md:block">
+                                        <div class="flex flex-wrap gap-2">
+                                            <!-- Furnishing Status -->
+                                            <div class="flex items-center text-xs bg-blue-50 px-2 py-1 rounded ">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                                                    <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd" />
+                                                </svg>
+                                                {{ property.get_furnishing_status_display }}
+                                            </div>
+                                            <!-- BHK Configuration -->
+                                            <div class="flex items-center text-xs bg-blue-50 px-2 py-1 rounded">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bed-single-icon lucide-bed-single h-3 w-3 mr-1"><path d="M3 20v-8a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v8"/><path d="M5 10V6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v4"/><path d="M3 18h18"/></svg>
+                                                {{ property.get_number_of_bedrooms_display }}
+                                            </div>
+                                            
+                                            <!-- Property Type -->
+                                            <div class="flex items-center text-xs bg-blue-50 px-2 py-1 rounded">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                                                    <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a1 1 0 110 2h-3a1 1 0 01-1-1v-2a1 1 0 00-1-1H9a1 1 0 00-1 1v2a1 1 0 01-1 1H4a1 1 0 110-2V4zm3 1h2v2H7V5zm2 4H7v2h2V9zm2-4h2v2h-2V5zm2 4h-2v2h2V9z" clip-rule="evenodd"/>
+                                                </svg>
+                                                {{ property.get_property_type_display }}
+                                            </div>
+                                            
+                                            <!-- Construction Status -->
+                                            <div class="flex items-center text-xs bg-blue-50 px-2 py-1 rounded">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-hard-hat-icon lucide-hard-hat h-3 w-3 mr-1"><path d="M10 10V5a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v5"/><path d="M14 6a6 6 0 0 1 6 6v3"/><path d="M4 15v-3a6 6 0 0 1 6-6"/><rect x="2" y="15" width="20" height="4" rx="1"/></svg>
+                                                {{ property.get_construction_status_display }}
+                                            </div>
+
+                                            <!-- Facing -->
+                                            {% if property.facing %}
+                                            <div class="flex items-center text-xs bg-blue-50 px-2 py-1 rounded">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-compass-icon lucide-compass h-3 w-3 mr-1"><path d="m16.24 7.76-1.804 5.411a2 2 0 0 1-1.265 1.265L7.76 16.24l1.804-5.411a2 2 0 0 1 1.265-1.265z"/><circle cx="12" cy="12" r="10"/></svg>
+                                                {{ property.get_facing_display }} Facing
+                                            </div>
+                                            {% endif %}
+
+                                            <!-- Gated Community -->
+                                            {% if property.gated_community %}
+                                            <div class="flex items-center text-xs bg-blue-50 px-2 py-1 rounded">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-fence-icon lucide-fence h-3 w-3 mr-1"><path d="M4 3 2 5v15c0 .6.4 1 1 1h2c.6 0 1-.4 1-1V5Z"/><path d="M6 8h4"/><path d="M6 18h4"/><path d="m12 3-2 2v15c0 .6.4 1 1 1h2c.6 0 1-.4 1-1V5Z"/><path d="M14 8h4"/><path d="M14 18h4"/><path d="m20 3-2 2v15c0 .6.4 1 1 1h2c.6 0 1-.4 1-1V5Z"/></svg>
+                                                Gated Community
+                                            </div>
+                                            {% endif %}
+
+                                            <!-- Corner Property -->
+                                            {% if property.corner_property %}
+                                            <div class="flex items-center text-xs bg-blue-50 px-2 py-1 rounded">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                                                    <path d="M11 17a1 1 0 001.447.894l4-2A1 1 0 0017 15V9.236a1 1 0 00-1.447-.894l-4 2a1 1 0 00-.553.894V17zM15.211 6.276a1 1 0 000-1.788l-4.764-2.382a1 1 0 00-.894 0L4.789 4.488a1 1 0 000 1.788l4.764 2.382a1 1 0 00.894 0l4.764-2.382zM4.447 8.342A1 1 0 003 9.236V15a1 1 0 00.553.894l4 2A1 1 0 009 17v-5.764a1 1 0 00-.553-.894l-4-2z" />
+                                                </svg>
+                                                Corner Property
+                                            </div>
+                                            {% endif %}
+
+                                            <!-- Pet Friendly -->
+                                            {% if property.pet_friendly %}
+                                            <div class="flex items-center text-xs bg-blue-50 px-2 py-1 rounded">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                                                    <path d="M9 12a1 1 0 11-2 0 1 1 0 012 0zm-.07-1.492a1 1 0 00.858.486 1 1 0 00.857-.486 1 1 0 00-.857-.486 1 1 0 00-.858.486zM11 3a1 1 0 10-2 0v1a1 1 0 102 0V3z" />
+                                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM7.858 5.485a1 1 0 00-1.715 1.03L7.633 9H7a1 1 0 100 2h1.834l.166.277V12H7a1 1 0 100 2h2v1a1 1 0 102 0v-1h2a1 1 0 100-2h-2v-.723l.166-.277H13a1 1 0 100-2h-.634l1.492-2.486a1 1 0 10-1.716-1.029L10.034 9h-.068L7.858 5.485z" clip-rule="evenodd" />
+                                                </svg>
+                                                Pet Friendly
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+
+                                    <!-- Key Details Grid -->
+                                    <div class="grid grid-cols-3 gap-3 mb-6 hidden md:grid">
+                                        <!-- Floor Number -->
+                                        <div class="flex items-center">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-between-horizontal-end-icon lucide-between-horizontal-end h-4 w-4 text-gray-500 mr-2"><rect width="13" height="7" x="3" y="3" rx="1"/><path d="m22 15-3-3 3-3"/><rect width="13" height="7" x="3" y="14" rx="1"/></svg>
+                                            <div>
+                                                <div class="text-xs text-gray-500">Floor</div>
+                                                <div class="text-sm font-medium text-gray-800">
+                                                    {% if property.floor_no %}
+                                                    {{ property.floor_no }} Floor
+                                                    {% else %}
+                                                    -
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Property Age -->
+                                        <div class="flex items-center">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-500 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd" />
+                                            </svg>
+                                            <div>
+                                                <div class="text-xs text-gray-500">Age</div>
+                                                <div class="text-sm font-medium text-gray-800">
+                                                    {% if property.property_age %}
+                                                    {{ property.property_age }} year{{ property.property_age|pluralize }}
+                                                    {% else %}
+                                                    New
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Ownership Type -->
+                                        <div class="flex items-center">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-500 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                                <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd" />
+                                            </svg>
+                                            <div>
+                                                <div class="text-xs text-gray-500">Ownership</div>
+                                                <div class="text-sm font-medium text-gray-800">{{ property.get_ownership_type_display }}</div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Power Backup -->
+                                        <div class="flex items-center">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-500 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                                <path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd" />
+                                            </svg>
+                                            <div>
+                                                <div class="text-xs text-gray-500">Power Backup</div>
+                                                <div class="text-sm font-medium text-gray-800">{{ property.get_power_backup_display }}</div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Water Source -->
+                                        <div class="flex items-center">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-droplets-icon lucide-droplets h-4 w-4 text-gray-500 mr-2"><path d="M7 16.3c2.2 0 4-1.83 4-4.05 0-1.16-.57-2.26-1.71-3.19S7.29 6.75 7 5.3c-.29 1.45-1.14 2.84-2.29 3.76S3 11.1 3 12.25c0 2.22 1.8 4.05 4 4.05z"/><path d="M12.56 6.6A10.97 10.97 0 0 0 14 3.02c.5 2.5 2 4.9 4 6.5s3 3.5 3 5.5a6.98 6.98 0 0 1-11.91 4.97"/></svg>
+                                            <div>
+                                                <div class="text-xs text-gray-500">Water Source</div>
+                                                <div class="text-sm font-medium text-gray-800">
+                                                    {% if property.water_source %}
+                                                    {{ property.get_water_source_display }}
+                                                    {% else %}
+                                                    -
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Road Width -->
+                                        <div class="flex items-center">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-500 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                                <path fill-rule="evenodd" d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 101.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z" clip-rule="evenodd" />
+                                            </svg>
+                                            <div>
+                                                <div class="text-xs text-gray-500">Road Width</div>
+                                                <div class="text-sm font-medium text-gray-800">
+                                                    {% if property.width_of_facing_road %}
+                                                    {{ property.width_of_facing_road }} ft
+                                                    {% else %}
+                                                    -
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Additional Features Section -->
+                                    {% if property.amenities.exists or property.highlights.exists or property.overlooking.exists %}
+                                    <div class="mb-6 hidden md:block">
+                                        <h3 class="text-sm font-semibold text-gray-700 mb-2">Key Features</h3>
+                                        <div class="flex flex-wrap gap-2">
+                                            {% for highlight in property.highlights.all|slice:":5" %}
+                                            <span class="text-xs bg-blue-100 px-2 py-1 rounded flex items-center">
+                                                
+                                                {{ highlight.name }}
+                                            </span>
+                                            {% endfor %}
+                                            
+                                            {% for amenity in property.amenities.all|slice:":5" %}
+                                            <span class="text-xs bg-blue-100 px-2 py-1 rounded">
+                                                {{ amenity.name }}
+                                            </span>
+                                            {% endfor %}
+                                            
+                                            {% for overlook in property.overlooking.all|slice:":3" %}
+                                            <span class="text-xs bg-blue-100 px-2 py-1 rounded">
+                                                Overlooking {{ overlook.name }}
+                                            </span>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            
+                            </div>
+                            {% empty %}
+                                <div class="col-span-full text-center py-12">
+                                    <p class="text-gray-500 text-lg">No properties found matching your criteria.</p>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        
+                        <!-- Modern Pagination Component -->
+                        <div class="mt-2">
+                            <div class="flex flex-col sm:flex-row items-center justify-between gap-4 px-1">
+                                <!-- Items Count -->
+                                <div class="text-sm text-gray-600">
+                                    Showing <span class="font-medium text-gray-800">{{ properties.start_index }}-{{ properties.end_index }}</span> of 
+                                    <span class="font-medium text-gray-800">{{ properties.paginator.count }}</span> properties
+                                </div>
+                                
+                                <!-- Pagination Controls -->
+                                <div class="flex items-center gap-1">
+                                    <!-- Previous Button -->
+                                    <a 
+                                        href="{% if properties.has_previous %}?page={{ properties.previous_page_number }}{% else %}#{% endif %}"
+                                        class="p-1 rounded-lg border border-gray-200 bg-white text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors {% if not properties.has_previous %}opacity-50 cursor-not-allowed{% endif %}"
+                                    >
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                                        </svg>
+                                        <span class="sr-only">Previous</span>
+                                    </a>
+                                    
+                                    <!-- Page Numbers -->
+                                    <div class="flex items-center gap-1 mx-2">
+                                        {% for num in properties.paginator.page_range %}
+                                            {% if num == properties.number %}
+                                                <a href="?page={{ num }}" class="w-8 h-8 rounded-lg bg-blue-600 text-white font-medium text-sm flex items-center justify-center">
+                                                    {{ num }}
+                                                </a>
+                                            {% elif num > properties.number|add:'-3' and num < properties.number|add:'3' %}
+                                                <a href="?page={{ num }}" class="w-8 h-8 rounded-lg border border-gray-200 bg-white text-gray-700 font-medium text-sm hover:bg-gray-50 flex items-center justify-center">
+                                                    {{ num }}
+                                                </a>
+                                            {% elif num == 1 or num == properties.paginator.num_pages %}
+                                                <a href="?page={{ num }}" class="w-8 h-8 rounded-lg border border-gray-200 bg-white text-gray-700 font-medium text-sm hover:bg-gray-50 flex items-center justify-center">
+                                                    {{ num }}
+                                                </a>
+                                            {% elif num == properties.number|add:'-3' or num == properties.number|add:'3' %}
+                                                <span class="px-2 text-gray-400">...</span>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                    
+                                    <!-- Next Button -->
+                                    <a 
+                                        href="{% if properties.has_next %}?page={{ properties.next_page_number }}{% else %}#{% endif %}"
+                                        class="p-1 rounded-lg border border-gray-200 bg-white text-gray-700 hover:bg-gray-50 transition-colors {% if not properties.has_next %}opacity-50 cursor-not-allowed{% endif %}"
+                                    >
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                        </svg>
+                                        <span class="sr-only">Next</span>
+                                    </a>
+                                </div>
+                                
+                                <!-- Items Per Page Selector (Optional) -->
+                                <div class="flex items-center gap-2 text-sm text-gray-600">
+                                    <span>Items per page:</span>
+                                    <select 
+                                        id="per-page-selector" 
+                                        class="px-10 py-1 w-max border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                        onchange="updatePerPage(this.value)"
+                                    >
+                                        <option value="12" {% if request.GET.per_page == '12' %}selected{% endif %}>12</option>
+                                        <option value="24" {% if request.GET.per_page == '24' %}selected{% endif %}>24</option>
+                                        <option value="48" {% if request.GET.per_page == '48' %}selected{% endif %}>48</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <script>
+                            function updatePerPage(value) {
+                                const url = new URL(window.location.href);
+                                url.searchParams.set('per_page', value);
+                                url.searchParams.set('page', '1'); // Reset to first page when changing items per page
+                                window.location.href = url.toString();
+                            }
+                        </script>
+
+                        <style>
+                            /* Optional animation for hover states */
+                            button {
+                            transition: all 0.2s ease;
+                            }
+                            button:hover {
+                            transform: translateY(-1px);
+                            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+                            }
+                        </style>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    // Handle filter button clicks
+    document.querySelectorAll('.property-type-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.property-type-btn').forEach(b => b.classList.remove('active', 'border-blue-500', 'bg-blue-50', 'text-blue-700'));
+            this.classList.add('active', 'border-blue-500', 'bg-blue-50', 'text-blue-700');
+            document.getElementById('property_type').value = this.dataset.value;
+        });
+    });
+
+    document.querySelectorAll('.config-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.config-btn').forEach(b => b.classList.remove('active', 'border-blue-500', 'bg-blue-50', 'text-blue-700'));
+            this.classList.add('active', 'border-blue-500', 'bg-blue-50', 'text-blue-700');
+            document.getElementById('bedrooms').value = this.dataset.value;
+        });
+    });
+</script>
+
+{% endblock %}

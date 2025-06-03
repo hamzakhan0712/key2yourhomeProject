@@ -1,0 +1,518 @@
+{% load static %}
+{% load compress %}
+{% load humanize %}
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Primary Meta Tags -->
+  <title>{% block title %}Key2YourHome - Global Real Estate Solutions{% endblock %}</title>
+  <meta name="description" content="{% block meta_description %}Find your dream property worldwide with Key2YourHome. Browse luxury homes, apartments, and commercial properties across global markets.{% endblock %}">
+  <meta name="keywords" content="{% block meta_keywords %}real estate, property, buy home, rent apartment, commercial property, investment property{% endblock %}">
+
+  <!-- Canonical URL -->
+  <link rel="canonical" href="{{ request.build_absolute_uri }}">
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="{{ request.build_absolute_uri }}">
+  <meta property="og:title" content="{% block og_title %}Key2YourHome - Global Real Estate Solutions{% endblock %}">
+  <meta property="og:description" content="{% block og_description %}Find your dream property worldwide with Key2YourHome.{% endblock %}">
+  <meta property="og:image" content="{% block og_image %}{% static 'img/og-default.jpg' %}{% endblock %}">
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="{{ request.build_absolute_uri }}">
+  <meta name="twitter:title" content="{% block twitter_title %}Key2YourHome - Global Real Estate Solutions{% endblock %}">
+  <meta name="twitter:description" content="{% block twitter_description %}Browse luxury and commercial properties worldwide.{% endblock %}">
+  <meta name="twitter:image" content="{% block twitter_image %}{% static 'img/og-default.jpg' %}{% endblock %}">
+
+  <!-- Google Site Verification -->
+  <meta name="google-site-verification" content="IZKEAvjBQk280-UBWKPFSwlnsQLTFg4_r7sl-VT_0ZE" />
+
+  <!-- Structured Data -->
+  {% block schema_ld %}{% endblock %}
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}">
+
+  {% compress css %}
+  <link rel="stylesheet" href="{% static 'src/output.css' %}">
+  <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+  {% endcompress %}
+
+  {% block extra_head %}{% endblock %}
+</head>
+
+
+
+<body class="bg-blue-50 text-blue-950 font-sans relative">
+
+    <!-- Navbar -->
+    {% include "base/navbar.html" %}
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-6 min-h-[calc(100vh-160px)]">
+        {% block content %}
+        {% endblock content %}
+
+    </main>
+
+    <!-- Footer -->
+    {% include "base/footer.html" %}
+
+    <!-- Add this before the closing </body> tag -->
+    {% comment %} <div class="fixed bottom-0 right-5 flex flex-col items-end z-50 group">
+      <a 
+        href="https://wa.me/+91 81047 95478" 
+        class="w-16 h-16 bg-green-100 text-white rounded-full text-center shadow-lg flex items-center justify-center hover:bg-[#128C7E] transition-all duration-300"
+        target="_blank"
+        aria-label="Chat on WhatsApp"
+      >
+         <svg 
+            height="30px" 
+            width="30px" 
+            viewBox="0 0 512 512" 
+            xmlns="http://www.w3.org/2000/svg"
+            className="whatsapp-icon"
+            aria-hidden="true"
+            >
+            <path 
+                fill="#EDEDED" 
+                d="M0,512l35.31-128C12.359,344.276,0,300.138,0,254.234C0,114.759,114.759,0,255.117,0 S512,114.759,512,254.234S395.476,512,255.117,512c-44.138,0-86.51-14.124-124.469-35.31L0,512z"
+            />
+            <path 
+                fill="#25D366" 
+                d="M137.71,430.786l7.945,4.414c32.662,20.303,70.621,32.662,110.345,32.662 c115.641,0,211.862-96.221,211.862-213.628S371.641,44.138,255.117,44.138S44.138,137.71,44.138,254.234 c0,40.607,11.476,80.331,32.662,113.876l5.297,7.945l-20.303,74.152L137.71,430.786z"
+            />
+            <path 
+                fill="#FFFFFF" 
+                d="M187.145,135.945l-16.772-0.883c-5.297,0-10.593,1.766-14.124,5.297 c-7.945,7.062-21.186,20.303-24.717,37.959c-6.179,26.483,3.531,58.262,26.483,90.041s67.09,82.979,144.772,105.048 c24.717,7.062,44.138,2.648,60.028-7.062c12.359-7.945,20.303-20.303,22.952-33.545l2.648-12.359 c0.883-3.531-0.883-7.945-4.414-9.71l-55.614-25.6c-3.531-1.766-7.945-0.883-10.593,2.648l-22.069,28.248 c-1.766,1.766-4.414,2.648-7.062,1.766c-15.007-5.297-65.324-26.483-92.69-79.448c-0.883-2.648-0.883-5.297,0.883-7.062 l21.186-23.834c1.766-2.648,2.648-6.179,1.766-8.828l-25.6-57.379C193.324,138.593,190.676,135.945,187.145,135.945"
+            />
+        </svg>
+
+      </a>
+      <span class="bg-black text-white text-sm rounded py-1 px-2 mb-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+        Chat with us
+      </span>
+    </div> {% endcomment %}
+
+    <!-- Scripts -->
+    <script src="{% static 'js/search.js' %}"></script>
+    <script src="//unpkg.com/alpinejs" defer></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Shared state for recent searches
+            let recentSearches = JSON.parse(localStorage.getItem('recentSearches')) || [];
+            
+            // Function to update recent searches in all components
+            function updateRecentSearchesUI() {
+              // Show/hide sections based on whether there are recent searches
+              const hasRecentSearches = recentSearches.length > 0;
+              
+              // Landing page recent searches
+              const recentSearchesSection = document.getElementById('recent-searches-section');
+              const recentSearchesContainer = document.getElementById('recent-searches-container');
+              if (recentSearchesSection && recentSearchesContainer) {
+                if (hasRecentSearches) {
+                  recentSearchesSection.classList.remove('hidden');
+                  recentSearchesContainer.innerHTML = '';
+                  recentSearches.slice(0, 5).forEach(search => {
+                    const searchElement = document.createElement('a');
+                    searchElement.href = search.url;
+                    searchElement.className = 'text-xs px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-full flex items-center transition gap-2';
+                    searchElement.innerHTML = `
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-clock"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                      ${search.text}
+                      <button class="text-gray-400 hover:text-gray-600 ml-1" onclick="removeRecentSearch(event, '${search.text}')">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                      </button>
+                    `;
+                    recentSearchesContainer.appendChild(searchElement);
+                  });
+                } else {
+                  recentSearchesSection.classList.add('hidden');
+                }
+              }
+              
+              // Mobile recent searches
+              const mobileRecentSearchesSection = document.getElementById('mobile-recent-searches-section');
+              const mobileRecentSearches = document.getElementById('mobile-recent-searches');
+              if (mobileRecentSearchesSection && mobileRecentSearches) {
+                if (hasRecentSearches) {
+                  mobileRecentSearchesSection.classList.remove('hidden');
+                  mobileRecentSearches.innerHTML = '';
+                  recentSearches.slice(0, 3).forEach(search => {
+                    const searchElement = document.createElement('a');
+                    searchElement.href = search.url;
+                    searchElement.className = 'block px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm flex items-center justify-between';
+                    searchElement.innerHTML = `
+                      <span class="flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-clock mr-2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        ${search.text}
+                      </span>
+                      <button class="text-gray-400 hover:text-gray-600" onclick="removeRecentSearch(event, '${search.text}')">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                      </button>
+                    `;
+                    mobileRecentSearches.appendChild(searchElement);
+                  });
+                } else {
+                  mobileRecentSearchesSection.classList.add('hidden');
+                }
+              }
+              
+              // Desktop navbar recent searches
+              const desktopRecentSearchesSection = document.getElementById('desktop-recent-searches-section');
+              const desktopRecentSearches = document.getElementById('desktop-recent-searches-list');
+              if (desktopRecentSearchesSection && desktopRecentSearches) {
+                if (hasRecentSearches) {
+                  desktopRecentSearchesSection.classList.remove('hidden');
+                  desktopRecentSearches.innerHTML = '';
+                  recentSearches.slice(0, 3).forEach(search => {
+                    const searchElement = document.createElement('a');
+                    searchElement.href = search.url;
+                    searchElement.className = 'block px-3 py-2 hover:bg-gray-100 rounded text-sm flex items-center justify-between';
+                    searchElement.innerHTML = `
+                      <span class="flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-history mr-2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></svg>
+                        ${search.text}
+                      </span>
+                      <span class="flex items-center gap-2">
+                        <span class="text-xs text-gray-500">${search.type === 'project' ? 'Project' : 'Property'}</span>
+                        <button class="text-gray-400 hover:text-gray-600" onclick="removeRecentSearch(event, '${search.text}')">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                        </button>
+                      </span>
+                    `;
+                    desktopRecentSearches.appendChild(searchElement);
+                  });
+                } else {
+                  desktopRecentSearchesSection.classList.add('hidden');
+                }
+              }
+            }
+            
+            // Remove individual search item
+            window.removeRecentSearch = function(event, searchText) {
+              event.preventDefault();
+              event.stopPropagation();
+              
+              recentSearches = recentSearches.filter(item => item.text !== searchText);
+              localStorage.setItem('recentSearches', JSON.stringify(recentSearches));
+              updateRecentSearchesUI();
+            };
+            
+            // Clear recent searches handlers
+            function clearRecentSearches() {
+              recentSearches = [];
+              localStorage.setItem('recentSearches', JSON.stringify(recentSearches));
+              updateRecentSearchesUI();
+            }
+            
+            document.getElementById('clear-recent-searches')?.addEventListener('click', clearRecentSearches);
+            document.getElementById('mobile-clear-recent-searches')?.addEventListener('click', clearRecentSearches);
+            document.getElementById('desktop-clear-recent-searches')?.addEventListener('click', clearRecentSearches);
+            
+           
+          // Search type toggle functionality (landing page)
+          const searchTypeToggle = document.getElementById('search-type-toggle');
+          if (searchTypeToggle) {
+            searchTypeToggle.addEventListener('change', function() {
+              const isPropertySearch = this.checked;
+              const searchTypeInput = document.getElementById('search-type');
+              const searchTitle = document.getElementById('search-title');
+              const typeFilterContainer = document.getElementById('type-filter-container');
+              const bhkContainer = document.getElementById('bhk-container');
+              const searchButton = document.querySelector('#property-search-form button[type="submit"]');
+              
+              searchTypeInput.value = isPropertySearch ? 'property' : 'project';
+              searchTitle.textContent = isPropertySearch ? 'Find Your Perfect Property' : 'Discover New Projects';
+              searchButton.textContent = isPropertySearch ? 'Search ' : 'Search';
+              
+              // Update the type filter dropdown
+              const typeFilterLabel = typeFilterContainer.querySelector('label');
+              const typeFilterSelect = typeFilterContainer.querySelector('select');
+              
+              if (isPropertySearch) {
+                typeFilterLabel.textContent = 'Property Type';
+                typeFilterSelect.name = 'property_type';
+                typeFilterSelect.innerHTML = `
+                  <option value="">All Types</option>
+                  {% for value, label in property_type_choices %}
+                  <option value="{{ value }}">{{ label }}</option>
+                  {% endfor %}
+                `;
+                bhkContainer.style.display = 'block';
+              } else {
+                typeFilterLabel.textContent = 'Project Status';
+                typeFilterSelect.name = 'status';
+                typeFilterSelect.innerHTML = `
+                  <option value="">All Statuses</option>
+                  {% for value, label in project_status_choices %}
+                  <option value="{{ value }}">{{ label }}</option>
+                  {% endfor %}
+                `;
+                bhkContainer.style.display = 'none';
+              }
+            });
+          }
+          
+          // Mobile search type toggle
+          const mobileSearchTypeToggle = document.getElementById('mobile-search-type-toggle');
+          if (mobileSearchTypeToggle) {
+            mobileSearchTypeToggle.addEventListener('click', function() {
+              const mobileSearchType = document.getElementById('mobile-search-type');
+              const isPropertySearch = mobileSearchType.value === 'property';
+              
+              mobileSearchType.value = isPropertySearch ? 'project' : 'property';
+              this.textContent = isPropertySearch ? 'Projects' : 'Properties';
+              
+              // Update the search button text
+              const mobileSearchButton = document.querySelector('#mobile-search button[type="submit"]');
+              mobileSearchButton.textContent = isPropertySearch ? 'Search Projects' : 'Search Properties';
+            });
+          }
+          
+          // Desktop search type change
+          const desktopSearchType = document.getElementById('desktop-search-type');
+          if (desktopSearchType) {
+            desktopSearchType.addEventListener('change', function() {
+              // You could add additional logic here if needed
+              console.log('Search type changed to:', this.value);
+            });
+          }
+          
+          function setupSearchSuggestions(inputElement, suggestionsContainer, searchType) {
+            inputElement.addEventListener('input', async function() {
+                const query = this.value.trim();
+                if (query.length < 2) {
+                    suggestionsContainer.classList.add('hidden');
+                    return;
+                }
+                
+                try {
+                    const response = await fetch(`/search/suggest/?q=${encodeURIComponent(query)}&type=${searchType}`);
+                    const data = await response.json();
+                    
+                    if (data.suggestions && data.suggestions.length > 0) {
+                        suggestionsContainer.innerHTML = data.suggestions.map(item => `
+                            <a href="#" class="block px-4 py-2 hover:bg-blue-50 flex items-center justify-between" data-value="${item.term}">
+                                <span class="font-medium">${item.term}</span>
+                                ${item.count ? `<span class="text-xs text-gray-500">${item.count} results</span>` : ''}
+                            </a>
+                        `).join('');
+                        suggestionsContainer.classList.remove('hidden');
+                    } else {
+                        suggestionsContainer.innerHTML = '<div class="px-4 py-2 text-sm text-gray-500">No suggestions found</div>';
+                        suggestionsContainer.classList.remove('hidden');
+                    }
+                } catch (error) {
+                    console.error('Error fetching suggestions:', error);
+                    suggestionsContainer.innerHTML = '<div class="px-4 py-2 text-sm text-gray-500">Error loading suggestions</div>';
+                    suggestionsContainer.classList.remove('hidden');
+                }
+            });
+            
+            // Rest of your event listeners remain the same
+            suggestionsContainer.addEventListener('click', function(e) {
+                e.preventDefault();
+                const suggestion = e.target.closest('a');
+                if (suggestion) {
+                    inputElement.value = suggestion.dataset.value;
+                    suggestionsContainer.classList.add('hidden');
+                }
+            });
+            
+            document.addEventListener('click', function(e) {
+                if (!inputElement.contains(e.target) && !suggestionsContainer.contains(e.target)) {
+                    suggestionsContainer.classList.add('hidden');
+                }
+            });
+        }
+        
+        // Initialize as before
+        const locationInput = document.getElementById('location');
+        const locationSuggestions = document.getElementById('location-suggestions');
+        if (locationInput && locationSuggestions) {
+            setupSearchSuggestions(locationInput, locationSuggestions, 'property');
+        }
+        
+        const mobileSearchInput = document.getElementById('mobile-search-input');
+        const mobileSearchSuggestions = document.getElementById('mobile-search-suggestions');
+        if (mobileSearchInput && mobileSearchSuggestions) {
+            setupSearchSuggestions(mobileSearchInput, mobileSearchSuggestions, 'property');
+        }
+        
+        // Desktop search initialization remains the same
+        const desktopSearchInput = document.getElementById('desktop-search-input');
+        const desktopSearchResults = document.getElementById('desktop-search-results');
+        if (desktopSearchInput && desktopSearchResults) {
+                desktopSearchInput.addEventListener('focus', function() {
+                    desktopSearchResults.classList.remove('hidden');
+                    if (desktopSearchInput.value.trim() === '') {
+                        if (desktopRecentSearches) desktopRecentSearches.classList.remove('hidden');
+                    }        
+                });
+            
+                desktopSearchInput.addEventListener('input', async function() {
+                    const query = this.value.trim();
+                    if (query.length < 2) {
+                        if (desktopRecentSearches) desktopRecentSearches.classList.remove('hidden');
+                        return;
+                    }
+            
+                    try {
+                        const response = await fetch(`/search/suggest/?q=${encodeURIComponent(query)}&type=${desktopSearchType.value}`);
+                        const data = await response.json();
+                        
+                        const suggestionsSection = document.getElementById('desktop-search-suggestions');
+                        if (data.suggestions && data.suggestions.length > 0) {
+                            suggestionsSection.innerHTML = `
+                                <div class="text-xs text-gray-500 mb-2">SUGGESTIONS</div>
+                                <div class="space-y-2">
+                                    ${data.suggestions.map(item => `
+                                        <a href="#" class="block px-4 py-2 hover:bg-blue-50 rounded text-sm" data-value="${item.term}">
+                                            ${item.term}
+                                        </a>
+                                    `).join('')}
+                                </div>
+                            `;
+                        }
+                        // Add click handler for suggestions
+                        suggestionsSection.querySelectorAll('a').forEach(suggestion => {
+                            suggestion.addEventListener('click', function(e) {
+                                e.preventDefault();
+                                desktopSearchInput.value = this.dataset.value;
+                                desktopSearchResults.classList.remove('hidden');
+                                
+                                // Trigger search results display
+                                if (desktopRecentSearches) desktopRecentSearches.classList.add('hidden');
+                                
+                            });
+                        });
+                    } catch (error) {
+                        console.error('Error fetching suggestions:', error);
+                    }
+                });
+                // Close search results when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!desktopSearchInput.contains(e.target) && !desktopSearchResults.contains(e.target)) {
+                        desktopSearchResults.classList.add('hidden');
+                    }
+                });
+            }
+      
+          // Form submission - save to recent searches
+          function handleSearchFormSubmission(form, searchInput) {
+            form.addEventListener('submit', function() {
+              const searchQuery = searchInput.value.trim();
+              if (searchQuery) {
+                const searchUrl = new URL(window.location.origin + this.getAttribute('action'));
+                const formData = new FormData(this);
+                
+                // Add form data to URL
+                formData.forEach((value, key) => {
+                  if (value) searchUrl.searchParams.append(key, value);
+                });
+                
+                // Add to recent searches
+                const existingIndex = recentSearches.findIndex(s => s.text === searchQuery && s.type === formData.get('type'));
+                if (existingIndex >= 0) {
+                  recentSearches.splice(existingIndex, 1);
+                }
+                
+                recentSearches.unshift({
+                  text: searchQuery,
+                  url: searchUrl.toString(),
+                  type: formData.get('type') || 'property',
+                  timestamp: new Date().toISOString()
+                });
+                
+                // Keep only the last 10 searches
+                recentSearches = recentSearches.slice(0, 10);
+                localStorage.setItem('recentSearches', JSON.stringify(recentSearches));
+                updateRecentSearchesUI();
+              }
+            });
+          }
+      
+          // Initialize form submission handlers
+          const propertySearchForm = document.getElementById('property-search-form');
+          if (propertySearchForm) {
+            handleSearchFormSubmission(propertySearchForm, locationInput);
+          }
+      
+          const mobileSearchForm = document.querySelector('#mobile-search form');
+          if (mobileSearchForm) {
+            handleSearchFormSubmission(mobileSearchForm, mobileSearchInput);
+          }
+      
+          const desktopSearchForm = document.querySelector('#desktop-search form');
+          if (desktopSearchForm) {
+            handleSearchFormSubmission(desktopSearchForm, desktopSearchInput);
+          }
+      
+          // Toggle mobile menu and search
+          document.getElementById('mobile-menu-button')?.addEventListener('click', function() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+            document.getElementById('mobile-search').classList.add('hidden');
+          });
+      
+          document.getElementById('mobile-search-toggle')?.addEventListener('click', function() {
+            const search = document.getElementById('mobile-search');
+            search.classList.toggle('hidden');
+            document.getElementById('mobile-menu').classList.add('hidden');
+            // Focus the input when search is shown
+            setTimeout(() => {
+              document.getElementById('mobile-search-input')?.focus();
+            }, 100);
+          });
+      
+          // Amenities dropdown toggle
+          const amenitiesToggle = document.getElementById('amenities-toggle');
+          const amenitiesDropdown = document.getElementById('amenities-dropdown');
+          if (amenitiesToggle && amenitiesDropdown) {
+            amenitiesToggle.addEventListener('click', function() {
+              amenitiesDropdown.classList.toggle('hidden');
+            });
+      
+            // Update selected amenities count display
+            const selectedAmenities = document.getElementById('selected-amenities');
+            const amenityCheckboxes = document.querySelectorAll('input[name="amenities"]');
+            
+            amenityCheckboxes.forEach(checkbox => {
+              checkbox.addEventListener('change', function() {
+                const selectedCount = document.querySelectorAll('input[name="amenities"]:checked').length;
+                selectedAmenities.textContent = selectedCount > 0 ? `${selectedCount} selected` : 'Select Amenities';
+              });
+            });
+          }
+      
+          // Initialize UI
+          updateRecentSearchesUI();
+      
+          // Set initial state based on URL params
+          if (new URLSearchParams(window.location.search).get('type') === 'project') {
+            if (searchTypeToggle) {
+              searchTypeToggle.checked = false;
+              searchTypeToggle.dispatchEvent(new Event('change'));
+            }
+            if (desktopSearchType) {
+              desktopSearchType.value = 'project';
+            }
+          }
+        });
+    </script>
+
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>

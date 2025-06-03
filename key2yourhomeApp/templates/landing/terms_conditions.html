@@ -1,0 +1,332 @@
+{% extends 'base/_base.html' %}
+
+
+{% block content %}
+<div class="container mx-auto px-4 py-12 w-full mt-4">
+    <!-- Header Section -->
+    <div class="text-center mb-12">
+        <h1 class="text-4xl font-bold text-gray-800 mb-4">Key2YourHome Terms & Conditions</h1>
+        <p class="text-lg text-blue-600">Last Updated: {% now "F j, Y" %}</p>
+        <div class="mt-6 border-t border-b border-gray-200 py-4">
+            <p class="text-gray-600">By accessing or using the Key2YourHome platform, you agree to be bound by these terms and conditions.</p>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+        <!-- Table of Contents Sidebar -->
+        <div class="lg:flex py-4">
+            <div class="lg:w-1/4 bg-white p-6 border-r-1 border-gray-200">
+                <h2 class="text-xl font-semibold text-blue-800 mb-4">Table of Contents</h2>
+                <ul class="space-y-3">
+                    <li><a href="#introduction" class="text-blue-600 hover:text-blue-800 hover:underline transition">1. Introduction</a></li>
+                    <li><a href="#definitions" class="text-blue-600 hover:text-blue-800 hover:underline transition">2. Definitions</a></li>
+                    <li><a href="#account-registration" class="text-blue-600 hover:text-blue-800 hover:underline transition">3. Account Registration</a></li>
+                    <li><a href="#property-listings" class="text-blue-600 hover:text-blue-800 hover:underline transition">4. Property Listings</a></li>
+                    <li><a href="#transactions" class="text-blue-600 hover:text-blue-800 hover:underline transition">5. Transactions</a></li>
+                    <li><a href="#user-conduct" class="text-blue-600 hover:text-blue-800 hover:underline transition">6. User Conduct</a></li>
+                    <li><a href="#intellectual-property" class="text-blue-600 hover:text-blue-800 hover:underline transition">7. Intellectual Property</a></li>
+                    <li><a href="#limitation-liability" class="text-blue-600 hover:text-blue-800 hover:underline transition">8. Limitation of Liability</a></li>
+                    <li><a href="#privacy" class="text-blue-600 hover:text-blue-800 hover:underline transition">9. Privacy</a></li>
+                    <li><a href="#modifications" class="text-blue-600 hover:text-blue-800 hover:underline transition">10. Modifications</a></li>
+                    <li><a href="#governing-law" class="text-blue-600 hover:text-blue-800 hover:underline transition">11. Governing Law</a></li>
+                    <li><a href="#contact" class="text-blue-600 hover:text-blue-800 hover:underline transition">12. Contact Information</a></li>
+                </ul>
+                
+                <div class="mt-8 p-4 bg-white rounded-lg border border-blue-100">
+                    <h3 class="font-medium text-blue-800 mb-2">Quick Summary</h3>
+                    <p class="text-sm text-gray-600">These terms govern your use of Key2YourHome. Please read them carefully before using our platform.</p>
+                    <div class="mt-3 flex items-center">
+                        <svg class="w-5 h-5 text-blue-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span class="text-sm text-blue-600">Estimated reading time: 10 minutes</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Terms Content -->
+            <div class="lg:w-3/4 p-8">
+                <!-- Introduction -->
+                <section id="introduction" class="mb-12">
+                    <div class="flex items-start">
+                        <div class="bg-blue-100 p-3 rounded-lg mr-4">
+                            <svg class="w-6 h-6 text-blue-800" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h2 class="text-2xl font-bold text-gray-800 mb-4">1. Introduction</h2>
+                            <p class="text-gray-700 mb-4">Welcome to Key2YourHome ("Platform"), a real estate service provided by InitCore Developers Group ("we", "us", or "our"). These Terms and Conditions ("Terms") govern your access to and use of our website, mobile applications, and related services.</p>
+                            <p class="text-gray-700">By accessing or using the Platform, you agree to be bound by these Terms and our Privacy Policy. If you disagree with any part of these Terms, you may not access the Platform.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Definitions -->
+                <section id="definitions" class="mb-12">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">2. Definitions</h2>
+                    <div class="bg-gray-50 rounded-lg p-6 mb-6">
+                        <ul class="space-y-3">
+                            <li class="flex">
+                                <span class="font-semibold text-blue-700 mr-2">"Platform":</span>
+                                <span class="text-gray-700">The Key2YourHome website, mobile applications, and related services.</span>
+                            </li>
+                            <li class="flex">
+                                <span class="font-semibold text-blue-700 mr-2">"User":</span>
+                                <span class="text-gray-700">Any individual or entity that accesses or uses the Platform.</span>
+                            </li>
+                            <li class="flex">
+                                <span class="font-semibold text-blue-700 mr-2">"Agent":</span>
+                                <span class="text-gray-700">A licensed real estate professional using the Platform to facilitate transactions.</span>
+                            </li>
+                        </ul>
+                    </div>
+                </section>
+
+                <!-- Account Registration -->
+                <section id="account-registration" class="mb-12">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">3. Account Registration</h2>
+                    <div class="space-y-4">
+                        <div class="p-4 border-l-4 border-blue-500 bg-blue-50">
+                            <h3 class="font-semibold text-gray-800">3.1 Eligibility</h3>
+                            <p class="text-gray-700 mt-1">To use certain features of the Platform, you must register for an account. You must be at least 18 years old to create an account.</p>
+                        </div>
+                        <div class="p-4 border-l-4 border-blue-500 bg-blue-50">
+                            <h3 class="font-semibold text-gray-800">3.2 Account Information</h3>
+                            <p class="text-gray-700 mt-1">You agree to provide accurate, current, and complete information during registration and to update such information to keep it accurate.</p>
+                        </div>
+                        <div class="p-4 border-l-4 border-blue-500 bg-blue-50">
+                            <h3 class="font-semibold text-gray-800">3.3 Account Security</h3>
+                            <p class="text-gray-700 mt-1">You are responsible for maintaining the confidentiality of your account credentials and for all activities that occur under your account.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Property Listings -->
+                <section id="property-listings" class="mb-12">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">4. Property Listings</h2>
+                    <div class="space-y-6">
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0 mt-1">
+                                <div class="flex items-center justify-center h-6 w-6 rounded-full bg-blue-100 text-blue-800">
+                                    4.1
+                                </div>
+                            </div>
+                            <div class="ml-3">
+                                <p class="text-gray-700">All property listings must be accurate and comply with all applicable laws. Sellers and Agents are solely responsible for their listings.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0 mt-1">
+                                <div class="flex items-center justify-center h-6 w-6 rounded-full bg-blue-100 text-blue-800">
+                                    4.2
+                                </div>
+                            </div>
+                            <div class="ml-3">
+                                <p class="text-gray-700">Key2YourHome does not verify the accuracy of listings and is not responsible for any misrepresentations in property descriptions.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0 mt-1">
+                                <div class="flex items-center justify-center h-6 w-6 rounded-full bg-blue-100 text-blue-800">
+                                    4.3
+                                </div>
+                            </div>
+                            <div class="ml-3">
+                                <p class="text-gray-700">We reserve the right to remove any listing that violates our policies or applicable laws without notice.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Transactions -->
+                <section id="transactions" class="mb-12">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">5. Transactions</h2>
+                    <div class="bg-white border rounded-lg overflow-hidden">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Section</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-700">5.1</td>
+                                    <td class="px-6 py-4 text-sm text-gray-700">Key2YourHome acts as a platform to connect buyers and sellers but is not a party to any real estate transaction.</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-700">5.2</td>
+                                    <td class="px-6 py-4 text-sm text-gray-700">All negotiations and transactions are solely between the buyer and seller (or their respective agents).</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-700">5.3</td>
+                                    <td class="px-6 py-4 text-sm text-gray-700">We recommend that all parties conduct their own due diligence and consult with appropriate professionals.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- User Conduct -->
+                <section id="user-conduct" class="mb-12">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">6. User Conduct</h2>
+                    <div class="space-y-4">
+                        <div class="flex items-start">
+                            <svg class="flex-shrink-0 h-5 w-5 text-blue-500 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                            </svg>
+                            <p class="ml-3 text-gray-700">You agree not to use the Platform for any unlawful purpose or in any way that could damage the Platform or impair anyone else's use of it.</p>
+                        </div>
+                        <div class="flex items-start">
+                            <svg class="flex-shrink-0 h-5 w-5 text-blue-500 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                            </svg>
+                            <p class="ml-3 text-gray-700">You will not post false, misleading, or deceptive content, including property listings.</p>
+                        </div>
+                        <div class="flex items-start">
+                            <svg class="flex-shrink-0 h-5 w-5 text-blue-500 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                            </svg>
+                            <p class="ml-3 text-gray-700">You will not engage in any discriminatory practices prohibited by law.</p>
+                        </div>
+                        <div class="flex items-start">
+                            <svg class="flex-shrink-0 h-5 w-5 text-blue-500 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                            </svg>
+                            <p class="ml-3 text-gray-700">You will not attempt to circumvent our fee structure or engage in any off-platform transactions to avoid fees.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Intellectual Property -->
+                <section id="intellectual-property" class="mb-12">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">7. Intellectual Property</h2>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
+                            <h3 class="font-semibold text-lg text-blue-700 mb-3">Platform Content</h3>
+                            <p class="text-gray-700">All content on the Platform, including text, graphics, logos, and software, is our property or the property of our licensors and is protected by copyright and other intellectual property laws.</p>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
+                            <h3 class="font-semibold text-lg text-blue-700 mb-3">User Content</h3>
+                            <p class="text-gray-700">By posting content on the Platform, you grant us a non-exclusive, worldwide, royalty-free license to use, display, and distribute such content in connection with the Platform.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Limitation of Liability -->
+                <section id="limitation-liability" class="mb-12">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">8. Limitation of Liability</h2>
+                    <div class="bg-red-50 border-l-4 border-red-500 p-4 mb-6">
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                <svg class="h-5 w-5 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                                </svg>
+                            </div>
+                            <div class="ml-3">
+                                <h3 class="text-sm font-medium text-red-800">Important Disclaimer</h3>
+                                <div class="mt-2 text-sm text-red-700">
+                                    <p>To the maximum extent permitted by law, Key2YourHome shall not be liable for any indirect, incidental, special, consequential, or punitive damages, or any loss of profits or revenues, whether incurred directly or indirectly, or any loss of data, use, goodwill, or other intangible losses resulting from (a) your access to or use of or inability to access or use the Platform; (b) any conduct or content of any third party on the Platform.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Privacy -->
+                <section id="privacy" class="mb-12">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">9. Privacy</h2>
+                    <p class="text-gray-700 mb-4">Your privacy is important to us. Our Privacy Policy explains how we collect, use, and share your personal information. By using the Platform, you agree to our collection, use, and sharing of your information as described in the Privacy Policy.</p>
+                    <a href="#" class="inline-flex items-center text-blue-600 hover:text-blue-800">
+                        <span>View Privacy Policy</span>
+                        <svg class="w-4 h-4 ml-1" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                        </svg>
+                    </a>
+                </section>
+
+                <!-- Modifications -->
+                <section id="modifications" class="mb-12">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">10. Modifications</h2>
+                    <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4">
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                <svg class="h-5 w-5 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                                </svg>
+                            </div>
+                            <div class="ml-3">
+                                <p class="text-sm text-yellow-700">
+                                    We reserve the right to modify these Terms at any time. We will provide notice of material changes through the Platform or via email. Your continued use of the Platform after such changes constitutes your acceptance of the new Terms.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Governing Law -->
+                <section id="governing-law" class="mb-12">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">11. Governing Law</h2>
+                    <p class="text-gray-700">These Terms shall be governed by and construed in accordance with the laws of [Your Jurisdiction], without regard to its conflict of law provisions.</p>
+                </section>
+
+                <!-- Contact Information -->
+                <section id="contact">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">12. Contact Information</h2>
+                    <div class="bg-blue-50 rounded-lg p-6">
+                        <h3 class="text-lg font-semibold text-blue-800 mb-3">InitCore Developers Group</h3>
+                        <div class="space-y-2">
+                            <p class="flex items-start text-gray-700">
+                                <svg class="flex-shrink-0 h-5 w-5 text-blue-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path>
+                                </svg>
+                                Shop No 4, Noorilliahi Masjid
+                                Opp. Fountain hotel
+                                Shillphata, Thane, Navi-Mumbai - 400612
+                            </p>
+                            <p class="flex items-start text-gray-700">
+                                <svg class="flex-shrink-0 h-5 w-5 text-blue-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"></path>
+                                </svg>
+                                +91 81047 95478
+                                        /
+                                +91 70393 63611
+                            </p>
+                            <p class="flex items-start text-gray-700">
+                                <svg class="flex-shrink-0 h-5 w-5 text-blue-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path>
+                                    <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>
+                                </svg>
+                                key2yourhome2017@gmail.com
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
+
+                <!-- Acceptance Section -->
+                <div class="my-6 bg-white rounded-lg shadow-md p-6 border border-blue-200">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <svg class="h-8 w-8 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                        <div class="ml-4">
+                            <h3 class="text-lg font-medium text-gray-900">Acceptance of Terms</h3>
+                            <div class="mt-2 text-sm text-gray-600">
+                                <p>By using Key2YourHome, you acknowledge that you have read, understood, and agree to be bound by these Terms & Conditions. If you do not agree, please refrain from using our Platform.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        
+    </div>
+</div>
+{% endblock %}

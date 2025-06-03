@@ -1,0 +1,270 @@
+{% extends "base/_base.html" %}
+
+{% block title %}Key2YourHome - Frequently Asked Questions{% endblock %}
+
+{% block content %}
+<div class="bg-white min-h-screen">
+  <!-- Hero Section -->
+  <div class="bg-gradient-to-r from-blue-50 to-blue-100 py-16 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-7xl mx-auto text-center">
+      <h1 class="text-4xl font-extrabold tracking-tight text-gray-900 sm:text-5xl md:text-6xl">
+        <span class="block">Frequently Asked</span>
+        <span class="block text-blue-600">Questions</span>
+      </h1>
+      <p class="mt-3 max-w-md mx-auto text-base text-gray-500 sm:text-lg md:mt-5 md:text-xl md:max-w-3xl">
+        Find answers to common questions about Key2YourHome
+      </p>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <!-- Sidebar Navigation -->
+      <div class="lg:col-span-1">
+        <div class="bg-white shadow rounded-lg sticky top-8">
+          <div class="px-6 py-5 border-b border-gray-200">
+            <h3 class="text-lg font-medium text-gray-900">Categories</h3>
+          </div>
+          <div class="p-6">
+            <nav class="space-y-2">
+              <a href="#general" class="block px-3 py-2 rounded-md text-base font-medium text-blue-700 bg-blue-50">General</a>
+              <a href="#account" class="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50">Account</a>
+            </nav>
+          </div>
+          <div class="px-6 py-4 bg-gray-50 rounded-b-lg">
+            <p class="text-sm text-gray-500">Can't find your answer? <a href="{% url 'contact_us' %}" class="font-medium text-blue-600 hover:text-blue-500">Contact us</a></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- FAQ Content -->
+      <div class="lg:col-span-2">
+        <!-- Search Bar -->
+        <div class="mb-8">
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+              </svg>
+            </div>
+            <input id="faq-search" type="text" class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Search FAQs...">
+          </div>
+        </div>
+
+        <!-- General Questions -->
+        <section id="general" class="mb-12">
+          <h2 class="text-2xl font-bold text-gray-900 mb-6 pb-2 border-b border-gray-200">General Questions</h2>
+          <div class="space-y-4">
+            <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+              <div class="px-4 py-5 sm:p-6">
+                <h3 class="text-lg leading-6 font-medium text-gray-900 cursor-pointer flex justify-between items-center" onclick="toggleFAQ('faq1')">
+                  What is Key2YourHome?
+                  <svg id="faq1-icon" class="h-5 w-5 text-gray-400 transform rotate-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                  </svg>
+                </h3>
+                <div id="faq1-content" class="mt-2 text-gray-600 hidden">
+                  <p>Key2YourHome is a comprehensive real estate platform developed by InitCore Developers Group that connects buyers, sellers, renters, and landlords in a seamless digital environment. Our platform offers advanced search tools, virtual tours, and secure transaction processing to simplify the property buying, selling, and renting process.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+              <div class="px-4 py-5 sm:p-6">
+                <h3 class="text-lg leading-6 font-medium text-gray-900 cursor-pointer flex justify-between items-center" onclick="toggleFAQ('faq2')">
+                  How does Key2YourHome differ from other real estate platforms?
+                  <svg id="faq2-icon" class="h-5 w-5 text-gray-400 transform rotate-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                  </svg>
+                </h3>
+                <div id="faq2-content" class="mt-2 text-gray-600 hidden">
+                  <p>Key2YourHome stands out through our:</p>
+                  <ul class="list-disc pl-5 mt-2 space-y-1">
+                    <li>Advanced AI-powered property matching system</li>
+                    <li>Integrated virtual tour technology with 3D walkthroughs</li>
+                    <li>Secure document handling and digital signing</li>
+                    <li>Transparent pricing with no hidden fees</li>
+                    <li>24/7 customer support with real estate experts</li>
+                    <li>Neighborhood analytics and market trends</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+              <div class="px-4 py-5 sm:p-6">
+                <h3 class="text-lg leading-6 font-medium text-gray-900 cursor-pointer flex justify-between items-center" onclick="toggleFAQ('faq3')">
+                  Is Key2YourHome available in my area?
+                  <svg id="faq3-icon" class="h-5 w-5 text-gray-400 transform rotate-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                  </svg>
+                </h3>
+                <div id="faq3-content" class="mt-2 text-gray-600 hidden">
+                  <p>Key2YourHome is continuously expanding to new markets. Currently, we operate in all 50 U.S. states and major international markets including Canada, the UK, and Australia. To check specific coverage in your area:</p>
+                  <ol class="list-decimal pl-5 mt-2 space-y-1">
+                    <li>Visit our coverage map on the homepage</li>
+                    <li>Enter your city or zip code in the search bar</li>
+                    <li>Contact our support team for specific inquiries</li>
+                  </ol>
+                  <p class="mt-2">We're adding new locations regularly, so even if we're not in your area yet, we likely will be soon!</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Account Questions -->
+        <section id="account" class="mb-12">
+          <h2 class="text-2xl font-bold text-gray-900 mb-6 pb-2 border-b border-gray-200">Account Questions</h2>
+          <div class="space-y-4">
+            <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+              <div class="px-4 py-5 sm:p-6">
+                <h3 class="text-lg leading-6 font-medium text-gray-900 cursor-pointer flex justify-between items-center" onclick="toggleFAQ('faq4')">
+                  How do I create an account?
+                  <svg id="faq4-icon" class="h-5 w-5 text-gray-400 transform rotate-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                  </svg>
+                </h3>
+                <div id="faq4-content" class="mt-2 text-gray-600 hidden">
+                  <p>Creating an account with Key2YourHome is simple:</p>
+                  <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <div class="bg-blue-50 p-4 rounded-lg">
+                      <h4 class="font-medium text-blue-800">Option 1: Email Registration</h4>
+                      <ol class="list-decimal pl-5 mt-2 text-sm text-gray-700 space-y-1">
+                        <li>Click "Sign Up" in the top right corner</li>
+                        <li>Select "Register with Email"</li>
+                        <li>Fill in your details</li>
+                        <li>Verify your email address</li>
+                      </ol>
+                    </div>
+                    <div class="bg-blue-50 p-4 rounded-lg">
+                      <h4 class="font-medium text-blue-800">Option 2: Social Login</h4>
+                      <ol class="list-decimal pl-5 mt-2 text-sm text-gray-700 space-y-1">
+                        <li>Click "Sign Up" in the top right corner</li>
+                        <li>Select your preferred social platform</li>
+                        <li>Authorize the connection</li>
+                        <li>Complete your profile</li>
+                      </ol>
+                    </div>
+                  </div>
+                  <p class="mt-4">Accounts are free to create and give you access to saved searches, property alerts, and more.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+              <div class="px-4 py-5 sm:p-6">
+                <h3 class="text-lg leading-6 font-medium text-gray-900 cursor-pointer flex justify-between items-center" onclick="toggleFAQ('faq5')">
+                  I forgot my password. How can I reset it?
+                  <svg id="faq5-icon" class="h-5 w-5 text-gray-400 transform rotate-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                  </svg>
+                </h3>
+                <div id="faq5-content" class="mt-2 text-gray-600 hidden">
+                  <p>To reset your password:</p>
+                  <ol class="list-decimal pl-5 mt-2 space-y-1">
+                    <li>Go to the login page</li>
+                    <li>Click "Forgot Password" below the login form</li>
+                    <li>Enter the email address associated with your account</li>
+                    <li>Check your email for a password reset link (valid for 24 hours)</li>
+                    <li>Click the link and create a new secure password</li>
+                  </ol>
+                  <div class="mt-4 p-4 bg-yellow-50 border-l-4 border-yellow-400">
+                    <div class="flex">
+                      <div class="flex-shrink-0">
+                        <svg class="h-5 w-5 text-yellow-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                          <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                        </svg>
+                      </div>
+                      <div class="ml-3">
+                        <p class="text-sm text-yellow-700">
+                          If you don't receive the email within 5 minutes, check your spam folder or <a href="{% url 'contact_us' %}" class="font-medium underline text-yellow-700 hover:text-yellow-600">contact support</a>.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+  
+
+        <!-- Contact CTA -->
+        <div class="bg-blue-50 rounded-lg p-6 mt-12">
+          <div class="text-center">
+            <h3 class="text-lg font-medium text-gray-900">Still have questions?</h3>
+            <p class="mt-2 text-sm text-gray-600">Our support team is ready to help you with any questions you might have.</p>
+            <div class="mt-6">
+              <a href="{% url 'contact_us' %}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                Contact Support
+                <svg class="ml-2 -mr-1 w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                </svg>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Toggle FAQ items
+  function toggleFAQ(id) {
+    const content = document.getElementById(`${id}-content`);
+    const icon = document.getElementById(`${id}-icon`);
+    
+    if (content.classList.contains('hidden')) {
+      content.classList.remove('hidden');
+      icon.classList.add('rotate-180');
+    } else {
+      content.classList.add('hidden');
+      icon.classList.remove('rotate-180');
+    }
+  }
+
+  // Search functionality
+  document.getElementById('faq-search').addEventListener('input', function(e) {
+    const searchTerm = e.target.value.toLowerCase();
+    const faqItems = document.querySelectorAll('[id$="-content"]');
+    
+    faqItems.forEach(item => {
+      const question = item.previousElementSibling.textContent.toLowerCase();
+      if (question.includes(searchTerm)) {
+        item.parentElement.parentElement.style.display = 'block';
+      } else {
+        item.parentElement.parentElement.style.display = 'none';
+      }
+    });
+  });
+
+  // Highlight active category on scroll
+  window.addEventListener('scroll', function() {
+    const sections = document.querySelectorAll('section[id]');
+    let currentSection = '';
+    
+    sections.forEach(section => {
+      const sectionTop = section.offsetTop;
+      const sectionHeight = section.clientHeight;
+      
+      if (window.scrollY >= (sectionTop - 300)) {
+        currentSection = section.getAttribute('id');
+      }
+    });
+    
+    document.querySelectorAll('nav a').forEach(link => {
+      link.classList.remove('text-blue-700', 'bg-blue-50');
+      link.classList.add('text-gray-600', 'hover:text-gray-900', 'hover:bg-gray-50');
+      
+      if (link.getAttribute('href') === `#${currentSection}`) {
+        link.classList.remove('text-gray-600', 'hover:text-gray-900', 'hover:bg-gray-50');
+        link.classList.add('text-blue-700', 'bg-blue-50');
+      }
+    });
+  });
+</script>
+{% endblock %}

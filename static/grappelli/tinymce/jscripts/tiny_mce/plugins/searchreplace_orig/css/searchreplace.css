@@ -1,0 +1,15 @@
+<<<<<<< HEAD
+.panel_wrapper {height:85px;}
+.panel_wrapper div.current {height:85px;}
+
+/* IE */
+* html .panel_wrapper {height:100px;}
+* html .panel_wrapper div.current {height:100px;}
+=======
+.panel_wrapper {height:85px;}
+.panel_wrapper div.current {height:85px;}
+
+/* IE */
+* html .panel_wrapper {height:100px;}
+* html .panel_wrapper div.current {height:100px;}
+>>>>>>> 227837fe7cb28de313cfa5035dca53af22c8994c

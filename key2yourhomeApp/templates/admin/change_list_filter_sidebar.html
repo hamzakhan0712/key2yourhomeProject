@@ -1,0 +1,121 @@
+{% extends "admin/change_list.html" %}
+{% load i18n grp_tags %}
+
+{% block javascripts %}
+    {{ block.super }}
+    <!-- Add any custom JS for filter interactions -->
+    <script>
+        (function($) {
+            $(document).ready(function() {
+                // Enhance filter dropdowns
+                $('.grp-filter-list').each(function() {
+                    $(this).addClass('grp-collapse grp-closed');
+                });
+                
+                // Quick search for large filter lists
+                $('.grp-filter-list h3').each(function() {
+                    var $list = $(this).next('ul');
+                    if ($list.find('li').length > 10) {
+                        $(this).append(
+                            '<input type="text" class="grp-filter-search" placeholder="{% trans "Search..." %}" style="margin-left: 10px; width: 150px;">'
+                        );
+                        
+                        $('.grp-filter-search').keyup(function() {
+                            var search = $(this).val().toLowerCase();
+                            $list.find('li').each(function() {
+                                var text = $(this).text().toLowerCase();
+                                $(this).toggle(text.indexOf(search) > -1);
+                            });
+                        });
+                    }
+                });
+            });
+        })(grp.jQuery);
+    </script>
+{% endblock %}
+
+{% block filters %}
+    {% if cl.has_filters %}
+        <div id="grp-filters" class="grp-module grp-filter">
+            <h2>{% trans 'Filter' %}</h2>
+            {% for spec in cl.filter_specs %}
+                <div class="grp-filter-list">
+                    <h3>{{ spec.title|capfirst }}</h3>
+                    {% admin_list_filter cl spec %}
+                </div>
+            {% endfor %}
+            
+            <!-- Custom Date Range Filter (if date_hierarchy exists) -->
+            {% if cl.date_hierarchy %}
+                <div class="grp-filter-list">
+                    <h3>{% trans 'Date Range' %}</h3>
+                    <ul>
+                        <li>
+                            <form method="GET" action="">
+                                {% for key, value in request.GET.items %}
+                                    {% if key != 'date__gte' and key != 'date__lte' %}
+                                        <input type="hidden" name="{{ key }}" value="{{ value }}">
+                                    {% endif %}
+                                {% endfor %}
+                                <label>{% trans 'From:' %}</label>
+                                <input type="date" name="date__gte" value="{{ request.GET.date__gte }}" style="width: 120px;">
+                                <label>{% trans 'To:' %}</label>
+                                <input type="date" name="date__lte" value="{{ request.GET.date__lte }}" style="width: 120px;">
+                                <button type="submit" class="grp-button">{% trans 'Apply' %}</button>
+                            </form>
+                        </li>
+                    </ul>
+                </div>
+            {% endif %}
+            
+            <!-- Quick Actions -->
+            <div class="grp-filter-list">
+                <h3>{% trans 'Quick Actions' %}</h3>
+                <ul>
+                    <li>
+                        <a href="?is_active__exact=1" class="grp-button">{% trans 'Active Only' %}</a>
+                    </li>
+                    <li>
+                        <a href="?is_active__exact=0" class="grp-button">{% trans 'Inactive Only' %}</a>
+                    </li>
+                    {% if cl.model_admin.list_editable %}
+                        <li>
+                            <a href="#" onclick="grp.jQuery('#changelist-form').find('input[name=_save]').click(); return false;" class="grp-button">{% trans 'Save Edits' %}</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}
+
+{% block result_list %}
+    {{ block.super }}
+    <!-- Add custom summary stats if needed -->
+    {% if cl.result_count %}
+        <div class="grp-module grp-stats">
+            <h3>{% trans 'Summary' %}</h3>
+            <ul>
+                <li><strong>{% trans 'Total Records:' %}</strong> {{ cl.result_count }}</li>
+                {% if 'is_active' in cl.list_display %}
+                    <li><strong>{% trans 'Active:' %}</strong> {{ cl.queryset.filter(is_active=True).count }}</li>
+                {% endif %}
+                {% if 'created_at' in cl.list_filter %}
+                    <li><strong>{% trans 'Added this month:' %}</strong> {{ cl.queryset.filter(created_at__month=now.month).count }}</li>
+                {% endif %}
+            </ul>
+        </div>
+    {% endif %}
+{% endblock %}
+
+{% block pagination %}
+    {{ block.super }}
+    <!-- Add export buttons if needed -->
+    <div class="grp-module grp-export-options">
+        <h3>{% trans 'Export' %}</h3>
+        <ul>
+            <li><a href="?export=csv" class="grp-button">{% trans 'CSV' %}</a></li>
+            <li><a href="?export=excel" class="grp-button">{% trans 'Excel' %}</a></li>
+        </ul>
+    </div>
+{% endblock %}

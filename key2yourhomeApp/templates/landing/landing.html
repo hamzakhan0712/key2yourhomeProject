@@ -1,0 +1,987 @@
+{% extends "base/_base.html" %}
+{% load static %}
+
+{% block title %}Welcome | Key2YourHome{% endblock %}
+
+{% block content %}
+
+
+  <!-- Hero Section with Flowbite Carousel -->
+  <section class="relative bg-transparent ">
+
+    <!-- Carousel -->
+    <div id="default-carousel" class="relative w-full h-[450px] md:h-[500px] lg:h-[550px] " data-carousel="slide">
+      <!-- Carousel wrapper -->
+      <div class="relative h-full overflow-hidden rounded-2xl mt-14">
+        <!-- Item 1 -->
+        <div class="hidden duration-700 ease-in-out" data-carousel-item>
+          <div class="absolute inset-0 bg-gradient-to-r from-blue-900/70 to-blue-600/30 z-10"></div>
+          <img src="{% static 'images/landing_banner/landing_banner1.jpg' %}" class="absolute block w-full h-full object-cover" alt="Luxury modern living room" loading="lazy">
+        </div>
+        <!-- Item 2 -->
+        <div class="hidden duration-700 ease-in-out" data-carousel-item>
+          <div class="absolute inset-0 bg-gradient-to-r from-blue-900/70 to-blue-600/30 z-10"></div>
+          <img src="{% static 'images/landing_banner/landing_banner2.jpg' %}" class="absolute block w-full h-full object-cover" alt="Contemporary apartment building" loading="lazy">
+        </div>
+        <!-- Item 3 -->
+        <div class="hidden duration-700 ease-in-out" data-carousel-item>
+          <div class="absolute inset-0 bg-gradient-to-r from-blue-900/70 to-blue-600/30 z-10"></div>
+          <img src="{% static 'images/landing_banner/landing_banner3.jpg' %}" class="absolute block w-full h-full object-cover" alt="Modern kitchen design" loading="lazy">
+        </div>
+        <!-- Item 4 -->
+        <div class="hidden duration-700 ease-in-out" data-carousel-item>
+          <div class="absolute inset-0 bg-gradient-to-r from-blue-900/70 to-blue-600/30 z-10"></div>
+          <img src="{% static 'images/landing_banner/landing_banner4.jpg' %}" class="absolute block w-full h-full object-cover" alt="Modern kitchen design" loading="lazy">
+        </div>
+       
+      </div>
+      
+      <!-- Hero Content -->
+      <div class="absolute flex items-start justify-center min-h-screen w-full bg-cover bg-center z-999 mx-auto py-4 top-0">
+          <div class="container mx-auto px-6 lg:px-8 text-center">
+          <div class="max-w-3xl lg:max-w-4xl xl:max-w-5xl space-y-6 mx-auto">
+              <h1 class=" md:text-5xl lg:text-6xl font-bold text-white leading-tight drop-shadow-lg animate-fade-in">
+              Discover Your Dream Home With Us
+              </h1>
+              <p class="text-lg md:text-xl text-blue-50 leading-relaxed drop-shadow-md max-w-2xl mx-auto animate-fade-in delay-100">
+              Premium properties curated by experts. Find your perfect match among thousands of listings across the country.
+              </p>
+              <div class="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in delay-200">
+              <a href="{% url 'register' %}" class="relative group bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white px-8 py-3.5 rounded-xl font-semibold text-center transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center overflow-hidden">
+                  <span class="relative z-10 flex items-center gap-2">
+                      Get Started
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-rocket-icon lucide-rocket"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></svg>
+                  </span>
+                  <span class="absolute inset-0 bg-gradient-to-r from-blue-700 to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+              </a>
+              <a href="{% url 'property_list' %}" class="relative group bg-white/10 hover:bg-white/20 border border-white/30 text-white px-8 py-3.5 rounded-xl font-medium text-center backdrop-blur-sm transition-all duration-300 flex items-center justify-center overflow-hidden">
+                  <span class="relative z-10 flex items-center gap-2">
+                  Explore Properties
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-compass-icon lucide-compass"><path d="m16.24 7.76-1.804 5.411a2 2 0 0 1-1.265 1.265L7.76 16.24l1.804-5.411a2 2 0 0 1 1.265-1.265z"/><circle cx="12" cy="12" r="10"/></svg>
+                  </span>
+                  <span class="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+              </a>
+              </div>
+          </div>
+          </div>
+      </div>
+
+    </div>
+
+    <!-- Updated Search Section for Landing Page -->
+    <div class="relative z-999 lg:px-4 px-0 sm:-mt-30 md:-mt-40 lg:-mt-50 mt-20 xl:-mt-60">
+      <div class="bg-white rounded-2xl shadow-2xl border border-gray-200 p-6 md:p-6">
+        
+       <!-- Header with search type toggle -->
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
+          <div>
+            <div class="flex items-end space-x-4">
+              <h3 class="text-2xl md:text-3xl font-bold text-gray-800" id="search-title">Find Your Perfect Property</h3>
+              
+              <label class="inline-flex items-center cursor-pointer">
+                <input type="checkbox" checked name="search-type-toggle" id="search-type-toggle" value="" class="sr-only peer">
+                <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600 dark:peer-checked:bg-blue-600"></div>
+                <span class="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300 flex items-end gap-1">Project
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-right-left-icon lucide-arrow-right-left w-4 h-4 text-blue-500"><path d="m16 3 4 4-4 4"/><path d="M20 7H4"/><path d="m8 21-4-4 4-4"/><path d="M4 17h16"/></svg>
+                  Property</span>
+              </label>
+
+            </div>
+            <p class="text-sm text-gray-500 mt-2">Search from 50,000+ premium listings across India</p>
+          </div>
+          <div class="mt-4 md:mt-0">
+            <div class="flex items-center bg-blue-50 px-3 py-2 rounded-lg">
+              <i class="lucide lucide-shield-check text-blue-600 mr-2"></i>
+              <span class="text-sm font-medium text-gray-700">10,000+ Happy Customers</span>
+            </div>
+          </div>
+        </div>
+        <!-- Recent Searches (only shown if localStorage has data) -->
+        <div id="recent-searches-section" class="mb-6 hidden">
+          <div class="flex items-center justify-between mb-2">
+            <p class="text-sm font-medium text-gray-700">Recent searches:</p>
+            <button id="clear-recent-searches" class="text-xs text-blue-600 hover:text-blue-800 hover:underline">Clear all</button>
+          </div>
+          <div id="recent-searches-container" class="flex flex-wrap gap-2">
+            <!-- Recent searches will be loaded here from localStorage -->
+          </div>
+        </div>
+
+        <div class="mb-6">
+          <p class="text-sm font-medium text-gray-700 mb-2">Popular searches:</p>
+          <div class="flex flex-wrap gap-2">
+            <a href="{% url 'property_list' %}?property_type=RESIDENTIAL_APARTMENT&city=Mumbai" class="text-xs px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-full flex items-center transition gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-building"><rect width="16" height="20" x="4" y="2" rx="2" ry="2"/><path d="M9 22v-4h6v4"/><path d="M8 6h.01"/><path d="M16 6h.01"/><path d="M12 6h.01"/><path d="M12 10h.01"/><path d="M12 14h.01"/><path d="M16 10h.01"/><path d="M16 14h.01"/><path d="M8 10h.01"/><path d="M8 14h.01"/></svg>
+              Apartments in Mumbai
+            </a>
+            <a href="{% url 'property_list' %}?property_type=INDEPENDENT_HOUSE_VILLA&city=Bangalore" class="text-xs px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-full flex items-center transition gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-house"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+              Villas in Bangalore
+            </a>
+            <a href="{% url 'property_list' %}?property_type=RESIDENTIAL_LAND&city=Hyderabad" class="text-xs px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-full flex items-center transition gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-land-plot"><path d="m12 8 6-3-6-3v10"/><path d="m8 11.99-5.5 3.14a1 1 0 0 0 0 1.74l8.5 4.86a2 2 0 0 0 2 0l8.5-4.86a1 1 0 0 0 0-1.74L16 12"/><path d="m6.49 12.85 11.02 6.3"/><path d="M17.51 12.85 6.5 19.15"/></svg>
+              Plots in Hyderabad
+            </a>
+            <a href="{% url 'project_list' %}?status=UNDER_CONSTRUCTION&city=Delhi+NCR" class="text-xs px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-full flex items-center transition gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-construction"><rect x="2" y="6" width="20" height="8" rx="1"/><path d="M17 14v7"/><path d="M7 14v7"/><path d="M17 3v3"/><path d="M7 3v3"/><path d="M10 14 2.3 6.3"/><path d="m14 6 7.7 7.7"/><path d="m8 6 8 8"/></svg>
+              Ongoing Projects in Delhi NCR
+            </a>
+          </div>
+        </div>
+
+        <!-- Search Form -->
+        <form id="property-search-form" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-4" action="{% url 'unified_search' %}" method="GET">
+          <input type="hidden" name="type" id="search-type" value="property">
+          
+          <!-- Location with enhanced suggestions -->
+          <div class="lg:col-span-3 relative">
+            <label for="location" class="block text-sm font-medium text-gray-700 mb-2">Location</label>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-map-pin"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>
+              </div>
+              <input type="text" id="location" name="q" placeholder="City, Area or Project"
+                    autocomplete="off"
+                    class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                    value="{{ request.GET.q }}" />
+              <div id="location-suggestions"
+                  class="hidden absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto">
+                <!-- Suggestions will be populated by JavaScript -->
+              </div>
+            </div>
+          </div>
+          
+          <!-- Property Type (changes to Project Status when project search is selected) -->
+          <div class="lg:col-span-2" id="type-filter-container">
+            <label for="property-type" class="block text-sm font-medium text-gray-700 mb-2">Property Type</label>
+            <div class="relative">
+              <select id="property-type" name="property_type"
+                      class="block w-full pl-4 pr-10 py-3 border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none transition-all">
+                <option value="">All Types</option>
+                {% for value, label in property_type_choices %}
+                <option value="{{ value }}" {% if request.GET.property_type == value %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+              </select>
+              <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                <i class="lucide lucide-chevron-down text-gray-400"></i>
+              </div>
+            </div>
+          </div>
+
+          <!-- Budget -->
+          <div class="lg:col-span-2">
+            <label for="budget" class="block text-sm font-medium text-gray-700 mb-2">Budget</label>
+            <div class="relative">
+              <select id="budget" name="price_range"
+                      class="block w-full pl-4 pr-10 py-3 border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none transition-all">
+                <option value="">Any Budget</option>
+                <option value="5000000" {% if request.GET.price_range == '5000000' %}selected{% endif %}>Under ₹50L</option>
+                <option value="10000000" {% if request.GET.price_range == '10000000' %}selected{% endif %}>₹50L - ₹1Cr</option>
+                <option value="20000000" {% if request.GET.price_range == '20000000' %}selected{% endif %}>₹1Cr - ₹2Cr</option>
+                <option value="20000001" {% if request.GET.price_range == '20000001' %}selected{% endif %}>Above ₹2Cr</option>
+              </select>
+              <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                <i class="lucide lucide-chevron-down text-gray-400"></i>
+              </div>
+            </div>
+          </div>
+
+          <!-- BHK (hidden when project search is selected) -->
+          <div class="lg:col-span-2" id="bhk-container">
+            <label for="bhk" class="block text-sm font-medium text-gray-700 mb-2">BHK</label>
+            <div class="relative">
+              <select id="bhk" name="number_of_bedrooms"
+                      class="block w-full pl-4 pr-10 py-3 border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none transition-all">
+                <option value="">Any Configuration</option>
+                {% for value, label in bedroom_choices %}
+                <option value="{{ value }}" {% if request.GET.number_of_bedrooms == value %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+              </select>
+              <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                <i class="lucide lucide-chevron-down text-gray-400"></i>
+              </div>
+            </div>
+          </div>
+
+          <!-- Amenities -->
+          <div class="lg:col-span-2">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Amenities</label>
+            <div class="relative">
+              <button type="button" id="amenities-toggle"
+                      class="w-full text-left pl-4 pr-10 py-3 border border-gray-300 rounded-lg bg-gray-50 hover:bg-gray-100 transition-all flex items-center justify-between">
+                <span id="selected-amenities" class="truncate">Select Amenities</span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-down"><path d="m6 9 6 6 6-6"/></svg>
+              </button>
+              <div id="amenities-dropdown"
+                  class="hidden absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg p-2 max-h-60 overflow-auto">
+                <div class="space-y-2">
+                  {% for amenity in amenities %}
+                  <label class="flex items-center space-x-2 cursor-pointer">
+                    <input type="checkbox" name="amenities" value="{{ amenity.id }}" 
+                          class="rounded text-blue-600" 
+                          {% if amenity.id|stringformat:"s" in request.GET.getlist.amenities %}checked{% endif %} />
+                    <span>{{ amenity.name }}</span>
+                  </label>
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Search Button -->
+          <div class="lg:col-span-1 flex items-end">
+            <button type="submit"
+                    class="w-full bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white py-3.5 px-4 rounded-lg font-semibold transition-all shadow-md hover:shadow-lg flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search mr-2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+              Search
+            </button>
+          </div>
+
+        </form>
+      </div>
+    </div>
+
+  </section>
+
+  {% comment %} <!-- Stats Section for Key2YourHome -->
+  <section class="bg-transparent">
+      <div class="max-w-screen-xl py-12 mx-auto text-center lg:py-16 lg:px-6">
+          <h2 class="mb-12 text-3xl font-bold text-gray-800 md:text-4xl">
+              Why Choose Key2YourHome?
+          </h2>
+          <dl class="grid max-w-screen-md gap-8 mx-auto text-gray-800 sm:grid-cols-3">
+              <!-- Happy Clients -->
+              <div class="flex flex-col items-center justify-center p-6 bg-blue-200 rounded-xl">
+                  <dt class="mb-2 text-3xl md:text-4xl font-extrabold text-blue-600">5,000+</dt>
+                  <dd class="font-light text-gray-600">Happy Clients</dd>
+              </div>
+              <!-- Properties Listed -->
+              <div class="flex flex-col items-center justify-center p-6 bg-blue-200 rounded-xl">
+                  <dt class="mb-2 text-3xl md:text-4xl font-extrabold text-blue-600">1,200+</dt>
+                  <dd class="font-light text-gray-600">Properties Listed</dd>
+              </div>
+              <!-- Successful Deals -->
+              <div class="flex flex-col items-center justify-center p-6 bg-blue-200 rounded-xl">
+                  <dt class="mb-2 text-3xl md:text-4xl font-extrabold text-blue-600">800+</dt>
+                  <dd class="font-light text-gray-600">Successful Deals</dd>
+              </div>
+          </dl>
+      </div>
+  </section> {% endcomment %}
+
+  <!-- Modern Property Types Carousel Section -->
+  <section class="py-16 md:py-20 bg-transparent">
+      <div class="max-w-13xl mx-auto sm:px-2 lg:px-4">  
+        <!-- Carousel Container -->
+        <div class="relative group bg-white rounded-3xl">
+          <!-- Navigation Buttons -->
+          <button id="prev-btn" class="carousel-nav-btn left-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" aria-label="Scroll left">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+            </svg>
+          </button>
+          
+          <button id="next-btn" class="carousel-nav-btn right-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" aria-label="Scroll right">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+            </svg>
+          </button>
+    
+          <!-- Carousel Track -->
+          <div id="carousel-track" class="carousel-track" tabindex="0">
+            <!-- Apartments -->
+            <div class="property-card">
+              <div class="property-image-container">
+                <img src="{% static 'images/category/category1.jpeg' %}" alt="Apartments" class="property-image" loading="lazy">
+                <div class="property-badge">120+ Listings</div>
+              </div>
+              <div class="property-content">
+                <h3 class="property-title">Apartments</h3>
+                <p class="property-description">Modern living spaces with premium amenities in prime locations</p>
+                <a href="/search/?type=property&property_type=RESIDENTIAL_APARTMENT" class="property-link" aria-label="Explore Apartments">
+                  Explore
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+                  </svg>
+                </a>
+              </div>
+            </div>
+            
+            <!-- Villas -->
+            <div class="property-card">
+              <div class="property-image-container">
+                <img src="{% static 'images/category/category2.jpeg' %}" alt="Villas" class="property-image" loading="lazy">
+                <div class="property-badge">45+ Listings</div>
+              </div>
+              <div class="property-content">
+                <h3 class="property-title">Villas</h3>
+                <p class="property-description">Luxury private homes with premium amenities and space</p>
+                <a href="/search/?type=property&property_type=INDEPENDENT_HOUSE_VILLA" class="property-link" aria-label="Explore Villas">
+                  Explore
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+                  </svg>
+                </a>
+              </div>
+            </div>
+          
+            
+            <!-- Plots -->
+            <div class="property-card">
+              <div class="property-image-container">
+                <img src="{% static 'images/category/category4.jpeg' %}" alt="Plots" class="property-image" loading="lazy">
+                <div class="property-badge">92+ Listings</div>
+              </div>
+              <div class="property-content">
+                <h3 class="property-title">Plots</h3>
+                <p class="property-description">Prime land parcels for your dream home or investment</p>
+                <a href="/search/?type=property&property_type=INDUSTRIAL_LANDS_PLOTS" class="property-link" aria-label="Explore Plots">
+                  Explore
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+                  </svg>
+                </a>
+              </div>
+            </div>
+            
+            <!-- Commercial -->
+            <div class="property-card">
+              <div class="property-image-container">
+                <img src="{% static 'images/category/category5.jpeg' %}" alt="Commercial" class="property-image" loading="lazy">
+                <div class="property-badge">57+ Listings</div>
+              </div>
+              <div class="property-content">
+                <h3 class="property-title">Commercial</h3>
+                <p class="property-description">Office spaces, retail stores and business properties</p>
+                <a href="/search/?type=property&property_type=COMMERCIAL_LAND_INST_LAND" class="property-link" aria-label="Explore Commercial">
+                  Explore
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+                  </svg>
+                </a>
+              </div>
+            </div>
+            
+            <!-- Beach Houses -->
+            <div class="property-card">
+              <div class="property-image-container">
+                <img src="{% static 'images/category/category6.jpeg' %}" alt="Beach Houses" class="property-image" loading="lazy">
+                <div class="property-badge">32+ Listings</div>
+              </div>
+              <div class="property-content">
+                <h3 class="property-title">Farm Houses</h3>
+                <p class="property-description">Waterfront properties with stunning ocean views</p>
+                <a href="/search/?type=property&property_type=FARMHOUSE" class="property-link" aria-label="Explore Beach Houses">
+                  Explore
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+                  </svg>
+                </a>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Scroll Indicator -->
+          <div class="flex justify-center mt-6 md:hidden">
+            <div class="flex space-x-2">
+              <div class="w-2 h-2 rounded-full bg-gray-300 dot-indicator active"></div>
+              <div class="w-2 h-2 rounded-full bg-gray-300 dot-indicator"></div>
+              <div class="w-2 h-2 rounded-full bg-gray-300 dot-indicator"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+  </section>
+    
+  <!-- Property CTA Section for Key2YourHome -->
+  <section class="bg-transparent">
+      <div class="gap-8 items-center py-12 px-4 mx-auto max-w-screen-xl xl:gap-16 md:grid md:grid-cols-2 sm:py-16 lg:px-6">
+          <!-- Property Image (Replace with your actual property image) -->
+          <img 
+              class="w-full rounded-xl shadow-lg" 
+              src="{% static 'images/landing_page/img1.jpg' %}" 
+              alt="Modern Luxury Home"
+              loading="lazy"
+          >
+          
+          <!-- Content -->
+          <div class="mt-4 md:mt-0">
+              <h2 class="mb-4 text-3xl md:text-4xl font-bold text-gray-800">
+                  Find Your Dream Home with Key2YourHome
+              </h2>
+              <p class="mb-6 text-gray-600 md:text-lg">
+                  Discover exclusive properties tailored to your lifestyle. 
+                  Whether you're buying, selling, or investing, our expert team 
+                  ensures a seamless real estate experience.
+              </p>
+              
+              <!-- CTA Buttons -->
+              <div class="flex flex-col sm:flex-row gap-4">
+                  <a 
+                      href="/property_list" 
+                      class="inline-flex items-center justify-center px-5 py-3 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition duration-200"
+                  >
+                      Browse Properties
+                      <svg class="ml-2 -mr-1 w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                          <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                      </svg>
+                  </a>
+                  <a 
+                      href="/contact_us" 
+                      class="inline-flex items-center justify-center px-5 py-3 text-sm font-medium text-blue-600 hover:text-blue-700 border border-blue-200 hover:border-blue-300 rounded-lg transition duration-200"
+                  >
+                      Contact Agent
+                  </a>
+              </div>
+          </div>
+      </div>
+  </section>
+
+  <!-- Key Services Section for Key2YourHome -->
+  <section class="bg-white">
+      <div class="py-12 px-4 mx-auto max-w-screen-xl sm:py-16 lg:px-6 ">
+          <div class="max-w-full mb-12 lg:mb-16 text-center">
+              <h2 class="mb-4 text-3xl md:text-4xl font-bold text-gray-800 ">Your Trusted Real Estate Partner</h2>
+              <p class="text-gray-600 sm:text-lg">From finding dream homes to smart investments, we provide end-to-end solutions tailored to your real estate needs.</p>
+          </div>
+          <div class="space-y-8 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-8 md:space-y-0">
+              <!-- Property Buying -->
+              <div class="p-6 bg-blue-50 rounded-lg transition hover:shadow-md">
+                  <div class="flex justify-center items-center mb-4 w-12 h-12 rounded-full bg-blue-100">
+                      <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                      </svg>
+                  </div>
+                  <h3 class="mb-3 text-xl font-bold text-gray-800">Property Buying</h3>
+                  <p class="text-gray-600">Expert guidance to find your perfect home with curated listings, neighborhood insights, and negotiation support.</p>
+              </div>
+
+              <!-- Selling Assistance -->
+              <div class="p-6 bg-blue-50 rounded-lg transition hover:shadow-md">
+                  <div class="flex justify-center items-center mb-4 w-12 h-12 rounded-full bg-blue-100">
+                      <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                      </svg>
+                  </div>
+                  <h3 class="mb-3 text-xl font-bold text-gray-800">Selling Assistance</h3>
+                  <p class="text-gray-600">Maximize your property's value with staging advice, targeted marketing, and competitive pricing strategies.</p>
+              </div>
+
+              <!-- Investment Advisory -->
+              <div class="p-6 bg-blue-50 rounded-lg transition hover:shadow-md">
+                  <div class="flex justify-center items-center mb-4 w-12 h-12 rounded-full bg-blue-100">
+                      <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                      </svg>
+                  </div>
+                  <h3 class="mb-3 text-xl font-bold text-gray-800">Investment Advisory</h3>
+                  <p class="text-gray-600">Identify high-growth opportunities with our market analysis and portfolio diversification expertise.</p>
+              </div>
+
+              <!-- Property Management -->
+              <div class="p-6 bg-blue-50 rounded-lg transition hover:shadow-md">
+                  <div class="flex justify-center items-center mb-4 w-12 h-12 rounded-full bg-blue-100">
+                      <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                      </svg>
+                  </div>
+                  <h3 class="mb-3 text-xl font-bold text-gray-800">Property Management</h3>
+                  <p class="text-gray-600">Hands-off ownership with our tenant screening, maintenance coordination, and financial reporting services.</p>
+              </div>
+
+              <!-- Home Valuation -->
+              <div class="p-6 bg-blue-50 rounded-lg transition hover:shadow-md">
+                  <div class="flex justify-center items-center mb-4 w-12 h-12 rounded-full bg-blue-100">
+                      <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                      </svg>
+                  </div>
+                  <h3 class="mb-3 text-xl font-bold text-gray-800">Home Valuation</h3>
+                  <p class="text-gray-600">Accurate pricing assessments using comparative market analysis and local trends data.</p>
+              </div>
+
+              <!-- Relocation Services -->
+              <div class="p-6 bg-blue-50 rounded-lg transition hover:shadow-md">
+                  <div class="flex justify-center items-center mb-4 w-12 h-12 rounded-full bg-blue-100">
+                      <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7l4-4m0 0l4 4m-4-4v18m-1-3l3 3 3-3m-6 2V9"></path>
+                      </svg>
+                  </div>
+                  <h3 class="mb-3 text-xl font-bold text-gray-800">Relocation Services</h3>
+                  <p class="text-gray-600">Smooth transitions with school district info, local service connections, and moving coordination.</p>
+              </div>
+          </div>
+      </div>
+  </section>
+
+  <section class="bg-transparent">
+      <div class="gap-12 items-center py-12 px-4 mx-auto max-w-screen-xl lg:grid lg:grid-cols-2 lg:py-16 lg:px-6">
+          <!-- Content -->
+          <div class="text-gray-600">
+              <h2 class="mb-4 text-3xl md:text-4xl font-bold text-gray-800">Your Trusted Real Estate Experts</h2>
+              <p class="mb-4">At Key2YourHome, we combine local market knowledge with innovative technology to simplify your property journey. Whether buying, selling, or investing, we deliver results with personalized service.</p>
+              <p>Our team of certified agents has helped over 1,200 families find their perfect homes in the last decade.</p>
+              
+              <!-- Trust Indicators -->
+              <div class="mt-8 flex flex-wrap gap-4">
+                  <div class="flex items-center">
+                      <svg class="w-5 h-5 mr-2 text-blue-600" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+                      <span>Local Market Specialists</span>
+                  </div>
+                  <div class="flex items-center">
+                      <svg class="w-5 h-5 mr-2 text-blue-600" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+                      <span>24/7 Availability</span>
+                  </div>
+              </div>
+          </div>
+          
+          <!-- Property Images -->
+          <div class="grid grid-cols-2 gap-4 mt-8">
+              <img class="w-full rounded-lg shadow-md" src="{% static 'images/landing_page/img2.jpeg'%}" alt="Luxury living room" loading="lazy">
+              <img class="mt-4 w-full lg:mt-8 rounded-lg shadow-md" src="{% static 'images/landing_page/img3.jpeg'%}" alt="Modern home exterior" loading="lazy">
+          </div>
+      </div>
+  </section>
+{% comment %} 
+  <section class="bg-blue-50 px-4 py-12">
+      <div class="mx-auto grid max-w-screen-xl rounded-xl bg-white p-6 shadow-sm md:p-8 lg:grid-cols-12 lg:gap-12 lg:p-12">
+          <!-- Property Image -->
+          <div class="lg:col-span-5">
+              <div class="relative overflow-hidden rounded-lg">
+                  <img class="w-full object-cover" src="https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" alt="Luxury penthouse with city view">
+                  <div class="absolute bottom-0 left-0 bg-blue-600 px-4 py-2 text-white">
+                      <span class="text-sm font-medium">FEATURED LISTING</span>
+                  </div>
+              </div>
+          </div>
+          
+          <!-- Property Details -->
+          <div class="mt-6 lg:col-span-7 lg:mt-0">
+              <h1 class="mb-3 text-2xl font-bold leading-tight text-gray-800 md:text-3xl">
+                  Luxury Penthouse in Downtown
+              </h1>
+              <div class="mb-4 flex items-center">
+                  <svg class="mr-1 h-5 w-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path></svg>
+                  <span class="text-gray-600">123 Skyline Blvd, Metropolitan City</span>
+              </div>
+              
+              <div class="mb-6 grid grid-cols-3 gap-4">
+                  <div>
+                      <span class="block text-sm text-gray-500">Bedrooms</span>
+                      <span class="text-xl font-semibold text-blue-600">3</span>
+                  </div>
+                  <div>
+                      <span class="block text-sm text-gray-500">Bathrooms</span>
+                      <span class="text-xl font-semibold text-blue-600">2.5</span>
+                  </div>
+                  <div>
+                      <span class="block text-sm text-gray-500">Sq. Ft.</span>
+                      <span class="text-xl font-semibold text-blue-600">2,450</span>
+                  </div>
+              </div>
+              
+              <p class="mb-6 text-gray-600">This stunning penthouse features floor-to-ceiling windows, smart home technology, and panoramic city views. Includes access to rooftop pool and 24/7 concierge.</p>
+              
+              <div class="flex flex-col sm:flex-row gap-4">
+                  <a href="#" class="inline-flex items-center justify-center rounded-lg bg-blue-600 px-6 py-3 text-center font-medium text-white hover:bg-blue-700 transition duration-200">
+                      Schedule Viewing
+                      <svg class="ml-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                  </a>
+                  <a href="#" class="inline-flex items-center justify-center rounded-lg border border-blue-200 px-6 py-3 text-center font-medium text-blue-600 hover:bg-blue-50 transition duration-200">
+                      Full Details
+                  </a>
+              </div>
+          </div>
+      </div>
+  </section> {% endcomment %}
+
+  <!-- Featured Property Banner -->
+  {% comment %} <section class="bg-blue-50 py-12 md:py-16 rounded-2xl my-8">
+      <div class="mx-auto max-w-screen-xl px-4 grid md:grid-cols-12 gap-12 items-center">
+          <!-- Content -->
+          <div class="md:col-span-7">
+              <h1 class="mb-4 text-3xl font-bold md:text-4xl lg:text-5xl">
+                  Exclusive Luxury Villa in Palm Jumeirah
+              </h1>
+              <p class="mb-6 text-blue-900 text-lg md:text-xl">
+                  5 Bedrooms • 7 Bathrooms • 8,500 sq.ft • Private Beach Access
+              </p>
+              
+              <div class="flex flex-col sm:flex-row gap-4">
+                  <a href="#" class="inline-flex items-center justify-center px-6 py-3 font-medium bg-white text-blue-600 hover:bg-blue-200 rounded-lg transition duration-200">
+                      Schedule Viewing
+                      <svg class="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                      </svg>
+                  </a>
+                  <a href="#" class="inline-flex items-center justify-center px-6 py-3 font-medium text-blue-900 hover:text-blue-100 border border-blue hover:bg-blue-700 rounded-lg transition duration-200">
+                      View Details
+                  </a>
+              </div>
+          </div>
+          
+          <!-- Image -->
+          <div class="hidden md:col-span-5 md:block">
+              <div class="relative rounded-xl overflow-hidden shadow-xl">
+                  <img class="w-full h-auto" src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" alt="Luxury villa with pool">
+                  <div class="absolute bottom-0 left-0 bg-blue-800/90 px-4 py-2 text-sm font-medium text-white">
+                      Featured Listing
+                  </div>
+              </div>
+          </div>
+      </div>
+  </section> {% endcomment %}
+
+  <!-- Trusted Partners Section -->
+  <section class="bg-white py-12 rounded-lg shadow-sm">
+      <div class="mx-auto max-w-screen-xl px-4">
+          <h2 class="text-center text-2xl font-bold text-gray-800 md:text-3xl">
+              Trusted by Leading Real Estate Partners
+          </h2>
+          
+          <div class="container mx-auto px-4 py-2">
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-6 items-center">
+              <!-- Partner 1 -->
+              <div class="flex justify-center p-4 bg-white ">
+                <img class="max-h-12 w-auto object-contain opacity-80 hover:opacity-100 transition-opacity duration-200" 
+                    src="{% static 'images/partner/Partner1.png' %}" 
+                    alt="Dubai Properties"
+                    loading="lazy">
+              </div>
+              
+              <!-- Partner 2 -->
+              <div class="flex justify-center p-4 bg-white ">
+                <img class="max-h-12 w-auto object-contain opacity-80 hover:opacity-100 transition-opacity duration-200" 
+                    src="{% static 'images/partner/Partner2.png' %}" 
+                    alt="Emaar"
+                    loading="lazy">
+              </div>
+              
+              <!-- Partner 3 -->
+              <div class="flex justify-center p-4 bg-white ">
+                <img class="max-h-12 w-auto object-contain opacity-80 hover:opacity-100 transition-opacity duration-200" 
+                    src="{% static 'images/partner/Partner3.webp' %}" 
+                    alt="Sobha"
+                    loading="lazy">
+              </div>
+              
+              <!-- Partner 4 -->
+              <div class="flex justify-center p-4 bg-white ">
+                <img class="max-h-12 w-auto object-contain opacity-80 hover:opacity-100 transition-opacity duration-200" 
+                    src="{% static 'images/partner/Partner4.png' %}" 
+                    alt="Damac"
+                    loading="lazy">
+              </div>
+              
+              <!-- Partner 5 -->
+              <div class="flex justify-center p-4 bg-white ">
+                <img class="max-h-12 w-auto object-contain opacity-80 hover:opacity-100 transition-opacity duration-200" 
+                    src="{% static 'images/partner/Partner5.png' %}" 
+                    alt="Ellington"
+                    loading="lazy">
+              </div>
+              
+              <!-- Partner 6 -->
+              <div class="flex justify-center p-4 bg-white ">
+                <img class="max-h-12 w-auto object-contain opacity-80 hover:opacity-100 transition-opacity duration-200" 
+                    src="{% static 'images/partner/Partner6.png' %}" 
+                    alt="Azizi"
+                    loading="lazy">
+              </div>
+            </div>
+          </div>
+      </div>
+  </section>
+
+  <section class="bg-transparent">
+      <div class="py-8 px-4 mx-auto max-w-screen-xl sm:py-16 lg:px-6">
+        <h2 class="mb-8 text-4xl tracking-tight font-bold flex items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-circle-help-icon lucide-circle-help w-8 h-8 mr-2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+          Frequently Asked Questions</h2>
+        <div class="grid pt-8 text-left border-t border-gray-200 md:gap-16 md:grid-cols-2">
+          <div>
+            <div class="mb-10">
+              <h3 class="flex items-center mb-4 text-lg font-medium text-blue-900">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-notebook-pen-icon lucide-notebook-pen w-5 h-5 mr-1"><path d="M13.4 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7.4"/><path d="M2 6h4"/><path d="M2 10h4"/><path d="M2 14h4"/><path d="M2 18h4"/><path d="M21.378 5.626a1 1 0 1 0-3.004-3.004l-5.01 5.012a2 2 0 0 0-.506.854l-.837 2.87a.5.5 0 0 0 .62.62l2.87-.837a2 2 0 0 0 .854-.506z"/></svg>
+                How do I schedule a property visit?
+              </h3>
+              <p class="text-gray-700">You can schedule a visit by clicking the “Schedule Visit” button on any listing page. Pick your preferred time and our agent will confirm with you shortly.</p>
+            </div>
+    
+            <div class="mb-10">
+              <h3 class="flex items-center mb-4 text-lg font-medium text-blue-900">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-clock-plus-icon lucide-clock-plus w-5 h-5 mr-1"><path d="M12 6v6l3.644 1.822"/><path d="M16 19h6"/><path d="M19 16v6"/><path d="M21.92 13.267a10 10 0 1 0-8.653 8.653"/></svg>
+                Are the property listings updated in real-time?
+              </h3>
+              <p class="text-gray-700">Yes, our listings are updated in real-time based on availability and market changes, ensuring you always have the latest information.</p>
+            </div>
+    
+            <div class="mb-10">
+              <h3 class="flex items-center mb-4 text-lg font-medium text-blue-900">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-file-icon lucide-file w-5 h-5 mr-1"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg>
+                What documents do I need to buy a property?
+              </h3>
+              <p class="text-gray-700">Typically, you will need your government ID, proof of income, address proof, and loan approval (if applicable). Our agents will assist you with the exact list based on the property.</p>
+            </div>
+    
+            <div class="mb-10">
+              <h3 class="flex items-center mb-4 text-lg font-medium text-blue-900">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-hand-coins-icon lucide-hand-coins w-5 h-5 mr-1"><path d="M11 15h2a2 2 0 1 0 0-4h-3c-.6 0-1.1.2-1.4.6L3 17"/><path d="m7 21 1.6-1.4c.3-.4.8-.6 1.4-.6h4c1.1 0 2.1-.4 2.8-1.2l4.6-4.4a2 2 0 0 0-2.75-2.91l-4.2 3.9"/><path d="m2 16 6 6"/><circle cx="16" cy="9" r="2.9"/><circle cx="6" cy="5" r="3"/></svg>
+                Can I get help with a home loan?
+              </h3>
+              <p class="text-gray-700">Yes, we partner with leading banks and NBFCs to offer home loan assistance. You can apply directly from our website or consult our finance advisor.</p>
+            </div>
+          </div>
+    
+          <div>
+            <div class="mb-10">
+              <h3 class="flex items-center mb-4 text-lg font-medium text-blue-900">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-indian-rupee-icon lucide-indian-rupee w-5 h-5 mr-1"><path d="M6 3h12"/><path d="M6 8h12"/><path d="m6 13 8.5 8"/><path d="M6 13h3"/><path d="M9 13c6.667 0 6.667-10 0-10"/></svg>
+                Are there any hidden charges?
+              </h3>
+              <p class="text-gray-700">We believe in transparency. All charges, including registration, taxes, and brokerage (if any), will be clearly listed before you make a decision.</p>
+            </div>
+    
+            <div class="mb-10">
+              <h3 class="flex items-center mb-4 text-lg font-medium text-blue-900">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-headset-icon lucide-headset w-5 h-5 mr-1"><path d="M3 11h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-5Zm0 0a9 9 0 1 1 18 0m0 0v5a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3Z"/><path d="M21 16v2a4 4 0 0 1-4 4h-5"/></svg>
+                How do I contact customer support?
+              </h3>
+              <p class="text-gray-700">You can reach out to us via the chat widget, call us directly, or use the <a href="#" class="text-blue-600 underline hover:no-underline">Contact Us</a> page. We respond within 24 hours.</p>
+            </div>
+    
+            <div class="mb-10">
+              <h3 class="flex items-center mb-4 text-lg font-medium text-blue-900">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-handshake-icon lucide-handshake w-5 h-5 mr-1"><path d="m11 17 2 2a1 1 0 1 0 3-3"/><path d="m14 14 2.5 2.5a1 1 0 1 0 3-3l-3.88-3.88a3 3 0 0 0-4.24 0l-.88.88a1 1 0 1 1-3-3l2.81-2.81a5.79 5.79 0 0 1 7.06-.87l.47.28a2 2 0 0 0 1.42.25L21 4"/><path d="m21 3 1 11h-2"/><path d="M3 3 2 14l6.5 6.5a1 1 0 1 0 3-3"/><path d="M3 4h8"/></svg>
+                Do you assist with rental properties?
+              </h3>
+              <p class="text-gray-700">Yes, our platform also includes verified rental listings and our agents can help with agreements, background checks, and smooth onboarding for tenants.</p>
+            </div>
+    
+          </div>
+        </div>
+      </div>
+  </section>
+    
+  <style>
+    .carousel-track {
+        display: flex;
+        gap: 1.5rem;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        scroll-behavior: smooth;
+        -webkit-overflow-scrolling: touch;
+        padding: 1rem 0;
+        scrollbar-width: none;
+        margin: 0 1rem;
+    }
+
+    .carousel-track::-webkit-scrollbar {
+        display: none;
+    }
+
+    .property-card {
+        flex: 0 0 calc(50% - 0.75rem);
+        scroll-snap-align: start;
+        border-radius: 0.75rem;
+        overflow: hidden;
+        background: white;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        min-width: 260px;
+    }
+
+    .property-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+
+    .property-image-container {
+        position: relative;
+        padding-top: 70%;
+        overflow: hidden;
+    }
+
+    .property-image {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+
+    .property-card:hover .property-image {
+        transform: scale(1.05);
+    }
+
+    .property-badge {
+        position: absolute;
+        top: 0.75rem;
+        right: 0.75rem;
+        background-color: rgba(255, 255, 255, 0.9);
+        padding: 0.25rem 0.5rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: #1f2937;
+    }
+
+    .property-content {
+        padding: 1.25rem;
+    }
+
+    .property-title {
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: #111827;
+        margin-bottom: 0.5rem;
+    }
+
+    .property-description {
+        font-size: 0.875rem;
+        color: #6b7280;
+        margin-bottom: 1rem;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .property-link {
+        display: inline-flex;
+        align-items: center;
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: #3b82f6;
+        transition: color 0.2s ease;
+    }
+
+    .property-link:hover {
+        color: #2563eb;
+    }
+
+    .carousel-nav-btn {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 10;
+        width: 2.5rem;
+        height: 2.5rem;
+        border-radius: 9999px;
+        background-color: white;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border: none;
+    }
+
+    .carousel-nav-btn:hover {
+        background-color: #f3f4f6;
+        transform: translateY(-50%) scale(1.05);
+    }
+
+    .carousel-nav-btn:focus {
+        outline: none;
+        box-shadow: 0 0 0 2px #3b82f6;
+    }
+
+    .dot-indicator.active {
+        background-color: #3b82f6;
+    }
+
+    @media (min-width: 640px) {
+        .property-card {
+        flex: 0 0 calc(33.333% - 1rem);
+        }
+    }
+
+    @media (min-width: 768px) {
+        .property-card {
+        flex: 0 0 calc(25% - 1.125rem);
+        }
+        
+        .carousel-track {
+        padding: 1.5rem 0;
+        margin: 0 2rem;
+        }
+    }
+
+    @media (min-width: 1024px) {
+        .property-card {
+        flex: 0 0 calc(20% - 1.2rem);
+        }
+    }
+  </style>
+    
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const track = document.getElementById('carousel-track');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const dots = document.querySelectorAll('.dot-indicator');
+        let currentIndex = 0;
+        
+        // Calculate scroll amount based on card width
+        const getScrollAmount = () => {
+        const card = document.querySelector('.property-card');
+        return card ? card.offsetWidth + 24 : 300; // 24px is the gap
+        };
+        
+        // Handle navigation buttons
+        prevBtn.addEventListener('click', () => {
+        track.scrollBy({ left: -getScrollAmount(), behavior: 'smooth' });
+        updateActiveDot();
+        });
+        
+        nextBtn.addEventListener('click', () => {
+        track.scrollBy({ left: getScrollAmount(), behavior: 'smooth' });
+        updateActiveDot();
+        });
+        
+        // Handle keyboard navigation
+        track.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowLeft') {
+            track.scrollBy({ left: -getScrollAmount(), behavior: 'smooth' });
+        } else if (e.key === 'ArrowRight') {
+            track.scrollBy({ left: getScrollAmount(), behavior: 'smooth' });
+        }
+        });
+        
+        // Update dot indicators based on scroll position
+        function updateActiveDot() {
+        const scrollPercentage = track.scrollLeft / (track.scrollWidth - track.clientWidth);
+        currentIndex = Math.round(scrollPercentage * (dots.length - 1));
+        
+        dots.forEach((dot, index) => {
+            if (index === currentIndex) {
+            dot.classList.add('active');
+            } else {
+            dot.classList.remove('active');
+            }
+        });
+        }
+        
+        // Make cards focusable for better keyboard navigation
+        const cards = document.querySelectorAll('.property-card');
+        cards.forEach(card => {
+        card.setAttribute('tabindex', '0');
+        });
+        
+        // Update dots on scroll
+        track.addEventListener('scroll', updateActiveDot);
+        
+        // Initialize
+        updateActiveDot();
+    });
+  </script>
+
+
+    
+
+
+{% endblock content %}

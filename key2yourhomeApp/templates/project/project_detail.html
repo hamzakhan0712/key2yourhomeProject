@@ -1,0 +1,2841 @@
+{% extends "base/_base.html" %}
+{% load static humanize %}
+{% load price_filters %}
+
+
+{% block content %}
+
+
+<!-- Include the gallery script -->
+<script src="{% static 'js/project-gallery.js' %}"></script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+      const mediaData{{ project.id }} = [
+          {% for media in project.media.all %}
+              {% if media.media_type != 'FILE' %}
+              {
+                  id: {{ media.id }},
+                  type: "{{ media.media_type|lower }}",
+                  url: "{{ media.file.url }}",
+                  title: "{{ media.title|escapejs }}",
+                  about: "{{ media.about|escapejs }}",
+                  thumb: "{{ media.file.url }}",  // Replace with thumbnail URL if available
+                  alt: "{{ media.title|escapejs }}"
+              }{% if not forloop.last %},{% endif %}
+              {% endif %}
+          {% endfor %}
+      ];
+
+      const VIDEO_PLACEHOLDER_URL = "{% static 'images/placeholder-video.jpeg' %}";
+
+      // Initialize gallery for this project
+      initProjectGallery(
+          VIDEO_PLACEHOLDER_URL,
+          {{ project.id }},
+          mediaData{{ project.id }},
+          {
+              mainPreview: document.getElementById('main-preview-{{ project.id }}'),
+              mediaThumbnails: document.getElementById('media-thumbnails-{{ project.id }}'),
+              fullscreenModal: document.getElementById('fullscreen-modal-{{ project.id }}'),
+              fullscreenPreview: document.getElementById('fullscreen-preview-{{ project.id }}'),
+              fullscreenThumbnails: document.getElementById('fullscreen-thumbnails-{{ project.id }}'),
+              closeFullscreen: document.getElementById('close-fullscreen-{{ project.id }}'),
+              thumbPrev: document.getElementById('thumb-prev-{{ project.id }}'),
+              thumbNext: document.getElementById('thumb-next-{{ project.id }}'),
+              fsPrev: document.getElementById('fs-prev-{{ project.id }}'),
+              fsNext: document.getElementById('fs-next-{{ project.id }}')
+          }
+      );
+  });
+</script>
+
+
+<div class="max-w-7xl mx-auto  sm:px-6 lg:px-8 py-8 md:py-12 mt-8">
+  <!-- Project Header Section -->
+  <div class="mb-12">
+    <div class="flex flex-col md:flex-row lg:flex-row gap-8 bg-white p-4 rounded-lg border border-blue-200">
+      
+      <div class="flex-1">
+        <!-- Media Gallery -->
+        <div class="h-full">
+          <!-- Main Preview -->
+          <div class="relative w-full  bg-gray-100 dark:bg-gray-800 rounded-lg overflow-hidden aspect-video mb-4">
+              <div id="main-preview-{{ project.id }}" class="flex items-center justify-center w-full h-full">
+                  <div class="text-center p-8">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                      <p class="mt-2 text-gray-500 dark:text-gray-400">Loading media...</p>
+                  </div>
+              </div>
+          </div>
+
+          <!-- Thumbnail Carousel -->
+          <div class="relative">
+              <div id="media-thumbnails-{{ project.id }}" class="flex gap-2 px-6 overflow-x-auto py-2 h-full scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 scrollbar-track-transparent">
+                  <!-- Thumbnails will be dynamically inserted here -->
+              </div>
+              
+              <!-- Navigation Arrows -->
+              <button id="thumb-prev-{{ project.id }}" class="absolute left-0 top-1/2 -translate-y-1/2 -ml-4  dark:bg-gray-100 rounded-full p-2 shadow-lg hover:text-white hover:bg-gray-100 dark:hover:bg-gray-400 transition-colors hidden">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 " viewBox="0 0 20 20" fill="currentColor">
+                      <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+                  </svg>
+              </button>
+              <button id="thumb-next-{{ project.id }}" class="absolute right-0 top-1/2 -translate-y-1/2 -mr-4 bg-white dark:bg-gray-100 rounded-full p-2 hover:text-white shadow-lg hover:bg-gray-100 dark:hover:bg-gray-400 transition-colors hidden">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                      <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                  </svg>
+              </button>
+          </div>
+
+          <div class="flex gap-4 mt-6">
+            <!-- Primary Action Button - WhatsApp (Consistent across both) -->
+              <a href="https://wa.me/917039363611" target="_blank" rel="noopener noreferrer"
+                  class="group flex items-center justify-center flex-1 bg-green-500 hover:bg-green-600 text-white py-3 px-4 rounded-xl text-sm font-medium shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5 active:translate-y-0">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 30 30" fill="currentColor" class="mr-2">
+                      <path d="M 15 3 C 8.373 3 3 8.373 3 15 C 3 17.251208 3.6323415 19.350068 4.7109375 21.150391 L 3.1074219 27 L 9.0820312 25.431641 C 10.829354 26.425062 12.84649 27 15 27 C 21.627 27 27 21.627 27 15 C 27 8.373 21.627 3 15 3 z M 10.892578 9.4023438 C 11.087578 9.4023438 11.287937 9.4011562 11.460938 9.4101562 C 11.674938 9.4151563 11.907859 9.4308281 12.130859 9.9238281 C 12.395859 10.509828 12.972875 11.979906 13.046875 12.128906 C 13.120875 12.277906 13.173313 12.453437 13.070312 12.648438 C 12.972312 12.848437 12.921344 12.969484 12.777344 13.146484 C 12.628344 13.318484 12.465078 13.532109 12.330078 13.662109 C 12.181078 13.811109 12.027219 13.974484 12.199219 14.271484 C 12.371219 14.568484 12.968563 15.542125 13.851562 16.328125 C 14.986562 17.342125 15.944188 17.653734 16.242188 17.802734 C 16.540187 17.951734 16.712766 17.928516 16.884766 17.728516 C 17.061766 17.533516 17.628125 16.864406 17.828125 16.566406 C 18.023125 16.268406 18.222188 16.319969 18.492188 16.417969 C 18.766188 16.515969 20.227391 17.235766 20.525391 17.384766 C 20.823391 17.533766 21.01875 17.607516 21.09375 17.728516 C 21.17075 17.853516 21.170828 18.448578 20.923828 19.142578 C 20.676828 19.835578 19.463922 20.505734 18.919922 20.552734 C 18.370922 20.603734 17.858562 20.7995 15.351562 19.8125 C 12.327563 18.6215 10.420484 15.524219 10.271484 15.324219 C 10.122484 15.129219 9.0605469 13.713906 9.0605469 12.253906 C 9.0605469 10.788906 9.8286563 10.071437 10.097656 9.7734375 C 10.371656 9.4754375 10.692578 9.4023438 10.892578 9.4023438 z"></path>
+                  </svg>
+                  WhatsApp
+                  <span class="ml-auto opacity-0 group-hover:opacity-100 transition-opacity duration-300">→</span>
+              </a>
+
+              <!-- Save Button - Dynamic for both project/property -->
+              <button class="bookmark-btn group flex-1 flex items-center justify-center px-4 py-3 rounded-xl transition-all duration-300 border-2 border-gray-200 hover:border-blue-400 bg-white hover:bg-blue-50 text-gray-700 hover:text-blue-700"
+                  data-type="{% if project %}project{% else %}property{% endif %}"  
+                  data-id="{% if project %}{{ project.id }}{% else %}{{ property.id }}{% endif %}" 
+                  data-bookmarked="{% if request.user.is_authenticated %}{% if project %}{% if project in request.user.bookmarked_projects.all %}true{% else %}false{% endif %}{% else %}{% if property in request.user.bookmarked_properties.all %}true{% else %}false{% endif %}{% endif %}{% else %}false{% endif %}">
+                  
+                  <!-- Animated Bookmark Icon -->
+                  <svg class="w-5 h-5 mr-2 transition-all duration-300 group-hover:fill-blue-100 group-hover:stroke-blue-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                      <path stroke-linecap="round" stroke-linejoin="round" 
+                          d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0111.186 0z" />
+                  </svg>
+
+                  <!-- Dynamic Button Text -->
+                  <span class="text-sm font-medium">
+                      {% if request.user.is_authenticated %}
+                          {% if project %}
+                              {% if project in request.user.bookmarked_projects.all %}Saved{% else %}Save Project{% endif %}
+                          {% else %}
+                              {% if property in request.user.bookmarked_properties.all %}Saved{% else %}Save Property{% endif %}
+                          {% endif %}
+                      {% else %}
+                          {% if project %}Save Project{% else %}Save Property{% endif %}
+                      {% endif %}
+                  </span>
+              </button>
+          </div>
+
+          <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                document.querySelectorAll('.bookmark-btn').forEach(button => {
+                    // Set initial styles
+                    updateButtonAppearance(button);
+        
+                    button.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        
+                        const type = this.getAttribute('data-type');
+                        const id = this.getAttribute('data-id');
+                        const isBookmarked = this.getAttribute('data-bookmarked') === 'true';
+                        
+                        if (!type || !id) return;
+                        
+                        // Add click animation
+                        this.classList.add('active:scale-95');
+                        setTimeout(() => this.classList.remove('active:scale-95'), 150);
+                        
+                        // Optimistic UI update
+                        this.setAttribute('data-bookmarked', (!isBookmarked).toString());
+                        updateButtonAppearance(this);
+                        
+                        // Get CSRF token
+                        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value;
+                        if (!csrfToken) {
+                            console.error('CSRF token not found');
+                            revertButtonState(this, isBookmarked);
+                            return;
+                        }
+                        
+                        // Unified endpoint for both adding and removing
+                        const endpoint = `/bookmarks/${type}/${id}/bookmark/`;
+                        
+                        fetch(endpoint, {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRFToken': csrfToken,
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({})
+                        })
+                        .then(response => {
+                            if (!response.ok) throw new Error('Network response was not ok');
+                            return response.json();
+                        })
+                        .then(data => {
+                            if (!data.success) {
+                                throw new Error(data.message || 'Operation failed');
+                            }
+                            // Update bookmark ID if needed
+                            if (data.bookmark_id) {
+                                this.setAttribute('data-bookmark-id', data.bookmark_id);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            revertButtonState(this, isBookmarked);
+                        });
+                    });
+                });
+        
+                function updateButtonAppearance(button) {
+                    const isBookmarked = button.getAttribute('data-bookmarked') === 'true';
+                    const icon = button.querySelector('svg');
+                    const text = button.querySelector('span');
+        
+                    if (isBookmarked) {
+                        button.classList.add('bg-blue-50', 'text-blue-600', 'border-blue-200', 'hover:border-blue-300');
+                        button.classList.remove('border-gray-200', 'text-gray-700', 'hover:text-gray-900');
+                        icon.classList.add('fill-blue-600');
+                        icon.classList.remove('fill-none');
+                        text.textContent = 'Saved';
+                    } else {
+                        button.classList.remove('bg-blue-50', 'text-blue-600', 'border-blue-200', 'hover:border-blue-300');
+                        button.classList.add('border-gray-200', 'text-gray-700', 'hover:text-gray-900');
+                        icon.classList.remove('fill-blue-600');
+                        icon.classList.add('fill-none');
+                        text.textContent = 'Save';
+                    }
+                }
+        
+                function revertButtonState(button, originalState) {
+                    button.setAttribute('data-bookmarked', originalState.toString());
+                    updateButtonAppearance(button);
+                }
+            });
+          </script>
+
+
+        </div>
+        <!-- Fullscreen Modal -->
+        <div id="fullscreen-modal-{{ project.id }}" class="fixed inset-0 z-50 hidden bg-black bg-opacity-90 items-center justify-center p-4">
+          <!-- Top Controls Bar -->
+          <div class="absolute top-0 mt-20 left-0 right-0 z-50 flex justify-between items-center p-4 bg-gradient-to-b from-black/70 to-transparent">
+              <!-- Title and description with smooth transitions -->
+              <div class="max-w-2xl pr-4 transition-opacity duration-300 hover:opacity-100">
+                  <h3 id="fullscreen-title-{{ project.id }}" 
+                      class="text-2xl font-semibold text-white tracking-tight truncate"
+                      aria-live="polite">
+                      <!-- Title will be inserted here -->
+                  </h3>
+                  <p id="fullscreen-about-{{ project.id }}" 
+                  class="mt-1 text-sm text-blue-500 line-clamp-2 transition-all duration-200"
+                  aria-live="polite">
+                      <!-- Description will be inserted here -->
+                  </p>
+              </div>
+                                                      
+                                                      <!-- Close button with modern interaction -->
+              <button id="close-fullscreen-{{ project.id }}"
+                      class="p-2 rounded-full backdrop-blur-sm bg-white/10 hover:bg-white/20 transition-all duration-200
+                          focus:outline-none focus:ring-2 focus:ring-white/50 focus:ring-offset-2 focus:ring-offset-black/50
+                          group"
+                      aria-label="Close fullscreen view">
+                  <svg xmlns="http://www.w3.org/2000/svg" 
+                      class="h-6 w-6 text-white group-hover:scale-110 transition-transform"
+                      viewBox="0 0 24 24" 
+                      fill="none" 
+                      stroke="currentColor" 
+                      stroke-width="2">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+              </button>
+          </div>
+          
+          <!-- Navigation Arrows -->
+          <button id="fs-prev-{{ project.id }}" class="absolute left-4 z-50 p-3 rounded-full bg-black/50 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+              </svg>
+          </button>
+          
+          <button id="fs-next-{{ project.id }}" class="absolute right-4 z-50 p-3 rounded-full bg-black/50 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+              </svg>
+          </button>
+          
+          <!-- Media Counter -->
+          <div class="absolute top-1/2 right-4 transform -translate-y-1/2 z-50 px-3 py-1 bg-black/50 rounded-full text-white text-sm hidden md:block">
+              <span id="current-index-{{ project.id }}">1</span> / <span id="total-media-{{ project.id }}">{{ project.media.count }}</span>
+          </div>
+          
+          <!-- Main Content Container -->
+          <div class="relative w-full h-full flex flex-col max-w-6xl mx-auto group">
+              <!-- Fullscreen Preview -->
+              <div id="fullscreen-preview-{{ project.id }}" class="flex-1 flex items-center justify-center relative">
+                  <!-- Fullscreen content will be inserted here -->
+              </div>
+              
+              <div class="absolute inset-y-0 left-0 top-50 w-24 z-50 flex flex-col items-center bg-gradient-to-t from-black/70 to-transparent p-4">
+                  <!-- Fullscreen Thumbnails Carousel -->
+                  <div class="flex-1 px-2 overflow-y-auto">
+                    <div class="w-full p-2">
+                      <div 
+                        class="flex flex-col gap-4 w-full bg-blue-50 p-2 rounded-xl backdrop-blur-sm"
+                        id="fullscreen-thumbnails-{{ project.id }}"
+                        aria-label="Project image thumbnails"
+                      >
+                        <!-- Thumbnails will be dynamically inserted here -->
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <!-- Video Controls (hidden by default) -->
+                  <div id="video-controls-{{ project.id }}" class="hidden w-full max-w-xl mt-2 flex-col">
+                      <div class="flex flex-col items-center gap-4 text-white">
+                          <button id="play-pause-{{ project.id }}" class="p-2">
+                              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" />
+                              </svg>
+                          </button>
+                          <div class="flex-1 bg-white/20 h-1 rounded-full overflow-hidden">
+                              <div id="progress-bar-{{ project.id }}" class="bg-blue-500 h-full" style="width: 0%"></div>
+                          </div>
+                          <div>
+                              <span id="current-time-{{ project.id }}" class="text-xs">0:00</span>
+                              <span class="text-xs opacity-50">/</span>
+                              <span id="duration-{{ project.id }}" class="text-xs">0:00</span>
+                          </div>
+                          
+                          <button id="mute-{{ project.id }}" class="p-2">
+                              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                  <path fill-rule="evenodd" d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.707.707L4.586 13H2a1 1 0 01-1-1V8a1 1 0 011-1h2.586l3.707-3.707a1 1 0 011.09-.217zM14.657 2.929a1 1 0 011.414 0A9.972 9.972 0 0119 10a9.972 9.972 0 01-2.929 7.071 1 1 0 01-1.414-1.414A7.971 7.971 0 0017 10c0-2.21-.894-4.208-2.343-5.657a1 1 0 010-1.414zm-2.829 2.828a1 1 0 011.415 0A5.983 5.983 0 0115 10a5.984 5.984 0 01-1.757 4.243 1 1 0 01-1.415-1.415A3.984 3.984 0 0013 10a3.983 3.983 0 00-1.172-2.828 1 1 0 010-1.415z" clip-rule="evenodd" />
+                              </svg>
+                          </button>
+                          <button id="fullscreen-video-{{ project.id }}" class="p-2">
+                              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                  <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h4a1 1 0 010 2H6.414l2.293 2.293a1 1 0 01-1.414 1.414L5 6.414V8a1 1 0 01-2 0V4zm9 1a1 1 0 010-2h4a1 1 0 011 1v4a1 1 0 01-2 0V6.414l-2.293 2.293a1 1 0 11-1.414-1.414L13.586 5H12zm-9 7a1 1 0 012 0v1.586l2.293-2.293a1 1 0 111.414 1.414L6.414 15H8a1 1 0 010 2H4a1 1 0 01-1-1v-4zm13-1a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 010-2h1.586l-2.293-2.293a1 1 0 111.414-1.414L15 13.586V12a1 1 0 011-1z" clip-rule="evenodd" />
+                              </svg>
+                          </button>
+                      </div>
+                  </div>
+              </div>
+          </div>
+        </div>
+
+
+
+      </div>
+      
+      <!-- Vertical Divider -->
+      <div class="hidden md:block w-1 rounded-2xl bg-gray-200"></div>
+            
+
+      <!-- Project Content Section -->
+      <div class="p-4 w-full flex flex-col flex-1">
+        <!-- Title and Basic Info -->
+        <div class="mb-3 flex flex-row items-start justify-between">
+            <div class="flex flex-col items-start justify-between mt-1 gap-1">
+                <h1 class="text-xl font-bold text-gray-900">
+                    {{ project.name }}
+                    <span class="text-sm text-gray-500 font-normal ml-1">
+                        by {{ project.developed_by }}
+                    </span>
+                </h1>
+                <div class="flex items-start">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-500 mr-1 mt-1" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
+                    </svg>
+                    <div class="flex flex-col">
+                        <span class="text-sm text-gray-600">{{ project.address }}</span>
+                        <span class="text-sm text-gray-600">
+                            {{ project.locality }}, {{ project.city }}, {{ project.state }}
+                            {% if project.landmark %} • Landmark: {{ project.landmark }}{% endif %}
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="flex flex-col items-end gap-1">
+                <span class="text-xs font-semibold px-3 py-1 
+                    {% if project.project_type == 'RESIDENTIAL' %}bg-blue-800{% else %}bg-purple-800{% endif %} 
+                    text-white rounded-full">
+                    {{ project.get_project_type_display }}
+                </span>
+            
+            </div>
+        </div>
+
+        <!-- Price and Area -->
+        <div class="flex items-center justify-between mb-3">
+            <div>
+                <div class="text-lg font-bold text-gray-900">
+                    ₹{{ project.price_range_start|indian_currency }} - ₹{{ project.price_range_end|indian_currency }}
+                </div>
+                <div class="text-xs text-gray-500">
+                    ₹{{ project.per_sq_ft_price|indian_currency }} per sq.ft
+                    <span class="ml-2 {% if project.per_sq_ft_price < 10000 %}text-green-600{% else %}text-orange-600{% endif %}">
+                        ({% if project.per_sq_ft_price < 10000 %}Below{% else %}Above{% endif %} {{ project.city }} avg)
+                    </span>
+                </div>
+            </div>
+            <div class="text-right">
+                <div class="text-sm font-medium text-gray-900">
+                    {{ project.total_area|indian_currency }} sq.ft
+                    {% if project.open_area %} ({{ project.open_area|indian_currency }} open){% endif %}
+                </div>
+                <div class="text-xs text-gray-500 flex items-center justify-end mt-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+                    </svg>
+                    Total Area
+                </div>
+            </div>
+        </div>
+
+        <!-- Project Highlights -->
+        <div class="mb-3 rounded-lg bg-gray-50">
+            <div class="flex flex-wrap gap-2">
+                <!-- Construction Status -->
+                <div class="flex items-center text-xs 
+                    {% if project.construction_status == 'READY_TO_MOVE' %}bg-green-100 text-green-800
+                    {% elif project.construction_status == 'UNDER_CONSTRUCTION' %}bg-orange-100 text-orange-800
+                    {% else %}bg-gray-100 text-gray-800{% endif %} 
+                    px-2 py-1 rounded">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd" />
+                    </svg>
+                    {{ project.get_construction_status_display }}
+                </div>
+                
+                <!-- Property Type -->
+                <div class="flex items-center text-xs bg-blue-100 px-2 py-1 rounded text-blue-800">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a1 1 0 110 2h-3a1 1 0 01-1-1v-2a1 1 0 00-1-1H9a1 1 0 00-1 1v2a1 1 0 01-1 1H4a1 1 0 110-2V4zm3 1h2v2H7V5zm2 4H7v2h2V9zm2-4h2v2h-2V5zm2 4h-2v2h2V9z" clip-rule="evenodd" />
+                    </svg>
+                    {{ project.get_property_type_display }}
+                </div>
+                
+                <!-- Possession Date -->
+                <div class="flex items-center text-xs bg-purple-100 px-2 py-1 rounded text-purple-800">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd" />
+                    </svg>
+                    Possession: {{ project.possession|date:"M Y" }}
+                </div>
+                
+                
+            </div>
+        </div>
+
+        <!-- Key Details Grid -->
+        <div class="grid grid-cols-3 gap-3 mb-6">
+            <!-- Towers -->
+            <div class="flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-500 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd" />
+                </svg>
+                <div>
+                    <div class="text-xs text-gray-500">Towers</div>
+                    <div class="text-sm font-medium">{{ project.total_number_of_towers|indian_currency }}</div>
+                </div>
+            </div>
+
+            <!-- Floors -->
+            <div class="flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-500 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M5 4a1 1 0 00-2 0v7.268a2 2 0 000 3.464V16a1 1 0 102 0v-1.268a2 2 0 000-3.464V4zM11 4a1 1 0 10-2 0v1.268a2 2 0 000 3.464V16a1 1 0 102 0V8.732a2 2 0 000-3.464V4zM16 3a1 1 0 011 1v7.268a2 2 0 010 3.464V16a1 1 0 11-2 0v-1.268a2 2 0 010-3.464V4a1 1 0 011-1z" />
+                </svg>
+                <div>
+                    <div class="text-xs text-gray-500">Floors</div>
+                    <div class="text-sm font-medium">{{ project.total_number_of_floors|indian_currency }}</div>
+                </div>
+            </div>
+
+            <!-- Total Units -->
+            <div class="flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-500 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" />
+                </svg>
+                <div>
+                    <div class="text-xs text-gray-500">Total Units</div>
+                    <div class="text-sm font-medium">{{ project.total_rooms|indian_currency }}</div>
+                </div>
+            </div>
+
+            <!-- Completion Year -->
+            <div class="flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-500 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd" />
+                </svg>
+                <div>
+                    <div class="text-xs text-gray-500">Completion</div>
+                    <div class="text-sm font-medium">{{ project.completion_year|date:"Y" }}</div>
+                </div>
+            </div>
+
+            <!-- Open Area -->
+            <div class="flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-500 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm3 2h6v4H7V5zm8 8v2h1v-2h-1zm-2-8h1V5h-1v2zm1 4h-1v2h1v-2zm-2 2h1v2h-1v-2zm-1-2h-1v2h1v-2zm-8 2h1v2H7v-2zm0-4h1v2H7V9z" clip-rule="evenodd" />
+                </svg>
+                <div>
+                    <div class="text-xs text-gray-500">Open Area</div>
+                    <div class="text-sm font-medium">{{ project.open_area|default:"-"|indian_currency }} sq.ft</div>
+                </div>
+            </div>
+
+            <!-- Developer -->
+            <div class="flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-500 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M6 6V5a3 3 0 013-3h2a3 3 0 013 3v1h2a2 2 0 012 2v3.57A22.952 22.952 0 0110 13a22.95 22.95 0 01-8-1.43V8a2 2 0 012-2h2zm2-1a1 1 0 011-1h2a1 1 0 011 1v1H8V5zm1 5a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1z" clip-rule="evenodd" />
+                    <path d="M2 13.692V16a2 2 0 002 2h12a2 2 0 002-2v-2.308A24.974 24.974 0 0110 15c-2.796 0-5.487-.46-8-1.308z" />
+                </svg>
+                <div>
+                    <div class="text-xs text-gray-500">Developer</div>
+                    <div class="text-sm font-medium">{{ project.developed_by }}</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Amenities Section -->
+        {% if project.amenities.exists %}
+        <div class="mb-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-3">Amenities</h3>
+            <div class="flex flex-wrap gap-2">
+                {% for amenity in project.amenities.all %}
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                    {{ amenity.name }}
+                </span>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Highlights Section -->
+        {% if project.highlights.exists %}
+        <div class="mb-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-3">Project Highlights</h3>
+            <ul class="space-y-2 flex gap-4">
+                {% for highlight in project.highlights.all %}
+                <li class="flex items-start">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500 mr-1 mt-0.5 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                    </svg>
+                    <span class="text-gray-700">{{ highlight.name }}</span>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+    
+        <!-- Action Buttons -->
+       
+        
+
+      </div>
+
+     
+
+    </div>
+  </div>
+
+  <div class="mb-6 border-b border-gray-200">
+    <ul class="flex flex-wrap -mb-px text-sm font-medium text-center" id="default-tab" data-tabs-toggle="#default-tab-content" role="tablist">
+      <!-- Overview Tab -->
+      <li class="me-2" role="presentation">
+        <button class="inline-flex items-center gap-2 p-4 border-b-2 border-transparent rounded-t-lg hover:text-blue-600 hover:border-blue-300 group" id="overview-tab" data-tabs-target="#overview" type="button" role="tab" aria-controls="overview" aria-selected="false">
+          <svg class="w-5 h-5 text-gray-400 group-hover:text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
+          </svg>
+          Overview
+        </button>
+      </li>
+  
+      <!-- Floor Plan Tab -->
+      <li class="me-2" role="presentation">
+        <button class="inline-flex items-center gap-2 p-4 border-b-2 border-transparent rounded-t-lg hover:text-blue-600 hover:border-blue-300 group" id="floorplan-tab" data-tabs-target="#floorplan" type="button" role="tab" aria-controls="floorplan" aria-selected="false">
+          <svg class="w-5 h-5 text-gray-400 group-hover:text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/>
+          </svg>
+          Floor Plan
+        </button>
+      </li>
+  
+      <!-- Amenities Tab -->
+      <li class="me-2" role="presentation">
+        <button class="inline-flex items-center gap-2 p-4 border-b-2 border-transparent rounded-t-lg hover:text-blue-600 hover:border-blue-300 group" id="amenities-tab" data-tabs-target="#amenities" type="button" role="tab" aria-controls="amenities" aria-selected="false">
+          <svg class="w-5 h-5 text-gray-400 group-hover:text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/>
+          </svg>
+          Amenities
+        </button>
+      </li>
+  
+      <!-- Specifications Tab -->
+      <li class="me-2" role="presentation">
+        <button class="inline-flex items-center gap-2 p-4 border-b-2 border-transparent rounded-t-lg hover:text-blue-600 hover:border-blue-300 group" id="specifications-tab" data-tabs-target="#specifications" type="button" role="tab" aria-controls="specifications" aria-selected="false">
+          <svg class="w-5 h-5 text-gray-400 group-hover:text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+          </svg>
+          Specifications
+        </button>
+      </li>
+  
+      <!-- Location Tab -->
+      <li class="me-2" role="presentation">
+        <button class="inline-flex items-center gap-2 p-4 border-b-2 border-transparent rounded-t-lg hover:text-blue-600 hover:border-blue-300 group" id="location-tab" data-tabs-target="#location" type="button" role="tab" aria-controls="location" aria-selected="false">
+          <svg class="w-5 h-5 text-gray-400 group-hover:text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+          </svg>
+          Location
+        </button>
+      </li>
+  
+      <!-- Gallery Tab -->
+      <li class="me-2" role="presentation">
+        <button class="inline-flex items-center gap-2 p-4 border-b-2 border-transparent rounded-t-lg hover:text-blue-600 hover:border-blue-300 group" id="gallery-tab" data-tabs-target="#gallery" type="button" role="tab" aria-controls="gallery" aria-selected="false">
+          <svg class="w-5 h-5 text-gray-400 group-hover:text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+          </svg>
+          Gallery
+        </button>
+      </li>
+  
+      <!-- Reviews Tab -->
+      <li role="presentation">
+        <button class="inline-flex items-center gap-2 p-4 border-b-2 border-transparent rounded-t-lg hover:text-blue-600 hover:border-blue-300 group" id="reviews-tab" data-tabs-target="#reviews" type="button" role="tab" aria-controls="reviews" aria-selected="false">
+          <svg class="w-5 h-5 text-gray-400 group-hover:text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
+          </svg>
+          Reviews
+        </button>
+      </li>
+    </ul>
+  </div>
+
+  <div id="default-tab-content" class="mb-8">
+
+    <div class="hidden p-4 rounded-xl shadow-md bg-white border border-blue-200" id="overview" role="tabpanel" aria-labelledby="overview-tab">
+
+      <!-- Project Description Section -->
+      <div class="overflow-hidden mb-8">
+        <!-- Header with RERA badge -->
+        <div class="px-6 py-4 border-b border-gray-100 bg-blue-50/50">
+          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <h3 class="text-2xl font-bold text-gray-800">About {{ project.name }}</h3>
+            {% if project.rera_approved %}
+            <div class="flex items-center">
+              <span class="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium bg-blue-100 text-blue-800 border border-blue-200">
+                <svg class="w-4 h-4 mr-1.5 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                </svg>
+                RERA Approved
+              </span>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+        
+        <!-- Main Description -->
+        <div class="px-6 py-4">
+          <div class="prose max-w-none text-gray-600 mb-6 pl-4">
+            {{ project.description|safe }}
+          </div>
+          
+         
+          <!-- Modern Pros & Cons Section -->
+          <div class="mt-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <!-- Advantages Card -->
+              <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow duration-300">
+                <div class="bg-gradient-to-r from-blue-50 to-indigo-50 px-6 py-4 border-b border-gray-200">
+                  <div class="flex items-center gap-3">
+                    <div class="bg-blue-100 p-2 rounded-lg">
+                      <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                      </svg>
+                    </div>
+                    <h4 class="text-lg font-semibold text-gray-800">Key Advantages</h4>
+                  </div>
+                </div>
+                <div class="p-6">
+                  {% if project.advantages %}
+                    <div class="prose prose-blue max-w-none text-gray-700">
+                      {{ project.advantages|linebreaks }}
+                    </div>
+                  {% else %}
+                    <div class="text-gray-400 italic py-2">No advantages information provided</div>
+                  {% endif %}
+                </div>
+              </div>
+
+              <!-- Considerations Card -->
+              <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow duration-300">
+                <div class="bg-gradient-to-r from-rose-50 to-pink-50 px-6 py-4 border-b border-gray-200">
+                  <div class="flex items-center gap-3">
+                    <div class="bg-rose-100 p-2 rounded-lg">
+                      <svg class="w-5 h-5 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                      </svg>
+                    </div>
+                    <h4 class="text-lg font-semibold text-gray-800">Important Considerations</h4>
+                  </div>
+                </div>
+                <div class="p-6">
+                  {% if project.disadvantages %}
+                    <div class="prose prose-rose max-w-none text-gray-700">
+                      {{ project.disadvantages|linebreaks }}
+                    </div>
+                  {% else %}
+                    <div class="text-gray-400 italic py-2">No considerations information provided</div>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+        
+
+      </div>
+
+      <!-- Project Phases Section -->
+      {% if project.phases.all %}
+      <div class=" p-4 mt-6 border-b border-blue-200">
+        <h3 class="text-2xl font-bold text-gray-800 mb-6">Project Phases</h3>
+        
+        <div class="overflow-x-auto">
+          <table class="w-full divide-y divide-gray-200">
+            <thead class="bg-blue-50">
+              <tr>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-blue-700 uppercase tracking-wider">Phase</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-blue-700 uppercase tracking-wider">Towers</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-blue-700 uppercase tracking-wider">Status</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-blue-700 uppercase tracking-wider">Possession</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-blue-700 uppercase tracking-wider">Configurations</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-blue-700 uppercase tracking-wider">Price Range</th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+              {% for phase in project.phases.all %}
+              <tr class="hover:bg-blue-50 transition-colors duration-150">
+                <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">{{ phase.phase_name }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-gray-600">{{ phase.number_of_towers }}</td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  {% with status=phase.construction_status %}
+                  <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full 
+                      {% if status == 'READY_TO_MOVE' %}bg-green-100 text-green-800
+                      {% elif status == 'UNDER_CONSTRUCTION' %}bg-yellow-100 text-yellow-800
+                      {% elif status == 'UPCOMING' %}bg-blue-100 text-blue-800
+                      {% else %}bg-gray-100 text-gray-800{% endif %}">
+                    {{ phase.get_construction_status_display }}
+                  </span>
+                  {% endwith %}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-gray-600">{{ phase.possession|date:"M Y"|default:"-" }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-gray-600">{{ phase.get_number_of_bedrooms_display }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-gray-600">
+                  ₹{{ project.price_range_start|floatformat:"0"|intcomma }} - ₹{{ project.price_range_end|floatformat:"0"|intcomma }}
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        
+        <div class="mt-4 text-sm text-gray-500">
+          <p>Note: Prices are indicative and may vary based on floor, view, and other factors.</p>
+        </div>
+      </div>
+      {% endif %}
+
+
+      <!-- Developer Info Section -->
+      <div class="p-4 mt-8">
+        <h3 class="text-2xl font-semibold text-gray-800 mb-6">About the Developer</h3>
+        
+        <div class="flex flex-col md:flex-row gap-6">
+          <!-- Developer Logo/Placeholder -->
+          <div class="md:w-1/4">
+            <div class="w-full aspect-square bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl overflow-hidden flex items-center justify-center shadow-inner">
+              <svg class="w-1/3 h-1/3 text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+              </svg>
+            </div>
+          </div>
+          
+          <!-- Developer Details -->
+          <div class="md:w-3/4">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+              <div>
+                <h4 class="text-xl font-semibold text-gray-800">{{ project.developed_by }}</h4>
+                
+                {% if project.completion_year or project.city %}
+                <div class="flex items-center gap-2 mt-1 text-sm text-gray-600">
+                  {% if project.completion_year %}
+                  <span>Est. {{ project.completion_year|date:"Y" }}</span>
+                  {% endif %}
+                  {% if project.city %}
+                  <span>•</span>
+                  <span>Based in {{ project.city }}{% if project.state %}, {{ project.state }}{% endif %}</span>
+                  {% endif %}
+                </div>
+                {% endif %}
+              </div>
+              
+              <a href="#contact-developer" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 text-sm font-medium">
+                Contact Developer
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                </svg>
+              </a>
+            </div>
+            
+            <!-- Developer Description -->
+            <div class="mt-4">
+              {% if project.description %}
+              <p class="text-gray-600 leading-relaxed">
+                {{ project.developed_by }} is a {% if project.completion_year %}developer established in {{ project.completion_year|date:"Y" }}{% else %}renowned real estate developer{% endif %} specializing in 
+                {% if project.property_type != 'OTHER' %}
+                {{ project.get_property_type_display }} projects{% if project.city %} in {{ project.city }}{% endif %}.
+                {% else %}
+                premium real estate developments{% if project.city %} across {{ project.city }}{% endif %}.
+                {% endif %}
+                
+                {% if project.highlights.all %}
+                Their projects are known for features like {{ project.highlights.all.0.name }}{% if project.highlights.all.1 %}, {{ project.highlights.all.1.name }}{% if project.highlights.all.2 %}, and {{ project.highlights.all.2.name }}{% endif %}{% endif %}.
+                {% endif %}
+              </p>
+              {% else %}
+              <p class="text-gray-600 leading-relaxed">
+                {{ project.developed_by }} is a reputable real estate developer with a portfolio of quality projects. 
+                {% if project.city %}Based in {{ project.city }}{% if project.state %}, {{ project.state }}{% endif %}, {% endif %}
+                they focus on delivering modern living spaces with attention to detail and timely delivery.
+              </p>
+              {% endif %}
+            </div>
+            
+            <!-- Developer Stats -->
+            <div class="mt-6 grid grid-cols-2 md:grid-cols-4 gap-3">
+              {% if project.rera_approved %}
+              <div class="bg-blue-50 p-3 rounded-lg border border-blue-100">
+                <p class="text-xs text-blue-600 font-medium">RERA Approved</p>
+                <p class="text-lg font-semibold text-gray-800">Yes</p>
+              </div>
+              {% endif %}
+              
+              <div class="bg-blue-50 p-3 rounded-lg border border-blue-100">
+                <p class="text-xs text-blue-600 font-medium">Project Status</p>
+                <p class="text-lg font-semibold text-gray-800">{{ project.get_construction_status_display }}</p>
+              </div>
+              
+              {% if project.possession %}
+              <div class="bg-blue-50 p-3 rounded-lg border border-blue-100">
+                <p class="text-xs text-blue-600 font-medium">Possession</p>
+                <p class="text-lg font-semibold text-gray-800">{{ project.possession|date:"M Y" }}</p>
+              </div>
+              {% endif %}
+              
+              {% if project.total_number_of_towers %}
+              <div class="bg-blue-50 p-3 rounded-lg border border-blue-100">
+                <p class="text-xs text-blue-600 font-medium">Total Towers</p>
+                <p class="text-lg font-semibold text-gray-800">{{ project.total_number_of_towers }}</p>
+              </div>
+              {% endif %}
+            </div>
+            
+          
+          </div>
+        </div>
+      </div>
+
+
+
+
+    </div>
+
+   
+    <div class="hidden p-4 bg-white rounded-xl shadow-md border border-blue-200" id="floorplan" role="tabpanel" aria-labelledby="floorplan-tab">
+      {% if project.floor_plans.all %}
+        <div class=" p-4 ">
+          <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6 border-b border-blue-200 pb-4">
+            <h3 class="text-2xl font-bold text-gray-800">Available Floor Plans</h3>
+            <div class="mt-2 md:mt-0">
+              <label for="sort-plans" class="sr-only">Sort by</label>
+              <select id="sort-plans" class="block w-full md:w-auto pl-3 pr-10 py-2 text-base border border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
+                <option>Sort by Size</option>
+                <option>Sort by Price</option>
+                <option>Sort by Bedrooms</option>
+              </select>
+            </div>
+          </div>
+
+      
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for plan in project.floor_plans.all %}
+            <div class="border border-gray-200 rounded-xl overflow-hidden hover:shadow-md transition-all duration-200">
+              <!-- Plan Image -->
+              <div class="h-56 bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center p-4 relative">
+                <svg xmlns="http://www.w3.org/2000/svg" width="254" height="254" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-layout-template-icon lucide-layout-template text-blue-300">
+                  <rect width="18" height="7" x="3" y="3" rx="1"/>
+                  <rect width="9" height="7" x="3" y="14" rx="1"/>
+                  <rect width="5" height="7" x="16" y="14" rx="1"/>
+                </svg>
+                
+                <div class="absolute top-3 right-3 bg-blue-500 text-white px-2 py-1 rounded-md shadow-sm text-sm font-medium">
+                  {{ plan.get_construction_status_display|default:"Available" }}
+                </div>
+              </div>
+              
+              <!-- Plan Details -->
+              <div class="p-5">
+                <div class="flex justify-between items-start">
+                  <h4 class="font-bold text-lg text-gray-800">{{ plan.get_number_of_bedrooms_display }}</h4>
+                  {% if plan.price %}
+                  <span class="bg-blue-100 text-blue-800 text-sm font-semibold px-2 py-1 rounded">
+                    ₹{{ plan.price|floatformat:"0"|intcomma }}
+                  </span>
+                  {% else %}
+                  <span class="text-sm text-gray-500">Price on request</span>
+                  {% endif %}
+                </div>
+                
+                <!-- Key Metrics -->
+                <div class="grid grid-cols-2 gap-4 mt-4">
+                  <div>
+                    <p class="text-xs text-gray-500 font-medium">Carpet Area</p>
+                    <p class="font-semibold text-gray-800">{{ plan.carpet_area|floatformat:"0"|intcomma }} sq.ft</p>
+                  </div>
+                  <div>
+                    <p class="text-xs text-gray-500 font-medium">Price/sq.ft</p>
+                    <p class="font-semibold text-gray-800">
+                      {% if plan.price and plan.carpet_area %}
+                      ₹{{ plan.price|floatformat:"0"|intcomma}} / {{plan.carpet_area|floatformat:"0"|intcomma }}
+                      {% else %}
+                      -
+                      {% endif %}
+                    </p>
+                  </div>
+                </div>
+                
+                <!-- Area Breakdown (collapsible) -->
+                <div class="mt-4">
+                  <button type="button" 
+                          class="area-details-toggle flex items-center text-blue-600 hover:text-blue-800 text-sm font-medium w-full text-left"
+                          aria-expanded="false"
+                          aria-controls="area-details-{{ forloop.counter }}"
+                          data-target="area-details-{{ forloop.counter }}">
+                    <span>View area details</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1 transition-transform duration-200 transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+        
+                  <div id="area-details-{{ forloop.counter }}" 
+                      class="area-details-content hidden mt-3 text-sm overflow-hidden transition-all duration-200 ease-in-out max-h-0"
+                      aria-labelledby="area-details-heading-{{ forloop.counter }}">
+                    <div class="space-y-2 pt-1">
+                      {% if plan.living_dining_area_length and plan.living_dining_area_breadth %}
+                      <div class="flex justify-between">
+                        <span class="text-gray-600">Living/Dining</span>
+                        <span class="font-medium">{{ plan.living_dining_area_length|floatformat }} × {{ plan.living_dining_area_breadth|floatformat }} ft</span>
+                      </div>
+                      {% endif %}
+                      {% if plan.kitchen_area_length and plan.kitchen_area_breadth %}
+                      <div class="flex justify-between">
+                        <span class="text-gray-600">Kitchen</span>
+                        <span class="font-medium">{{ plan.kitchen_area_length|floatformat }} × {{ plan.kitchen_area_breadth|floatformat }} ft</span>
+                      </div>
+                      {% endif %}
+                      {% if plan.bedroom_area_length and plan.bedroom_area_breadth %}
+                      <div class="flex justify-between">
+                        <span class="text-gray-600">Bedroom</span>
+                        <span class="font-medium">{{ plan.bedroom_area_length|floatformat }} × {{ plan.bedroom_area_breadth|floatformat }} ft</span>
+                      </div>
+                      {% endif %}
+                      {% if plan.toilet_area_length and plan.toilet_area_breadth %}
+                      <div class="flex justify-between">
+                        <span class="text-gray-600">Toilet</span>
+                        <span class="font-medium">{{ plan.toilet_area_length|floatformat }} × {{ plan.toilet_area_breadth|floatformat }} ft</span>
+                      </div>
+                      {% endif %}
+                      {% if plan.bathroom_area_length and plan.bathroom_area_breadth %}
+                      <div class="flex justify-between">
+                        <span class="text-gray-600">Bathroom</span>
+                        <span class="font-medium">{{ plan.bathroom_area_length|floatformat }} × {{ plan.bathroom_area_breadth|floatformat }} ft</span>
+                      </div>
+                      {% endif %}
+                      {% if plan.utility_area_length and plan.utility_area_breadth %}
+                      <div class="flex justify-between">
+                        <span class="text-gray-600">Utility</span>
+                        <span class="font-medium">{{ plan.utility_area_length|floatformat }} × {{ plan.utility_area_breadth|floatformat }} ft</span>
+                      </div>
+                      {% endif %}
+                      {% if plan.wardrobe_area_length and plan.wardrobe_area_breadth %}
+                      <div class="flex justify-between">
+                        <span class="text-gray-600">Wardrobe</span>
+                        <span class="font-medium">{{ plan.wardrobe_area_length|floatformat }} × {{ plan.wardrobe_area_breadth|floatformat }} ft</span>
+                      </div>
+                      {% endif %}
+                      {% if plan.foyer_area_length and plan.foyer_area_breadth %}
+                      <div class="flex justify-between">
+                        <span class="text-gray-600">Foyer</span>
+                        <span class="font-medium">{{ plan.foyer_area_length|floatformat }} × {{ plan.foyer_area_breadth|floatformat }} ft</span>
+                      </div>
+                      {% endif %}
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- CTA Buttons -->
+                <div class="mt-6 grid grid-cols-2 gap-3">
+                  <button type="button" class="py-2 px-4 border border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50 transition-colors duration-200 text-sm font-medium">
+                    Enquire Now
+                  </button>
+                  <button type="button" class="py-2 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 text-sm font-medium">
+                    Download Plan
+                  </button>
+                </div>
+                
+                {% if plan.possession %}
+                <div class="mt-4 flex items-center text-sm text-gray-500 gap-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  Possession: {{ plan.possession|date:"M Y" }}
+                </div>
+                {% endif %}
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+        
+        <script>
+          document.addEventListener('DOMContentLoaded', function() {
+            // Handle area details toggle
+            const toggleButtons = document.querySelectorAll('.area-details-toggle');
+            
+            toggleButtons.forEach(button => {
+              button.addEventListener('click', function() {
+                const targetId = this.getAttribute('data-target');
+                const content = document.getElementById(targetId);
+                const isExpanded = this.getAttribute('aria-expanded') === 'true';
+                
+                // Toggle aria-expanded state
+                this.setAttribute('aria-expanded', !isExpanded);
+                
+                // Toggle icon rotation
+                const icon = this.querySelector('svg');
+                icon.classList.toggle('rotate-180');
+                
+                // Toggle content visibility with smooth animation
+                if (isExpanded) {
+                  content.classList.add('hidden');
+                  content.style.maxHeight = '0';
+                } else {
+                  content.classList.remove('hidden');
+                  content.style.maxHeight = content.scrollHeight + 'px';
+                }
+              });
+              
+              // Initialize hidden state
+              const targetId = button.getAttribute('data-target');
+              const content = document.getElementById(targetId);
+              content.style.maxHeight = '0';
+            });
+          });
+        </script>
+        
+        <style>
+          .area-details-toggle svg.rotate-180 {
+            transform: rotate(180deg);
+          }
+          
+          .area-details-content {
+            transition: max-height 0.3s ease-in-out, opacity 0.2s ease-in-out;
+          }
+        </style>
+      {% else %}
+        <div class="bg-white rounded-xl shadow-sm p-8 text-center border border-gray-100">
+          <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+          </svg>
+          <h3 class="mt-3 text-lg font-medium text-gray-900">No floor plans available yet</h3>
+          <p class="mt-2 text-gray-500">We're currently preparing the detailed floor plans for this project.</p>
+          <div class="mt-6">
+            <button type="button" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+              <svg xmlns="http://www.w3.org/2000/svg" class="-ml-1 mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              </svg>
+              Notify me when available
+            </button>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+
+
+    <div class="hidden p-4 bg-white rounded-xl shadow-md border border-blue-200" id="amenities" role="tabpanel" aria-labelledby="amenities-tab">
+      <div class="bg-white p-4 md:p-6 ">
+          <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-8 gap-4 border-b pb-2 border-blue-200">
+              <div>
+                  <h3 class="text-2xl font-bold text-gray-800">Project Amenities</h3>
+                  <p class="text-gray-500 mt-1">Premium facilities designed for modern living</p>
+              </div>
+              <div class="flex items-center gap-2">
+                  <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd" />
+                      </svg>
+                      {{ project.amenities.all|length }} Amenities
+                  </span>
+              </div>
+          </div>
+
+          
+          {% if project.amenities.all %}
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-4">
+              {% for amenity in project.amenities.all %}
+              <div class="group relative overflow-hidden rounded-xl border border-gray-200 bg-white p-4 transition-all duration-200 hover:shadow-md hover:border-blue-200">
+                  <div class="absolute right-5 top-5 ">
+                      <div class="flex h-10 w-10 items-center justify-center rounded-full bg-blue-50 text-blue-600 transition-all duration-200 group-hover:bg-blue-100 ">
+                          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                              <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                          </svg>
+                      </div>
+                  </div>
+                  
+                  <div class="mt-12">
+                      <h4 class="text-lg font-semibold text-gray-800">{{ amenity.name }}</h4>
+                   
+                  </div>
+              </div>
+              {% endfor %}
+          </div>
+          
+          <div class="mt-10 bg-blue-50 rounded-xl p-4 md:p-6 border border-blue-100">
+              <div class="flex flex-col md:flex-row md:items-center gap-6">
+                  <div class="flex-shrink-0">
+                      <div class="flex h-12 w-12 items-center justify-center rounded-full bg-blue-100 text-blue-600">
+                          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                      </div>
+                  </div>
+                  <div>
+                      <h4 class="text-lg font-medium text-gray-800">Premium Amenities</h4>
+                      <p class="mt-1 text-gray-600">All amenities are maintained to the highest standards and available for residents 24/7. Some facilities may have scheduled maintenance periods.</p>
+                  </div>
+              </div>
+          </div>
+          {% else %}
+          <div class="text-center py-12">
+              <div class="mx-auto h-24 w-24 flex items-center justify-center rounded-full bg-blue-50 text-blue-600">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                  </svg>
+              </div>
+              <h3 class="mt-6 text-lg font-medium text-gray-800">Amenities Coming Soon</h3>
+              <p class="mt-2 text-gray-500 max-w-md mx-auto">We're currently finalizing our world-class amenities package. Check back soon or contact us for preliminary information.</p>
+              <div class="mt-6">
+                  <button type="button" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="-ml-1 mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                      </svg>
+                      Get Amenities List
+                  </button>
+              </div>
+          </div>
+          {% endif %}
+      </div>
+    </div>
+
+
+    <div class="hidden p-4 bg-white rounded-xl shadow-md border border-blue-200" id="specifications" role="tabpanel" aria-labelledby="specifications-tab">
+      <div class="bg-white p-4 md:p-6 ">
+          <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
+              <h3 class="text-2xl font-bold text-gray-800">Project Specifications</h3>
+              <div class="flex items-center gap-2 mt-2 md:mt-0">
+                  <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                          <path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd" />
+                      </svg>
+                      Technical Details
+                  </span>
+              </div>
+          </div>
+          
+          <div class="space-y-8">
+              <!-- Basic Project Info -->
+              <div>
+                  <h4 class="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-100">Project Overview</h4>
+                  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      <div class="bg-gray-50 p-4 rounded-lg border border-gray-100">
+                          <p class="text-sm text-gray-500 mb-1">Project Type</p>
+                          <p class="font-medium text-gray-800">{{ project.get_project_type_display }}</p>
+                      </div>
+                      <div class="bg-gray-50 p-4 rounded-lg border border-gray-100">
+                          <p class="text-sm text-gray-500 mb-1">Property Type</p>
+                          <p class="font-medium text-gray-800">{{ project.get_property_type_display }}</p>
+                      </div>
+                      <div class="bg-gray-50 p-4 rounded-lg border border-gray-100">
+                          <p class="text-sm text-gray-500 mb-1">Construction Status</p>
+                          <p class="font-medium text-gray-800">{{ project.get_construction_status_display }}</p>
+                      </div>
+                      <div class="bg-gray-50 p-4 rounded-lg border border-gray-100">
+                          <p class="text-sm text-gray-500 mb-1">Total Area</p>
+                          <p class="font-medium text-gray-800">{{ project.total_area|indian_currency }} sq.ft</p>
+                      </div>
+                      <div class="bg-gray-50 p-4 rounded-lg border border-gray-100">
+                          <p class="text-sm text-gray-500 mb-1">Total Towers</p>
+                          <p class="font-medium text-gray-800">{{ project.total_number_of_towers|indian_currency }}</p>
+                      </div>
+                      <div class="bg-gray-50 p-4 rounded-lg border border-gray-100">
+                          <p class="text-sm text-gray-500 mb-1">Total Floors</p>
+                          <p class="font-medium text-gray-800">{{ project.total_number_of_floors|indian_currency }}</p>
+                      </div>
+                  </div>
+              </div>
+
+              <!-- Amenities Section -->
+              {% if project.amenities.all %}
+              <div>
+                  <h4 class="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-100">Key Amenities</h4>
+                  <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                      {% for amenity in project.amenities.all %}
+                      <div class="flex items-center gap-2 p-3 bg-blue-50 rounded-lg border border-blue-100">
+                          <div class="bg-blue-100 p-2 rounded-full text-blue-600">
+                              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                              </svg>
+                          </div>
+                          <span class="text-sm font-medium text-gray-700">{{ amenity.name }}</span>
+                      </div>
+                      {% endfor %}
+                  </div>
+              </div>
+              {% endif %}
+
+              <!-- Construction Details -->
+              <div>
+                  <h4 class="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-100">Construction Specifications</h4>
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {% for phase in project.phases.all %}
+                      <div class="bg-gray-50 p-5 rounded-lg border border-gray-200">
+                          <div class="flex justify-between items-start mb-3">
+                              <h5 class="font-semibold text-gray-800">{{ phase.phase_name }}</h5>
+                              <span class="text-xs px-2 py-1 bg-blue-100 text-blue-800 rounded-full">{{ phase.get_construction_status_display }}</span>
+                          </div>
+                          <div class="grid grid-cols-2 gap-3">
+                              <div>
+                                  <p class="text-xs text-gray-500">Bedrooms</p>
+                                  <p class="text-sm font-medium text-gray-800">{{ phase.get_number_of_bedrooms_display }}</p>
+                              </div>
+                              <div>
+                                  <p class="text-xs text-gray-500">Towers</p>
+                                  <p class="text-sm font-medium text-gray-800">{{ phase.number_of_towers|indian_currency }}</p>
+                              </div>
+                              <div>
+                                  <p class="text-xs text-gray-500">Possession</p>
+                                  <p class="text-sm font-medium text-gray-800">{{ phase.possession|date:"M Y" }}</p>
+                              </div>
+                              <div>
+                                  <p class="text-xs text-gray-500">Completion</p>
+                                  <p class="text-sm font-medium text-gray-800">{{ phase.completion_year|date:"Y" }}</p>
+                              </div>
+                          </div>
+                      </div>
+                      {% endfor %}
+                  </div>
+              </div>
+
+              <!-- Floor Plans Summary -->
+              {% if project.floor_plans.all %}
+              <div>
+                  <h4 class="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-100">Available Configurations</h4>
+                  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {% for plan in project.floor_plans.all %}
+                      <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                          <div class="flex justify-between items-start mb-2">
+                              <h5 class="font-semibold text-gray-800">{{ plan.get_number_of_bedrooms_display }}</h5>
+                              {% if plan.price %}
+                              <span class="text-sm font-medium bg-blue-100 text-blue-800 px-2 py-1 rounded">
+                                  ₹{{ plan.price|indian_currency }}
+                              </span>
+                              {% endif %}
+                          </div>
+                          <div class="grid grid-cols-2 gap-2">
+                              <div>
+                                  <p class="text-xs text-gray-500">Carpet Area</p>
+                                  <p class="text-sm font-medium text-gray-800">{{ plan.carpet_area|indian_currency }} sq.ft</p>
+                              </div>
+                              <div>
+                                  <p class="text-xs text-gray-500">Status</p>
+                                  <p class="text-sm font-medium text-gray-800">{{ plan.get_construction_status_display|default:"Available" }}</p>
+                              </div>
+                          </div>
+                      </div>
+                      {% endfor %}
+                  </div>
+              </div>
+              {% endif %}
+
+              <!-- Nearby Places -->
+              {% if project.nearby_places.all %}
+              <div>
+                  <h4 class="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-100">Nearby Locations</h4>
+                  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                      {% for place in project.nearby_places.all %}
+                      <div class="flex items-start gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
+                          <div class="bg-blue-100 p-2 rounded-full text-blue-600 mt-0.5">
+                              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                              </svg>
+                          </div>
+                          <div>
+                              <p class="font-medium text-gray-800">{{ place.name }}</p>
+                              <p class="text-sm text-gray-600">{{ place.distance }} km from project</p>
+                          </div>
+                      </div>
+                      {% endfor %}
+                  </div>
+              </div>
+              {% endif %}
+
+              <!-- Additional Information -->
+              <div>
+                  <h4 class="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-100">Additional Details</h4>
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div class="space-y-4">
+                          <div>
+                              <h5 class="font-medium text-gray-800 mb-2 flex items-center gap-2">
+                                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-600" viewBox="0 0 20 20" fill="currentColor">
+                                      <path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd" />
+                                  </svg>
+                                  Project Highlights
+                              </h5>
+                              {% if project.highlights.all %}
+                              <ul class="list-disc pl-5 space-y-1 text-gray-700">
+                                  {% for highlight in project.highlights.all %}
+                                  <li>{{ highlight.name }}</li>
+                                  {% endfor %}
+                              </ul>
+                              {% else %}
+                              <p class="text-gray-500 text-sm">No highlights specified</p>
+                              {% endif %}
+                          </div>
+                      </div>
+                      <div class="space-y-4">
+                          <div>
+                              <h5 class="font-medium text-gray-800 mb-2 flex items-center gap-2">
+                                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-600" viewBox="0 0 20 20" fill="currentColor">
+                                      <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                                  </svg>
+                                  Key Information
+                              </h5>
+                              <div class="space-y-2">
+                                  <div class="flex justify-between border-b border-gray-100 pb-2">
+                                      <span class="text-sm text-gray-500">RERA Approved</span>
+                                      <span class="text-sm font-medium text-gray-800">
+                                          {% if project.rera_approved %}Yes{% else %}No{% endif %}
+                                      </span>
+                                  </div>
+                                  <div class="flex justify-between border-b border-gray-100 pb-2">
+                                      <span class="text-sm text-gray-500">Price Range</span>
+                                      <span class="text-sm font-medium text-gray-800">
+                                          ₹{{ project.price_range_start|indian_currency }} - ₹{{ project.price_range_end|indian_currency }}
+                                      </span>
+                                  </div>
+                                  <div class="flex justify-between border-b border-gray-100 pb-2">
+                                      <span class="text-sm text-gray-500">Price per sq.ft</span>
+                                      <span class="text-sm font-medium text-gray-800">
+                                          ₹{{ project.per_sq_ft_price|indian_currency }}
+                                      </span>
+                                  </div>
+                                  <div class="flex justify-between border-b border-gray-100 pb-2">
+                                      <span class="text-sm text-gray-500">Developed By</span>
+                                      <span class="text-sm font-medium text-gray-800">{{ project.developed_by }}</span>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+    </div>  
+
+    <div id="location" role="tabpanel" aria-labelledby="location-tab"
+        class="hidden p-6 bg-white rounded-2xl shadow-lg border border-blue-200">
+        <div class="space-y-6">
+            <!-- Header -->
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 p-2">
+                <div>
+                    <h3 class="text-2xl font-bold text-gray-800">Project Location</h3>
+                    <p class="text-gray-500 mt-1 text-sm">Exact location and neighborhood details</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span
+                        class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20"
+                            fill="currentColor">
+                            <path fill-rule="evenodd"
+                                d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
+                                clip-rule="evenodd" />
+                        </svg>
+                        {{ project.city }}, {{ project.state }}
+                    </span>
+                </div>
+            </div>
+
+            <!-- Content -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 pb-2">
+                <!-- Details Section -->
+                <div class="col-span-1">
+                    <div class="bg-gray-50 p-6 rounded-xl border border-gray-200 space-y-6">
+                        <!-- Address -->
+                        <div>
+                            <h4 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                                <svg xmlns="http://www.w3.org/2000/svg"
+                                    class="h-5 w-5 text-blue-600" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                                Address
+                            </h4>
+                            <div class="pl-6 space-y-1 text-sm">
+                                <p class="text-gray-800">{{ project.address }}</p>
+                                <p class="text-gray-600">{{ project.locality }}, {{ project.city }}</p>
+                                <p class="text-gray-600">{{ project.district }}, {{ project.state }}</p>
+                                {% if project.landmark %}
+                                <p class="text-gray-500">
+                                    <span class="font-medium">Landmark:</span> {{ project.landmark }}
+                                </p>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Distance from Key Locations -->
+                        <div>
+                            <h4 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                                <svg xmlns="http://www.w3.org/2000/svg"
+                                    class="h-5 w-5 text-blue-600" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                Nearby Locations
+                            </h4>
+                            {% if project.nearby_places.all %}
+                            <ul class="pl-6 space-y-3 text-sm">
+                                {% for place in project.nearby_places.all %}
+                                <li class="flex justify-between">
+                                    <span class="text-gray-700">{{ place.name }}</span>
+                                    <span class="font-semibold text-blue-600">{{ place.distance }} km</span>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                            {% else %}
+                            <p class="text-gray-500 text-sm pl-6">No nearby places information available</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Map Section -->
+                <div class="col-span-1 lg:col-span-2">
+                    <div class="h-full w-full rounded-xl overflow-hidden border border-gray-200 shadow">
+                        <iframe width="100%" height="100%" class="h-96 rounded-xl"
+                            style="border:0"
+                            loading="lazy"
+                            allowfullscreen
+                            referrerpolicy="no-referrer-when-downgrade"
+                            src="https://www.google.com/maps/embed/v1/place?key=AIzaSyAJa7iVBFa8em-DOHg-26Rwx96qvFAgWBo&q={{ project.address | urlencode }},{{ project.city | urlencode }},{{ project.state | urlencode }}">
+                        </iframe>
+                    </div>
+                    <p class="text-xs text-gray-400 mt-2">* Map is a static preview based on the provided address.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="hidden p-4 bg-white rounded-xl shadow-md border border-blue-200" id="gallery" role="tabpanel" aria-labelledby="gallery-tab">
+      <div class="p-4 md:p-6 ">
+          <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4">
+              <div>
+                  <h3 class="text-2xl font-bold text-gray-800">Project Gallery</h3>
+                  <p class="text-gray-500 mt-1">Visual showcase of {{ project.name }}</p>
+              </div>
+              <div class="flex items-center gap-2">
+                  <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="4" height="4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-images-icon lucide-images w-4 h-4 mr-1"><path d="M18 22H4a2 2 0 0 1-2-2V6"/><path d="m22 13-1.296-1.296a2.41 2.41 0 0 0-3.408 0L11 18"/><circle cx="12" cy="8" r="2"/><rect width="16" height="16" x="6" y="2" rx="2"/></svg>
+                      {{ project.media.count }} Media Items
+                  </span>
+              </div>
+          </div>
+
+          {% if project.media.all %}
+        <!-- Media Type Tabs with Professional Active State -->
+          <div class="mb-8">
+            <div class="border-b border-gray-200">
+                <div class="flex flex-wrap -mb-px space-x-1">
+                    <button class="media-tab active px-5 py-3 text-sm font-semibold transition-all duration-200 ease-in-out relative" data-tab="images">
+                        <span class="relative z-10">Images</span>
+                        <span class="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600 transition-all duration-200"></span>
+                    </button>
+                    <button class="media-tab px-5 py-3 text-sm font-semibold text-gray-500 hover:text-gray-700 transition-all duration-200 ease-in-out relative" data-tab="videos">
+                        <span class="relative z-10">Videos</span>
+                        <span class="absolute bottom-0 left-0 right-0 h-0.5 bg-transparent transition-all duration-200"></span>
+                    </button>
+                    <button class="media-tab px-5 py-3 text-sm font-semibold text-gray-500 hover:text-gray-700 transition-all duration-200 ease-in-out relative" data-tab="documents">
+                        <span class="relative z-10">Documents</span>
+                        <span class="absolute bottom-0 left-0 right-0 h-0.5 bg-transparent transition-all duration-200"></span>
+                    </button>
+                </div>
+            </div>
+          </div>
+
+          <style>
+            .media-tab {
+                position: relative;
+                color: #4b5563; /* gray-600 */
+                margin-bottom: -1px;
+            }
+            
+            .media-tab.active {
+                color: #2563eb; /* blue-600 */
+            }
+            
+            .media-tab:not(.active):hover {
+                color: #374151; /* gray-700 */
+            }
+            
+            /* Optional: Add background color change on active */
+            .media-tab.active {
+                background-color: #f8fafc; /* blue-50 */
+                border-top-left-radius: 0.375rem;
+                border-top-right-radius: 0.375rem;
+            }
+            
+            /* Optional: Add subtle shadow to active tab */
+            .media-tab.active {
+                box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+            }
+          </style>
+
+          <script>
+            // Enhanced Tab Switching with Smooth Transitions
+            document.querySelectorAll('.media-tab').forEach(tab => {
+                tab.addEventListener('click', (e) => {
+                    // Prevent default if it's a button (not necessary for buttons but good practice)
+                    e.preventDefault();
+                    
+                    // Get all tabs and content areas
+                    const allTabs = document.querySelectorAll('.media-tab');
+                    const allContents = document.querySelectorAll('.media-content');
+                    
+                    // Remove active classes with transition
+                    allTabs.forEach(t => {
+                        t.classList.remove('active');
+                        t.querySelector('span:last-child').classList.remove('bg-blue-600');
+                        t.querySelector('span:last-child').classList.add('bg-transparent');
+                    });
+                    
+                    allContents.forEach(c => {
+                        c.style.opacity = '0';
+                        setTimeout(() => {
+                            c.classList.remove('active');
+                        }, 150);
+                    });
+                    
+                    // Add active class to clicked tab
+                    tab.classList.add('active');
+                    tab.querySelector('span:last-child').classList.add('bg-blue-600');
+                    tab.querySelector('span:last-child').classList.remove('bg-transparent');
+                    
+                    // Show corresponding content with fade-in effect
+                    const tabId = tab.getAttribute('data-tab');
+                    const content = document.getElementById(`${tabId}-content`);
+                    
+                    setTimeout(() => {
+                        content.classList.add('active');
+                        content.style.opacity = '0';
+                        setTimeout(() => {
+                            content.style.opacity = '1';
+                        }, 10);
+                    }, 150);
+                });
+            });
+          </script>
+          
+          <!-- Images Tab Content -->
+          <div class="media-content active" id="images-content">
+              <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+                  {% for media in project.media.all %}
+                  {% if media.media_type == 'IMAGE' %}
+                  <a href="{{ media.file.url }}" class="group" target="_blank" data-fancybox="gallery" data-caption="{{ media.title }}">
+                      <div class="aspect-square bg-gray-100 rounded-lg overflow-hidden relative transition-all duration-300 hover:shadow-md">
+                          <img src="{{ media.file.url }}" alt="{{ media.title }}" 
+                              class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105">
+                          <div class="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                              <div class="bg-white/90 p-2 rounded-full">
+                                  <svg class="h-5 w-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM15 10l4 4m0 0l-4 4m4-4H5" />
+                                  </svg>
+                              </div>
+                          </div>
+                          {% if media.about %}
+                          <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-3 text-white text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                              {{ media.about|truncatechars:60 }}
+                          </div>
+                          {% endif %}
+                      </div>
+                  </a>
+                  {% endif %}
+                  {% empty %}
+                  <div class="col-span-full text-center py-8">
+                      <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                      <p class="mt-2 text-gray-500">No images available</p>
+                  </div>
+                  {% endfor %}
+              </div>
+          </div>
+
+          <!-- Videos Tab Content -->
+          <div class="media-content hidden" id="videos-content">
+              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {% for media in project.media.all %}
+                  {% if media.media_type == 'VIDEO' %}
+                  <div class="bg-gray-100 rounded-lg overflow-hidden group relative">
+                      <video class="w-full aspect-video object-cover" controls poster="{% if media.thumbnail %}{{ media.thumbnail.url }}{% else %}/static/video-placeholder.jpg{% endif %}">
+                          <source target="_blank" src="{{ media.file.url }}" type="video/mp4">
+                          Your browser does not support the video tag.
+                      </video>
+                      <div class="p-3">
+                          <h4 class="font-medium text-gray-800">{{ media.title }}</h4>
+                          {% if media.about %}
+                          <p class="text-sm text-gray-600 mt-1">{{ media.about|truncatechars:80 }}</p>
+                          {% endif %}
+                      </div>
+                      <a href="{{ media.file.url }}" 
+                        class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black/30">
+                          <div class="bg-white p-3 rounded-full">
+                              <svg class="h-6 w-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                              </svg>
+                          </div>
+                      </a>
+                  </div>
+                  {% endif %}
+                  {% empty %}
+                  <div class="col-span-full text-center py-8">
+                      <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                      </svg>
+                      <p class="mt-2 text-gray-500">No videos available</p>
+                  </div>
+                  {% endfor %}
+              </div>
+          </div>
+
+          <!-- Documents Tab Content -->
+          <div class="media-content hidden" id="documents-content">
+              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {% for media in project.media.all %}
+                  {% if media.media_type == 'FILE' %}
+                  <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow duration-300">
+                      <div class="flex items-start gap-3">
+                          <div class="bg-blue-100 p-3 rounded-lg text-blue-600 flex-shrink-0">
+                              <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                              </svg>
+                          </div>
+                          <div class="flex-1 min-w-0">
+                              <h4 class="font-medium text-gray-800 truncate">{{ media.title }}</h4>
+                              <p class="text-sm text-gray-500 mt-1">
+                                  {{ media.file.name|slice:"-4:"|upper }} • 
+                                  {{ media.file.size|filesizeformat }}
+                              </p>
+                              {% if media.about %}
+                              <p class="text-sm text-gray-600 mt-2">{{ media.about|truncatechars:80 }}</p>
+                              {% endif %}
+                              <a href="{{ media.file.url }}" download class="mt-3 inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-800">
+                                  Download
+                                  <svg class="ml-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                  </svg>
+                              </a>
+                          </div>
+                      </div>
+                  </div>
+                  {% endif %}
+                  {% empty %}
+                  <div class="col-span-full text-center py-8">
+                      <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                      </svg>
+                      <p class="mt-2 text-gray-500">No documents available</p>
+                  </div>
+                  {% endfor %}
+              </div>
+          </div>
+          {% else %}
+          <!-- Empty State -->
+          <div class="text-center py-12">
+              <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              <h3 class="mt-2 text-lg font-medium text-gray-900">No media available</h3>
+              <p class="mt-1 text-gray-500">Gallery will be updated soon.</p>
+          </div>
+          {% endif %}
+      </div>
+    </div>
+
+
+    <div class="hidden p-4 bg-white rounded-xl shadow-md border border-blue-200" id="reviews" role="tabpanel" aria-labelledby="reviews-tab">
+      <div class="p-4">
+        <!-- Review Header -->
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+          <div>
+            <h2 class="text-2xl font-bold text-gray-800">Customer Reviews</h2>
+            <div class="flex items-center mt-2">
+              <div class="flex items-center mr-3">
+                {% for i in "12345" %}
+                <svg class="w-5 h-5 {% if forloop.counter <= avg_rating %}text-blue-500{% else %}text-gray-300{% endif %}" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                </svg>
+                {% endfor %}
+              </div>
+              <span class="text-gray-600 text-sm">{{ avg_rating|default:"0" }} out of 5 ({{ total_reviews }} reviews)</span>
+            </div>
+          </div>
+          
+          {% if user.is_authenticated and not user_has_reviewed %}
+          <button id="writeReviewBtn" class="text-sm px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all flex items-center gap-2 shadow-sm hover:shadow-md">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+            </svg>
+            Write a Review
+          </button>
+          {% endif %}
+        </div>
+        
+        
+        <div class="mb-8">
+          <div class="w-full flex flex-col md:flex-row gap-8 bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+            <!-- Rating Distribution -->
+            <div class="flex-1">
+              <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-up10-icon lucide-arrow-up-1-0 w-5 h-5 text-blue-500 mr-2"><path d="m3 8 4-4 4 4"/><path d="M7 4v16"/><path d="M17 10V4h-2"/><path d="M15 10h4"/><rect x="15" y="14" width="4" height="6" ry="2"/></svg>
+                Rating Breakdown
+              </h3>
+              
+              <div class="space-y-4 pb-4">
+                {% for rating, count in rating_distribution.items reversed %}
+                <div class="flex items-center gap-4">
+                  <!-- Star rating visualization -->
+                  <div class="flex items-center w-32">
+                    <div class="flex mr-3">
+                      {% for i in "12345" %}
+                        <svg class="w-4 h-4 text-blue-500 {% if forloop.counter <= rating|add:0 %}block{% else %}hidden{% endif %}" fill="currentColor" viewBox="0 0 20 20">
+                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                        </svg>
+                      {% endfor %}
+                    </div>
+                    <span class="text-xs text-gray-500">{{ rating|floatformat:1 }}</span>
+                  </div>
+                  
+                  <!-- Progress bar -->
+                  <div class="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
+                    <div 
+                      class="bg-gradient-to-r from-blue-400 to-blue-600 h-full rounded-full" 
+                      style="width: {% if total_reviews > 0 %}{% widthratio count total_reviews 100 %}{% else %}0{% endif %}%"
+                    ></div>
+                  </div>
+                  
+                
+                </div>
+                {% endfor %}
+              </div>
+              
+              <div class="mt-4 pt-4 border-t border-gray-200 text-sm text-gray-500">
+                <div class="flex justify-between mb-2">
+                  <span>Total Reviews:</span>
+                  <span class="font-medium text-gray-700">{{ total_reviews }}</span>
+                </div>
+                <div class="flex justify-between">
+                  <span>Average Rating:</span>
+                  <span class="font-medium text-gray-700">{{ avg_rating|floatformat:1 }}/5</span>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Vertical Divider -->
+            <div class="hidden md:block w-1 rounded-2xl bg-gray-200"></div>
+            
+            <!-- Category Ratings -->
+            <div class="flex-1">
+              <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                <svg class="w-5 h-5 text-blue-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                </svg>
+                Category Ratings
+              </h3>
+              
+              {% if category_ratings %}
+              <div class="space-y-4 p-4">
+                {% for category, rating in category_ratings.items %}
+                <div class="bg-white border-b border-gray-200">
+                  <div class="flex justify-between items-center">
+                    <span class="text-sm font-medium text-gray-700 capitalize">{{ category }}</span>
+                    <div class="flex items-center">
+                      {% with rating_int=rating|floatformat:"0" %}
+                        {% for i in "12345" %}
+                          <svg class="w-4 h-4 {% if forloop.counter <= rating_int|add:0 %}text-blue-500{% else %}text-gray-200{% endif %}" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                          </svg>
+                        {% endfor %}
+                        <span class="text-xs text-blue-600 font-medium ml-1">{{ rating|floatformat:1 }}</span>
+                      {% endwith %}
+                    </div>
+                  </div>
+                  <div class="w-full bg-gray-100 rounded-full h-1.5 mt-2">
+                    <div class="bg-gradient-to-r from-blue-400 to-blue-600 h-full rounded-full" style="width: {% widthratio rating 5 100 %}%"></div>
+                  </div>
+                </div>
+                {% endfor %}
+              </div>
+              {% else %}
+              <div class="text-center py-6 bg-gray-50 rounded-lg">
+                <svg class="mx-auto h-6 w-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                <p class="mt-2 text-sm text-gray-500">No category ratings available</p>
+              </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+       
+        
+        <!-- Reviews Content -->
+       
+          <!-- Review Form (Hidden by default) -->
+          {% if user.is_authenticated and not user_has_reviewed %}
+          <div id="reviewFormContainer" class="hidden bg-white p-4 rounded-xl mb-8 border border-gray-200">
+            
+            
+            
+            <form method="post"  class="space-y-8">
+              {% csrf_token %}
+              
+             <!-- Toast Notifications Container (initially hidden) -->
+              <div class="fixed top-4 right-4 space-y-4 z-50" id="toastContainer">
+                <!-- Success Toast Template -->
+                <div id="toast-success" class="hidden flex items-center w-full max-w-xs p-4 text-gray-500 bg-white rounded-lg shadow-sm" role="alert">
+                  <div class="inline-flex items-center justify-center shrink-0 w-8 h-8 text-green-500 bg-green-100 rounded-lg">
+                    <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z"/>
+                    </svg>
+                    <span class="sr-only">Check icon</span>
+                  </div>
+                  <div class="ms-3 text-sm font-normal">Review submitted successfully!</div>
+                  <button type="button" class="ms-auto -mx-1.5 -my-1.5 bg-white text-gray-400 hover:text-gray-900 rounded-lg focus:ring-2 focus:ring-gray-300 p-1.5 hover:bg-gray-100 inline-flex items-center justify-center h-8 w-8" onclick="hideToast('toast-success')">
+                    <span class="sr-only">Close</span>
+                    <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                    </svg>
+                  </button>
+                </div>
+
+                <!-- Error Toast Template -->
+                <div id="toast-danger" class="hidden flex items-center w-full max-w-xs p-4 text-gray-500 bg-white rounded-lg shadow-sm" role="alert">
+                  <div class="inline-flex items-center justify-center shrink-0 w-8 h-8 text-red-500 bg-red-100 rounded-lg">
+                    <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 11.793a1 1 0 1 1-1.414 1.414L10 11.414l-2.293 2.293a1 1 0 0 1-1.414-1.414L8.586 10 6.293 7.707a1 1 0 0 1 1.414-1.414L10 8.586l2.293-2.293a1 1 0 0 1 1.414 1.414L11.414 10l2.293 2.293Z"/>
+                    </svg>
+                    <span class="sr-only">Error icon</span>
+                  </div>
+                  <div class="ms-3 text-sm font-normal" id="error-message">Please fix the errors below.</div>
+                  <button type="button" class="ms-auto -mx-1.5 -my-1.5 bg-white text-gray-400 hover:text-gray-900 rounded-lg focus:ring-2 focus:ring-gray-300 p-1.5 hover:bg-gray-100 inline-flex items-center justify-center h-8 w-8" onclick="hideToast('toast-danger')">
+                    <span class="sr-only">Close</span>
+                    <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Review Title & Content -->
+              <div class="bg-white p-2  space-y-6">
+                
+                <div class="flex justify-between items-center mb-4">
+                  <h3 class="text-lg font-semibold text-gray-900">Share Your Experience</h3>
+                  <button id="cancelReviewBtn" class="text-gray-500 hover:text-gray-700">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                  </button>
+                </div>
+
+                <div>
+                  <label for="title" class="block text-sm font-medium text-gray-700 mb-2">Review Title</label>
+                  <input type="text" name="title" id="title" class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm transition duration-200 hover:border-gray-300" placeholder="Summarize your experience" required>
+                  <p class="mt-1 text-sm text-gray-500">Keep it concise yet descriptive</p>
+                </div>
+                
+                <div>
+                  <label for="comment" class="block text-sm font-medium text-gray-700 mb-2">Detailed Review</label>
+                  <textarea name="comment" id="comment" rows="6" class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm transition duration-200 hover:border-gray-300" placeholder="Share your honest thoughts about the property... What did you like? What could be improved?" required></textarea>
+                  <p class="mt-1 text-sm text-gray-500">Your review helps others make better decisions</p>
+                </div>
+
+
+                <!-- Overall Rating -->
+                <div class="flex flex-col items-center">
+                  <h3 class="text-lg font-semibold text-gray-900 text-center">Overall Rating</h3>
+                  <p class="text-center text-sm text-gray-500 mb-2">Click to rate from 5 (best) to 1 (worst)</p>
+                  <div class="flex items-center justify-center gap-2" id="ratingStars">
+                    {% for i in "54321" %}
+                    <input type="radio" id="star{{ i }}" name="rating" value="{{ i }}" class="hidden peer/star{{ i }}" {% if forloop.first %}checked{% endif %}>
+                    <label for="star{{ i }}" class="cursor-pointer peer-checked/star{{ i }}:text-yellow-500 text-gray-200 hover:text-yellow-400 transition-colors duration-200 transform peer-hover/star{{ i }}:scale-110">
+                      <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                      </svg>
+                      <span class="sr-only">{{ i }} stars</span>
+                    </label>
+                    {% endfor %}
+                  </div>
+                  
+                </div>
+                
+                <!-- Category Ratings Grid -->
+                <div class="flex items-center justify-between gap-4">
+                  <!-- Design & Architecture -->
+                  <div class="col-span-1">
+                    <label class="block text-base font-medium text-gray-800 mb-2">Design & Architecture</label>
+                    <div class="flex items-center justify-star" id="designRating">
+                      {% for i in "54321" %}
+                      <input type="radio" id="design{{ i }}" name="design_rating" value="{{ i }}" class="hidden peer/design{{ i }}" {% if forloop.first %}checked{% endif %}>
+                      <label for="design{{ i }}" class="cursor-pointer peer-checked/design{{ i }}:text-blue-600 text-gray-200 hover:text-blue-400 transition-colors duration-150">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                        </svg>
+                      </label>
+                      {% endfor %}
+                    </div>
+                  </div>
+                  
+                  <!-- Location -->
+                  <div class="col-span-1">
+                    <label class="block text-base font-medium text-gray-800 mb-2">Location</label>
+                    <div class="flex items-center justify-start" id="locationRating">
+                      {% for i in "54321" %}
+                      <input type="radio" id="location{{ i }}" name="location_rating" value="{{ i }}" class="hidden peer/location{{ i }}" {% if forloop.first %}checked{% endif %}>
+                      <label for="location{{ i }}" class="cursor-pointer peer-checked/location{{ i }}:text-blue-600 text-gray-200 hover:text-blue-400 transition-colors duration-150">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                        </svg>
+                      </label>
+                      {% endfor %}
+                    </div>
+                  </div>
+                  
+                  <!-- Amenities -->
+                  <div class="col-span-1">
+                    <label class="block text-base font-medium text-gray-800 mb-2">Amenities</label>
+                    <div class="flex items-center justify-start" id="amenitiesRating">
+                      {% for i in "54321" %}
+                      <input type="radio" id="amenities{{ i }}" name="amenities_rating" value="{{ i }}" class="hidden peer/amenities{{ i }}" {% if forloop.first %}checked{% endif %}>
+                      <label for="amenities{{ i }}" class="cursor-pointer peer-checked/amenities{{ i }}:text-blue-600 text-gray-200 hover:text-blue-400 transition-colors duration-150">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                        </svg>
+                      </label>
+                      {% endfor %}
+                    </div>
+                  </div>
+                  
+                  <!-- Construction Quality -->
+                  <div class="col-span-1">
+                    <label class="block text-base font-medium text-gray-800 mb-2">Construction Quality</label>
+                    <div class="flex items-center justify-start" id="qualityRating">
+                      {% for i in "54321" %}
+                      <input type="radio" id="quality{{ i }}" name="quality_rating" value="{{ i }}" class="hidden peer/quality{{ i }}" {% if forloop.first %}checked{% endif %}>
+                      <label for="quality{{ i }}" class="cursor-pointer peer-checked/quality{{ i }}:text-blue-600 text-gray-200 hover:text-blue-400 transition-colors duration-150">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                        </svg>
+                      </label>
+                      {% endfor %}
+                    </div>
+                  </div>
+                  
+                  <!-- Value -->
+                  <div class="col-span-1">
+                    <label class="block text-base font-medium text-gray-800 mb-2">Value for Money</label>
+                    <div class="flex items-center justify-start gap-2" id="valueRating">
+                      {% for i in "54321" %}
+                      <input type="radio" id="value{{ i }}" name="value_rating" value="{{ i }}" class="hidden peer/value{{ i }}" {% if forloop.first %}checked{% endif %}>
+                      <label for="value{{ i }}" class="cursor-pointer peer-checked/value{{ i }}:text-blue-600 text-gray-200 hover:text-blue-400 transition-colors duration-150">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                        </svg>
+                      </label>
+                      {% endfor %}
+                    </div>
+                  </div>
+                </div>
+                
+                
+
+
+              </div>
+              
+              <div class="flex justify-end gap-4 pt-2">
+                <button type="button" class="px-4 py-2 border border-gray-300 text-gray-700 font-small rounded-lg transition-all hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                  Cancel
+                </button>
+                <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-small rounded-lg transition-all shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                  Submit Review
+                </button>
+              </div>
+
+            </form>
+            <script>
+              document.addEventListener('DOMContentLoaded', function() {
+                // Initialize star rating controls
+                initRatingControls();
+                
+                // Handle review form submission
+                const reviewForm = document.getElementById('reviewForm');
+                if (reviewForm) {
+                    reviewForm.addEventListener('submit', handleReviewSubmit);
+                }
+                
+                // Cancel button handler
+                const cancelBtn = document.getElementById('cancelReviewBtn');
+                if (cancelBtn) {
+                    cancelBtn.addEventListener('click', function() {
+                        window.history.back();
+                    });
+                }
+              });
+            
+              function initRatingControls() {
+                  // Initialize all rating star controls
+                  document.querySelectorAll('.rating-control').forEach(control => {
+                      const inputName = control.dataset.inputName;
+                      const stars = control.querySelectorAll('.rating-star');
+                      
+                      stars.forEach((star, index) => {
+                          star.addEventListener('click', () => {
+                              // Update visual state
+                              stars.forEach((s, i) => {
+                                  if (i <= index) {
+                                      s.classList.add('text-yellow-400');
+                                      s.classList.remove('text-gray-300');
+                                  } else {
+                                      s.classList.add('text-gray-300');
+                                      s.classList.remove('text-yellow-400');
+                                  }
+                              });
+                              
+                              // Update hidden input value (1-5, where 5 is the first star)
+                              const ratingValue = stars.length - index;
+                              document.querySelector(`input[name="${inputName}"]`).value = ratingValue;
+                          });
+                      });
+                  });
+              }
+              
+              function handleReviewSubmit(e) {
+                  e.preventDefault();
+                  const form = e.target;
+                  const submitBtn = form.querySelector('button[type="submit"]');
+                  
+                  // Disable submit button to prevent duplicate submissions
+                  submitBtn.disabled = true;
+                  submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Submitting...';
+                  
+                  // Reset error states
+                  document.querySelectorAll('.error-message').forEach(el => {
+                      el.textContent = '';
+                      el.classList.add('hidden');
+                  });
+                  
+                  // Get form data
+                  const formData = new FormData(form);
+                  
+                  // Add CSRF token
+                  const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+                  
+                  // Submit via AJAX
+                  fetch(form.action, {
+                      method: 'POST',
+                      body: formData,
+                      headers: {
+                          'X-CSRFToken': csrfToken,
+                          'X-Requested-With': 'XMLHttpRequest'
+                      }
+                  })
+                  .then(response => {
+                      if (!response.ok) {
+                          throw new Error('Network response was not ok');
+                      }
+                      return response.json();
+                  })
+                  .then(data => {
+                      if (data.status === 'success') {
+                          showToast('success', data.message);
+                          if (data.redirect_url) {
+                              setTimeout(() => {
+                                  window.location.href = data.redirect_url;
+                              }, 1500);
+                          }
+                      } else if (data.status === 'error') {
+                          showToast('danger', data.message);
+                          
+                          // Display field-specific errors
+                          if (data.errors) {
+                              for (const field in data.errors) {
+                                  const errorElement = document.getElementById(`${field}-error`);
+                                  if (errorElement) {
+                                      errorElement.textContent = data.errors[field][0].message;
+                                      errorElement.classList.remove('hidden');
+                                  }
+                              }
+                          }
+                      }
+                  })
+                  .catch(error => {
+                      showToast('danger', 'An unexpected error occurred. Please try again.');
+                      console.error('Error:', error);
+                  })
+                  .finally(() => {
+                      submitBtn.disabled = false;
+                      submitBtn.textContent = 'Submit Review';
+                  });
+              }
+              
+              function showToast(type, message) {
+                  const toast = document.getElementById(`toast-${type}`);
+                  if (type === 'danger') {
+                      document.getElementById('error-message').textContent = message;
+                  }
+                  toast.classList.remove('hidden');
+                  setTimeout(() => hideToast(`toast-${type}`), 5000);
+              }
+              
+              function hideToast(id) {
+                  document.getElementById(id).classList.add('hidden');
+              }
+            </script>
+
+
+
+          </div>
+          {% endif %}
+          
+          <!-- Reviews List -->
+          <div>
+            <div class="flex justify-between items-center mb-4">
+              <h4 class="text-lg font-semibold text-gray-800 flex gap-2 items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-message-square-icon lucide-message-square w-6 h-6 text-blue-500"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                Comments
+              </h4>
+              <div class="flex items-center">
+                <label for="sortReviews" class="text-sm text-gray-600 mr-2 px-4">Sort by:</label>
+                <select id="sortReviews" class="text-sm border border-gray-300 rounded-md px-4 py-1 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                  <option value="newest">Newest First</option>
+                  <option value="highest">Highest Rating</option>
+                  <option value="lowest">Lowest Rating</option>
+                </select>
+              </div>
+            </div>
+            
+            {% if reviews %}
+            <div class="space-y-6">
+              {% for review in reviews %}
+              <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                <div class="flex justify-between items-start mb-3">
+                  <div class="flex items-center">
+                    <div class="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center overflow-hidden">
+                      {% if review.user.profile_picture %}
+                      <img src="{{ review.user.profile_picture.url }}" alt="{{ review.user.get_full_name }}" class="h-full w-full object-cover">
+                      {% else %}
+                      <svg class="h-6 w-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                      </svg>
+                      {% endif %}
+                    </div>
+                    <div class="ml-3">
+                      <p class="font-medium text-gray-800">{{ review.user.get_full_name|default:review.user.username }}</p>
+                      <div class="flex items-center">
+                        {% for i in "12345" %}
+                        <svg class="w-4 h-4 {% if forloop.counter <= review.rating %}text-blue-500{% else %}text-gray-300{% endif %}" fill="currentColor" viewBox="0 0 20 20">
+                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                        </svg>
+                        {% endfor %}
+                        <span class="text-xs text-gray-500 ml-1">
+                          {{ review.created_at|date:"M d, Y · h:i A" }}
+                        </span>
+                        
+                      </div>
+                    </div>
+                  </div>
+                  {% if review.is_verified_tenant or review.is_verified_owner %}
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                    {% if review.is_verified_tenant %}Verified Tenant{% else %}Verified Owner{% endif %}
+                  </span>
+                  {% endif %}
+                </div>
+                
+                <h4 class="text-lg font-medium text-gray-800 mb-2">{{ review.title }}</h4>
+                <p class="text-gray-600 mb-4">{{ review.comment }}</p>
+                
+                {% if review.design_rating or review.location_rating or review.amenities_rating or review.value_rating %}
+                <div class="mt-4 pt-4 border-t border-gray-100">
+                  <h4 class="text-sm font-medium text-gray-600 mb-3">Category Ratings</h4>
+                  
+                  <div class="grid grid-cols-2 gap-4">
+                    <!-- Design Rating -->
+                    <div class="flex items-center">
+                      <span class="text-xs text-gray-500 w-24">Design</span>
+                      <div class="flex items-center ml-2">
+                        {% for i in "12345" %}
+                        <svg class="w-3 h-3 {% if forloop.counter <= review.design_rating %}text-blue-500{% else %}text-gray-200{% endif %}" fill="currentColor" viewBox="0 0 20 20">
+                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                        </svg>
+                        {% endfor %}
+                        <span class="text-xs text-blue-600 ml-1">{{ review.design_rating|floatformat:1 }}</span>
+                      </div>
+                    </div>
+                    
+                    <!-- Location Rating -->
+                    <div class="flex items-center">
+                      <span class="text-xs text-gray-500 w-24">Location</span>
+                      <div class="flex items-center ml-2">
+                        {% for i in "12345" %}
+                        <svg class="w-3 h-3 {% if forloop.counter <= review.location_rating %}text-blue-500{% else %}text-gray-200{% endif %}" fill="currentColor" viewBox="0 0 20 20">
+                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                        </svg>
+                        {% endfor %}
+                        <span class="text-xs text-blue-600 ml-1">{{ review.location_rating|floatformat:1 }}</span>
+                      </div>
+                    </div>
+                    
+                    <!-- Amenities Rating -->
+                    <div class="flex items-center">
+                      <span class="text-xs text-gray-500 w-24">Amenities</span>
+                      <div class="flex items-center ml-2">
+                        {% for i in "12345" %}
+                        <svg class="w-3 h-3 {% if forloop.counter <= review.amenities_rating %}text-blue-500{% else %}text-gray-200{% endif %}" fill="currentColor" viewBox="0 0 20 20">
+                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                        </svg>
+                        {% endfor %}
+                        <span class="text-xs text-blue-600 ml-1">{{ review.amenities_rating|floatformat:1 }}</span>
+                      </div>
+                    </div>
+                    
+                     <!-- quality Rating -->
+                     <div class="flex items-center">
+                      <span class="text-xs text-gray-500 w-24">Quality</span>
+                      <div class="flex items-center ml-2">
+                        {% for i in "12345" %}
+                        <svg class="w-3 h-3 {% if forloop.counter <= review.quality_rating %}text-blue-500{% else %}text-gray-200{% endif %}" fill="currentColor" viewBox="0 0 20 20">
+                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                        </svg>
+                        {% endfor %}
+                        <span class="text-xs text-blue-600 ml-1">{{ review.quality_rating|floatformat:1 }}</span>
+                      </div>
+                    </div>
+
+                    <!-- Value Rating -->
+                    <div class="flex items-center">
+                      <span class="text-xs text-gray-500 w-24">Value</span>
+                      <div class="flex items-center ml-2">
+                        {% for i in "12345" %}
+                        <svg class="w-3 h-3 {% if forloop.counter <= review.value_rating %}text-blue-500{% else %}text-gray-200{% endif %}" fill="currentColor" viewBox="0 0 20 20">
+                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                        </svg>
+                        {% endfor %}
+                        <span class="text-xs text-blue-600 ml-1">{{ review.value_rating|floatformat:1 }}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                {% endif %}
+                
+                <!-- Owner Response -->
+                {% if review.owner_response %}
+                <div class="mt-4 pt-4 border-t border-gray-200">
+                  <div class="flex items-start">
+                    <div class="flex-shrink-0 mr-3">
+                      <div class="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center">
+                        <svg class="h-5 w-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01"/>
+                        </svg>
+                      </div>
+                    </div>
+                    <div>
+                      <p class="text-sm font-medium text-gray-800 mb-1">Management Response</p>
+                      <p class="text-sm text-gray-600">{{ review.owner_response }}</p>
+                      <p class="text-xs text-gray-500 mt-1">{{ review.response_date|date:"M d, Y" }}</p>
+                    </div>
+                  </div>
+                </div>
+                {% endif %}
+              </div>
+              {% endfor %}
+            </div>
+            
+            <!-- Pagination -->
+            {% if reviews.has_other_pages %}
+            <div class="mt-8 flex justify-center">
+              <nav class="flex items-center space-x-2">
+                {% if reviews.has_previous %}
+                <a href="?page={{ reviews.previous_page_number }}#reviews" class="px-3 py-1 rounded-md border border-gray-300 text-gray-700 hover:bg-blue-50">
+                  &laquo; Previous
+                </a>
+                {% endif %}
+                
+                {% for i in reviews.paginator.page_range %}
+                {% if reviews.number == i %}
+                <span class="px-3 py-1 rounded-md bg-blue-600 text-white">{{ i }}</span>
+                {% else %}
+                <a href="?page={{ i }}#reviews" class="px-3 py-1 rounded-md border border-gray-300 text-gray-700 hover:bg-blue-50">
+                  {{ i }}
+                </a>
+                {% endif %}
+                {% endfor %}
+                
+                {% if reviews.has_next %}
+                <a href="?page={{ reviews.next_page_number }}#reviews" class="px-3 py-1 rounded-md border border-gray-300 text-gray-700 hover:bg-blue-50">
+                  Next &raquo;
+                </a>
+                {% endif %}
+              </nav>
+            </div>
+            {% endif %}
+            {% else %}
+            <!-- Empty State -->
+            <div class="text-center py-12">
+              <svg class="mx-auto h-14 w-14 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
+              </svg>
+              <h3 class="mt-4 text-lg font-medium text-gray-900">No reviews yet</h3>
+              <p class="mt-2 text-gray-500 max-w-md mx-auto">
+                Be the first to share your experience! Your review will help others make better decisions.
+              </p>
+              {% if not user.is_authenticated %}
+              <div class="mt-6">
+                <a href="{% url 'login' %}?next={% if project %}{% url 'project_detail' project.pk %}{% else %}{% url 'property_detail' property.pk %}{% endif %}" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg inline-flex items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
+                  </svg>
+                  Sign in to leave a review
+                </a>
+              </div>
+              {% endif %}
+            </div>
+            {% endif %}
+          </div>
+       
+          
+      </div>
+    </div>
+      
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        // Review form toggle
+        const writeReviewBtn = document.getElementById('writeReviewBtn');
+        const reviewFormContainer = document.getElementById('reviewFormContainer');
+        const cancelReviewBtn = document.getElementById('cancelReviewBtn');
+        
+        if (writeReviewBtn && reviewFormContainer) {
+          writeReviewBtn.addEventListener('click', () => {
+            reviewFormContainer.classList.toggle('hidden');
+            window.scrollTo({
+              top: reviewFormContainer.offsetTop - 20,
+              behavior: 'smooth'
+            });
+          });
+        }
+        
+        if (cancelReviewBtn && reviewFormContainer) {
+          cancelReviewBtn.addEventListener('click', () => {
+            reviewFormContainer.classList.add('hidden');
+          });
+        }
+        
+        // Star rating interaction
+        function setupRatingStars(containerId) {
+          const container = document.getElementById(containerId);
+          if (container) {
+            const stars = container.querySelectorAll('input[type="radio"]');
+            const starLabels = container.querySelectorAll('label');
+            
+            starLabels.forEach((label, index) => {
+              label.addEventListener('click', () => {
+                // Update visual stars
+                starLabels.forEach((star, i) => {
+                  const svg = star.querySelector('svg');
+                  if (i <= index) {
+                    svg.classList.remove('text-gray-300');
+                    svg.classList.add('text-blue-500');
+                  } else {
+                    svg.classList.remove('text-blue-500');
+                    svg.classList.add('text-gray-300');
+                  }
+                });
+              });
+            });
+          }
+        }
+        
+        // Setup all rating star components
+        setupRatingStars('ratingStars');
+        setupRatingStars('designRating');
+        setupRatingStars('locationRating');
+        setupRatingStars('amenitiesRating');
+        setupRatingStars('qualityRating');
+        setupRatingStars('valueRating');
+
+        // Sort reviews functionality
+        const sortSelect = document.getElementById('sortReviews');
+        if (sortSelect) {
+          sortSelect.addEventListener('change', function() {
+            const sortValue = this.value;
+            let url = window.location.href.split('?')[0];
+            
+            // Remove existing sort parameter if present
+            url = url.replace(/([&?])sort=\w+(&|$)/, '$1');
+            
+            // Add new sort parameter
+            if (url.includes('?')) {
+              url += `&sort=${sortValue}`;
+            } else {
+              url += `?sort=${sortValue}`;
+            }
+            
+            window.location.href = url + '#reviews';
+          });
+          
+          // Set current sort value from URL
+          const urlParams = new URLSearchParams(window.location.search);
+          const currentSort = urlParams.get('sort') || 'newest';
+          sortSelect.value = currentSort;
+        }
+      });
+    </script>
+      
+  </div>
+
+
+
+  <!-- Similar Projects Section -->
+  <div class="bg-gray-50/50 py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-7xl mx-auto">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-8 gap-4">
+        <h2 class="text-2xl font-bold text-gray-900">Similar Projects in {{ project.state }}</h2>
+        <a href="{% url 'project_list' %}?state={{ project.state|urlencode }}" class="text-blue-600 hover:text-blue-800 font-medium flex items-center">
+          View all in {{ project.state }}
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-1" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+          </svg>
+        </a>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for similar_project in similar_projects %}
+        <div class="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow duration-300 border border-gray-100 group">
+          <!-- Image Carousel -->
+          <div x-data="{
+            activeSlide: 0,
+            totalSlides: {{ similar_project.media.all|length|default:1 }},
+            next() { this.activeSlide = (this.activeSlide + 1) % this.totalSlides },
+            prev() { this.activeSlide = (this.activeSlide - 1 + this.totalSlides) % this.totalSlides }
+          }" class="relative h-48 w-full overflow-hidden">
+            <!-- Slides -->
+            {% for media in similar_project.media.all %}
+              {% if media.media_type != 'FILE' and media.media_type != 'VIDEO' %}
+              <div x-show="activeSlide === {{ forloop.counter0 }}" 
+                  x-transition:enter="transition ease-out duration-300"
+                  x-transition:enter-start="opacity-0"
+                  x-transition:enter-end="opacity-100"
+                  x-transition:leave="transition ease-in duration-300"
+                  x-transition:leave-start="opacity-100"
+                  x-transition:leave-end="opacity-0"
+                  class="absolute inset-0">
+                <img src="{{ media.file.url }}" 
+                    alt="{{ media.title|default:similar_project.name }}" 
+                    class="w-full h-full object-cover">
+              </div>
+              {% endif %}
+            {% empty %}
+              <div class="w-full h-full bg-gradient-to-br from-blue-50 to-gray-100 flex items-center justify-center">
+                <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                </svg>
+              </div>
+            {% endfor %}
+
+            <!-- Navigation Arrows -->
+            <template x-if="totalSlides > 1">
+              <div class="absolute inset-0 flex items-center justify-between p-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                <button @click="prev()" class="p-1.5 rounded-full bg-white/80 text-gray-800 shadow hover:bg-white transition-colors">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                  </svg>
+                </button>
+                <button @click="next()" class="p-1.5 rounded-full bg-white/80 text-gray-800 shadow hover:bg-white transition-colors">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                  </svg>
+                </button>
+              </div>
+            </template>
+
+            <!-- Status Badge -->
+            <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
+              {% if similar_project.status == 'under_construction' %}
+              <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-1 rounded-full inline-flex items-center">
+                <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"/>
+                </svg>
+                Under Construction
+              </span>
+              {% elif similar_project.status == 'ready_to_move' %}
+              <span class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-1 rounded-full inline-flex items-center">
+                <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                </svg>
+                Ready to Move
+              </span>
+              {% endif %}
+            </div>
+
+            <!-- Slide Indicators -->
+            <template x-if="totalSlides > 1">
+              <div class="absolute bottom-4 left-0 right-0 flex justify-center gap-1.5">
+                <template x-for="i in totalSlides" :key="i">
+                  <button @click="activeSlide = i - 1" 
+                          class="w-2 h-2 rounded-full transition-all"
+                          :class="{'bg-white/80 w-4': activeSlide === i - 1, 'bg-white/30': activeSlide !== i - 1}">
+                  </button>
+                </template>
+              </div>
+            </template>
+          </div>
+
+          <!-- Project Details -->
+          <div class="p-5">
+            <h3 class="font-bold text-lg mb-1 hover:text-blue-600 transition-colors">
+              <a href="{% url 'project_detail' similar_project.pk %}">{{ similar_project.name }}</a>
+            </h3>
+            
+            <div class="flex items-center text-gray-600 mb-3">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5 shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
+              </svg>
+              <span class="truncate">{{ similar_project.locality }}, {{ similar_project.city }}</span>
+            </div>
+            
+            <div class="flex justify-between items-center mt-4">
+              <div>
+                <p class="text-sm text-gray-500">Price Range</p>
+                <p class="font-bold text-blue-600">₹{{ similar_project.price_range_start|indian_currency }} - ₹{{ similar_project.price_range_end|indian_currency }}</p>
+              </div>
+              <div class="text-right">
+                <p class="text-sm text-gray-500">Per Sq.ft Price</p>
+                <p class="font-medium text-gray-800">₹{{ similar_project.per_sq_ft_price|indian_currency }}</p>
+              </div>
+            </div>
+
+            <div class="mt-4 grid grid-cols-2 gap-4 text-sm">
+              <!-- Property Type -->
+              <div class="space-y-1">
+                <p class="text-gray-500">Property Type</p>
+                <div class="flex items-center gap-1 font-medium text-gray-800">
+                  <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                  </svg>
+                  <span>{{ similar_project.get_project_type_display  }}</span>
+                </div>
+              </div>
+            
+              <!-- Construction Status -->
+              <div class="space-y-1">
+                <p class="text-gray-500">Status</p>
+                <div class="flex items-center gap-1 font-medium">
+                  {% if similar_project.construction_status == 'UNDER_CONSTRUCTION' %}
+                  <span class="flex items-center text-amber-600">
+                    <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"/>
+                    </svg>
+                    Under Construction
+                  </span>
+                  {% elif similar_project.construction_status == 'READY_TO_MOVE' %}
+                  <span class="flex items-center text-green-600">
+                    <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                    </svg>
+                    Ready to Move
+                  </span>
+                  {% else%}
+                  <span class="flex items-center text-blue-600">
+                    <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"/>
+                    </svg>
+                    {{similar_project.construction_status}}
+                  </span>
+                  {% endif %}
+                </div>
+              </div>
+
+              <!-- Project Size -->
+              {% if similar_project.total_area %}
+              <div class="space-y-1">
+                <p class="text-gray-500">Project Size</p>
+                <div class="flex items-center gap-1 font-medium text-gray-800">
+                  <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                  </svg>
+                  <span>{{ similar_project.total_area|indian_currency }} Sq.ft</span>
+                </div>
+              </div>
+              {% endif %}
+            
+              <!-- Total Towers -->
+              {% if similar_project.total_number_of_towers %}
+              <div class="space-y-1">
+                <p class="text-gray-500">Towers</p>
+                <div class="flex items-center gap-1 font-medium text-gray-800">
+                  <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                  </svg>
+                  <span>{{ similar_project.total_number_of_towers }}</span>
+                </div>
+              </div>
+              {% endif %}
+            
+              <!-- Total Floors -->
+              {% if similar_project.total_number_of_floors %}
+              <div class="space-y-1">
+                <p class="text-gray-500">Floors</p>
+                <div class="flex items-center gap-1 font-medium text-gray-800">
+                  <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/>
+                  </svg>
+                  <span>{{ similar_project.total_number_of_floors }}</span>
+                </div>
+              </div>
+              {% endif %}
+            
+              <!-- Total Units -->
+              {% if similar_project.total_rooms %}
+              <div class="space-y-1">
+                <p class="text-gray-500">Units</p>
+                <div class="flex items-center gap-1 font-medium text-gray-800">
+                  <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                  </svg>
+                  <span>{{ similar_project.total_rooms }}</span>
+                </div>
+              </div>
+              {% endif %}
+            
+            
+            </div>
+            
+        
+          </div>
+        </div>
+        {% empty %}
+        <div class="col-span-full text-center py-8">
+          <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          <h3 class="mt-2 text-lg font-medium text-gray-900">No similar projects found</h3>
+          <p class="mt-1 text-gray-500">We couldn't find any similar projects in this area.</p>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+
+
+ <!-- Modern Contact Form Section -->
+
+  <div class="bg-white p-8 bg-white rounded-xl shadow-md border border-blue-200">
+    <div class="text-center mb-10">
+      <h2 class="text-3xl font-bold text-gray-900 mb-3">Interested in {{ project.name }}?</h2>
+      <p class="text-lg text-gray-600 max-w-2xl mx-auto">Connect with our property experts for personalized assistance</p>
+    </div>
+    
+    <form class="grid grid-cols-1 md:grid-cols-2 gap-6" x-data="contactForm()" @submit.prevent="submitForm">
+      <!-- Form Group -->
+      <div class="space-y-2">
+        <label for="name" class="block text-sm font-medium text-gray-700">Full Name <span class="text-red-500">*</span></label>
+        <div class="relative">
+          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            </svg>
+          </div>
+          <input type="text" id="name" x-model="formData.name" required class="pl-10 w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200">
+        </div>
+      </div>
+      
+      <!-- Form Group -->
+      <div class="space-y-2">
+        <label for="email" class="block text-sm font-medium text-gray-700">Email <span class="text-red-500">*</span></label>
+        <div class="relative">
+          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
+          </div>
+          <input type="email" id="email" x-model="formData.email" required class="pl-10 w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200">
+        </div>
+      </div>
+      
+      <!-- Form Group -->
+      <div class="space-y-2">
+        <label for="phone" class="block text-sm font-medium text-gray-700">Phone <span class="text-red-500">*</span></label>
+        <div class="relative">
+          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+            </svg>
+          </div>
+          <input type="tel" id="phone" x-model="formData.phone" required class="pl-10 w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200">
+        </div>
+      </div>
+      
+      <!-- Form Group -->
+      <div class="space-y-2">
+        <label for="budget" class="block text-sm font-medium text-gray-700">Budget Range</label>
+        <div class="relative">
+          <select id="budget" x-model="formData.budget" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 appearance-none bg-white">
+            <option value="">Select Budget Range</option>
+            <option value="Under ₹1 Crore">Under ₹1 Crore</option>
+            <option value="₹1-2 Crore">₹1-2 Crore</option>
+            <option value="₹2-3 Crore">₹2-3 Crore</option>
+            <option value="₹3-5 Crore">₹3-5 Crore</option>
+            <option value="Above ₹5 Crore">Above ₹5 Crore</option>
+          </select>
+          <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+            <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Full Width Form Group -->
+      <div class="md:col-span-2 space-y-2">
+        <label for="message" class="block text-sm font-medium text-gray-700">Your Message</label>
+        <textarea id="message" rows="4" x-model="formData.message" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200"></textarea>
+      </div>
+      
+      <!-- Submit Button -->
+      <div class="md:col-span-2">
+        <button type="submit" :disabled="isSubmitting" class="w-full py-4 px-6 bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white font-medium rounded-xl transition duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 flex items-center justify-center">
+          <span x-text="isSubmitting ? 'Processing...' : 'Submit Enquiry'"></span>
+          <svg x-show="isSubmitting" class="animate-spin -mr-1 ml-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+        </button>
+      </div>
+      
+      <!-- Success Message -->
+      <div x-show="isSuccess" class="md:col-span-2 mt-4 p-4 bg-green-50 border border-green-200 rounded-xl text-green-700">
+        <div class="flex items-center">
+          <svg class="h-5 w-5 text-green-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+          </svg>
+          <span x-text="successMessage"></span>
+        </div>
+      </div>
+      
+      <!-- Error Message -->
+      <div x-show="isError" class="md:col-span-2 mt-4 p-4 bg-red-50 border border-red-200 rounded-xl text-red-700">
+        <div class="flex items-center">
+          <svg class="h-5 w-5 text-red-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span x-text="errorMessage"></span>
+        </div>
+      </div>
+    </form>
+  </div>
+
+
+  <script>
+    document.addEventListener('alpine:init', () => {
+      Alpine.data('contactForm', () => ({
+        formData: {
+          name: '',
+          email: '',
+          phone: '',
+          budget: '',
+          message: ''
+        },
+        isSubmitting: false,
+        isSuccess: false,
+        isError: false,
+        successMessage: 'Thank you! Your enquiry has been submitted successfully. Our team will contact you shortly.',
+        errorMessage: 'There was an error submitting your form. Please try again later.',
+        
+        async submitForm() {
+          this.isSubmitting = true;
+          this.isSuccess = false;
+          this.isError = false;
+          
+          try {
+            // Simulate API call - replace with actual fetch/axios call
+            await new Promise(resolve => setTimeout(resolve, 1500));
+            
+            // Form submission successful
+            this.isSuccess = true;
+            this.formData = { name: '', email: '', phone: '', budget: '', message: '' };
+            
+            // Reset form after 5 seconds
+            setTimeout(() => {
+              this.isSuccess = false;
+            }, 5000);
+          } catch (error) {
+            this.isError = true;
+          } finally {
+            this.isSubmitting = false;
+          }
+        }
+      }));
+    });
+  </script>
+        
+</div>
+
+
+{% endblock content %}

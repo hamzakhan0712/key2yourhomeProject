@@ -1,0 +1,550 @@
+{% extends "base/_base.html" %}
+{% load static %}
+{% load humanize %}
+
+
+{% block title %}Profile | Key2YourHome{% endblock %}
+
+
+
+{% block content %}
+
+
+<div class="min-h-screen mt-14">
+  <!-- Header -->
+ 
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 shadow-sm rounded-lg bg-white">
+      <div class="flex flex-col md:flex-row items-center justify-between">
+        <div class="flex items-center space-x-4">
+          <!-- Profile Picture -->
+          <div class="relative">
+            {% if user.profile_picture %}
+              <img class="h-16 w-16 rounded-full object-cover border-4 border-blue-100" src="{{ user.profile_picture.url }}" alt="Profile picture">
+            {% else %}
+              <div class="h-16 w-16 rounded-full bg-blue-100 flex items-center justify-center border-4 border-blue-100">
+                <span class="text-blue-600 text-2xl font-bold">{{ user.first_name|first|upper }}{{ user.last_name|first|upper }}</span>
+              </div>
+            {% endif %}
+            <span class="absolute bottom-0 right-0 bg-green-500 rounded-full h-4 w-4 border-2 border-white"></span>
+          </div>
+          
+          <!-- User Info -->
+          <div>
+            <h1 class="text-2xl font-bold text-gray-800">{{ user.get_full_name }}</h1>
+            <div class="flex items-center space-x-2">
+              <span class="text-gray-600">{{ user.email }}</span>
+              {% comment %} {% if user.email_verified %}
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
+                  Verified
+                </span>
+              {% else %}
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800">
+                  Unverified
+                </span>
+              {% endif %} {% endcomment %}
+            </div>
+            {% if user.phone %}
+              <div class="flex items-center text-gray-600 mt-1">
+                <svg class="h-4 w-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/>
+                </svg>
+                <span>{{ user.phone }}</span>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+        
+        <!-- Action Buttons -->
+        <div class="mt-4 md:mt-0 flex space-x-3">
+          <a href="{% url 'change_password' %}" class="inline-flex gap-1 items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-key-round-icon lucide-key-round text-amber-500"><path d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z"/><circle cx="16.5" cy="7.5" r=".5" fill="currentColor"/></svg>
+            Change Password
+          </a>
+          <a href="#" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user-round-pen-icon lucide-user-round-pen text-white mr-1"><path d="M2 21a8 8 0 0 1 10.821-7.487"/><path d="M21.378 16.626a1 1 0 0 0-3.004-3.004l-4.01 4.012a2 2 0 0 0-.506.854l-.837 2.87a.5.5 0 0 0 .62.62l2.87-.837a2 2 0 0 0 .854-.506z"/><circle cx="10" cy="8" r="5"/></svg>
+            Edit Profile
+          </a>
+        </div>
+      </div>
+    </div>
+
+
+  <!-- Main Content -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <!-- Left Column -->
+      <div class="lg:col-span-2 space-y-8">
+        <!-- Profile Update Form -->
+        <div class="bg-white shadow rounded-lg p-6">
+          <h2 class="text-lg font-medium text-gray-900 mb-6">Profile Information</h2>
+          <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <!-- First Name -->
+              <div>
+                <label for="first_name" class="block text-sm font-medium text-gray-700">First Name</label>
+                <input type="text" name="first_name" id="first_name" value="{{ form.instance.first_name }}" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+              </div>
+              
+              <!-- Last Name -->
+              <div>
+                <label for="last_name" class="block text-sm font-medium text-gray-700">Last Name</label>
+                <input type="text" name="last_name" id="last_name" value="{{ form.instance.last_name }}" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+              </div>
+              
+              <!-- Email -->
+              <div>
+                <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+                <input type="email" name="email" id="email" value="{{ form.instance.email }}" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" disabled>
+                {% comment %} {% if not user.email_verified %}
+                  <p class="mt-2 text-sm text-yellow-600">Your email is not verified. <a href="#" class="font-medium text-blue-600 hover:text-blue-500">Resend verification email</a></p>
+                {% endif %} {% endcomment %}
+              </div>
+              
+              <!-- Phone -->
+              <div>
+                <label for="phone" class="block text-sm font-medium text-gray-700">Phone</label>
+                <input type="text" name="phone" id="phone" value="{{ form.instance.phone }}" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+              </div>
+              
+              <!-- Profile Picture -->
+              <div class="md:col-span-2">
+                <label for="profile_picture" class="block text-sm font-medium text-gray-700">Profile Picture</label>
+                <div class="mt-1 flex items-center">
+                  {% if form.instance.profile_picture %}
+                    <img id="profile-picture-preview" class="h-12 w-12 rounded-full object-cover mr-4" src="{{ form.instance.profile_picture.url }}" alt="Current profile picture">
+                  {% else %}
+                    <div id="profile-picture-preview" class="h-12 w-12 rounded-full bg-blue-100 flex items-center justify-center mr-4">
+                      <span class="text-blue-600 font-bold">{{ user.first_name|first|upper }}{{ user.last_name|first|upper }}</span>
+                    </div>
+                  {% endif %}
+                  <div class="flex text-sm text-gray-600">
+                    <label for="profile_picture" class="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500">
+                      <span>Upload a Image</span>
+                      <input id="profile_picture" name="profile_picture" type="file" class="sr-only" onchange="previewImage(this)">
+                    </label>
+                    <p class="pl-1">for your Profile Image</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="mt-8 flex justify-end">
+              <button type="submit" class="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                Save Changes
+              </button>
+            </div>
+          </form>
+        </div>
+        
+        <!-- Security Section -->
+        <div class="bg-white shadow rounded-lg p-6">
+          <h2 class="text-lg font-medium text-gray-900 mb-6 flex">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shield-user-icon lucide-shield-user text-blue-600 mr-1 "><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="M6.376 18.91a6 6 0 0 1 11.249.003"/><circle cx="12" cy="11" r="4"/></svg>
+            Security</h2>
+          
+          <!-- Password Last Changed -->
+          <div class="mb-6">
+            <h3 class="text-sm font-medium text-gray-900">Password</h3>
+            <div class="mt-2 flex items-center justify-between">
+              <p class="text-sm text-gray-600">
+                {% if user.last_password_change %}
+                  Last changed {{ user.last_password_change|timesince }} ago
+                {% else %}
+                  Never changed
+                {% endif %}
+              </p>
+              <a href="{% url 'change_password' %}" class="text-sm font-medium text-blue-600 hover:text-blue-500">Change password</a>
+            </div>
+          </div>
+        
+
+          <!-- Active Sessions -->
+          <div class="py-6 px-0 sm:py-6 border-t border-gray-200">
+            <h2 class="text-lg font-medium leading-6 text-gray-900">Active Sessions</h2>
+            <p class="mt-1 text-sm text-gray-600">This is a list of devices that have logged into your account.</p>
+            
+            <ul class="mt-4 divide-y divide-gray-200">
+                {% for session in active_sessions %}
+                    <li class="py-4">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <div class="bg-blue-100 p-2 rounded-lg">
+                                    {% if session.device_icon == "windows" %}
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="20" height="20">
+                                            <rect width="21" height="21" x="3" y="3" fill="#00a4ef" rx="2"/>
+                                            <rect width="21" height="21" x="24" y="3" fill="#7fba00" rx="2"/>
+                                            <rect width="21" height="21" x="3" y="24" fill="#ffb900" rx="2"/>
+                                            <rect width="21" height="21" x="24" y="24" fill="#f25022" rx="2"/>
+                                        </svg>
+                                    {% elif session.device_icon == "mac" or session.device_icon == "iphone" %}
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                                            <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
+                                        </svg>
+                                    {% elif session.device_icon == "android" %}
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                            <path fill="#3DDC84" d="M17.6 9.48l1.84-3.18c.16-.31.04-.69-.26-.85-.3-.16-.69-.04-.85.26l-1.85 3.2c-1.68-1.08-3.76-1.7-5.92-1.7-2.17 0-4.24.62-5.92 1.7L3.67 5.71c-.16-.3-.55-.42-.85-.26-.3.16-.42.55-.26.85L4.4 9.48C2.94 10.87 2 12.8 2 15v4c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2v-4c0-2.2-.94-4.13-2.4-5.52z"/>
+                                            <circle fill="#263238" cx="7" cy="14" r="1.25"/>
+                                            <circle fill="#263238" cx="17" cy="14" r="1.25"/>
+                                            <path fill="#A4C639" d="M18.44 6.3l-1.84 3.18c-.08.14-.03.3.11.38.03.02.07.03.1.03.11 0 .22-.06.28-.16l1.84-3.18c.08-.14.03-.3-.11-.38-.14-.08-.3-.03-.38.11zM5.56 6.3l1.84 3.18c.06.11.17.16.28.16.04 0 .07-.01.11-.03.14-.08.19-.24.11-.38L5.67 5.93c-.08-.14-.24-.19-.38-.11-.14.08-.19.24-.11.38z"/>
+                                        </svg>
+                                    {% else %}
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M4 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4zm2 2v12h10V6H6zm12 0h-2v12h2V6z" clip-rule="evenodd"/>
+                                        </svg>
+                                    {% endif %}
+                                </div>
+                                <div class="ml-3">
+                                    <p class="text-sm font-medium text-gray-900">
+                                        {{ session.device_type }}
+                                        {% if session.remember_me %}
+                                            <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
+                                                Remembered
+                                            </span>
+                                        {% else %}
+                                            <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800">
+                                                Temporary
+                                            </span>
+                                        {% endif %}
+                                    </p>
+                                    <p class="text-sm text-gray-500">
+                                        {{ session.ip_address }} • {{ session.last_activity|timesince }} ago
+                                        {% if session.session_key == current_session_key %}
+                                            <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">Current session</span>
+                                        {% endif %}
+                                    </p>
+                                </div>
+                            </div>
+                            {% if session.session_key != current_session_key %}
+                                <form method="POST" action="{% url 'terminate_session' session.id %}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="text-sm font-medium text-red-600 hover:text-red-500">Sign out</button>
+                                </form>
+                            {% endif %}
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+          </div>
+
+        </div>
+      </div>
+      
+      <!-- Right Column -->
+      <div class="space-y-8">
+  
+        <!-- Bookmarked Items -->
+        <div class="bg-white shadow rounded-lg p-6">
+          <h2 class="text-lg font-medium text-gray-900 mb-6 flex items-center gap-1">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bookmark-check-icon lucide-bookmark-check text-blue-600"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2Z"/><path d="m9 10 2 2 4-4"/></svg>
+            Bookmarks</h2>
+          
+          {% if bookmarks %}
+            <ul class="space-y-4">
+              {% for bookmark in bookmarks|slice:":3" %}
+                <li class="flex">
+                  
+                    <div class="flex-shrink-0 h-16 w-16 rounded-md overflow-hidden">
+                      
+                      {% if bookmark.property %}
+                        {% with bookmark.property.media.all|first as first_media %}
+                          {% if first_media and first_media.file %}
+                            <img class="h-full w-full object-cover" src="{{ first_media.file.url }}" alt="{{ first_media.title|default:bookmark.property.name }}">
+                          {% else %}
+                            <div class="w-full h-full flex items-center justify-center text-gray-500 dark:text-gray-400">
+                                <div class="text-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    <p class="mt-2">No media available for this property</p>
+                                </div>
+                            </div>
+                          {% endif %}
+                        {% endwith %}
+                      {% elif bookmark.project %}
+                        {% with bookmark.project.media.all|first as first_media %}
+                          <div class="relative w-full h-full overflow-hidden group">
+                              {% if first_media and first_media.file %}
+                                  <!-- Image with hover overlay effect -->
+                                  <img class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" 
+                                      src="{{ first_media.file.url }}" 
+                                      alt="{{ first_media.title|default:bookmark.project.name }}">
+                                  
+                                  <!-- Hover overlay with "View Details" text -->
+                                  <div class="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                                      <div class="text-center p-4 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+                                          <span class="inline-flex items-center bg-white text-blue-600 px-4 py-2 rounded-full text-xs font-medium shadow-lg">
+                                              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" />
+                                              </svg>
+                                              View
+                                          </span>
+                                      </div>
+                                  </div>
+                                  
+                                  <!-- Clickable link covering entire image -->
+                                  <a href="{% url 'project_detail' bookmark.project.id %}" class="absolute inset-0 z-10" aria-label="View property details"></a>
+                                  
+                              {% else %}
+                                  <!-- No media placeholder with modern design -->
+                                  <div class="w-full h-full flex items-center justify-center bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400">
+                                      <div class="text-center p-6">
+                                          <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                          </svg>
+                                          <p class="mt-3 text-sm font-medium">No media available</p>
+                                          <a href="{% url 'project_detail' bookmark.project.id %}" class="mt-2 inline-flex items-center text-blue-600 hover:text-blue-800 text-xs font-medium">
+                                              View property details
+                                              <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 ml-1" viewBox="0 0 20 20" fill="currentColor">
+                                                  <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                                              </svg>
+                                          </a>
+                                      </div>
+                                  </div>
+                              {% endif %}
+                          </div>
+                        {% endwith %}
+                      {% endif %}
+                      
+                    </div>
+                    <div class="ml-4 flex-1">
+                      <div class="flex justify-between">
+                        <h3 class="text-sm font-medium text-gray-900">
+                          {% if bookmark.property %}
+                            {{ bookmark.property.name }}
+                          {% else %}
+                            {{ bookmark.project.name }}
+                          {% endif %}
+                        </h3>
+                        <span class="text-xs text-gray-500">
+                          {{ bookmark.created_at|timesince }} ago
+                        </span>
+                      </div>
+                      <p class="text-sm text-gray-500">
+                        {% if bookmark.property %}
+                          {{ bookmark.property.address }}
+                        {% else %}
+                          {{ bookmark.project.address }}
+                        {% endif %}
+                      </p>
+                      <div class="mt-1 flex justify-between items-center">
+                        <p class="text-sm font-medium text-blue-600">
+                          {% if bookmark.property %}
+                            ${{ bookmark.property.price_in_rs|floatformat:"0"|intcomma }}
+                          {% else %}
+                            Starting from ${{ bookmark.project.price_range_start|floatformat:"0"|intcomma }}
+                          {% endif %}
+                        </p>
+                        <div class="flex space-x-1">
+                          {% if bookmark.property %}
+                            {% with bookmark.property.media.count as media_count %}
+                              {% if media_count > 1 %}
+                                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
+                                  +{{ media_count|add:"-1" }} more
+                                </span>
+                              {% endif %}
+                            {% endwith %}
+                          {% elif bookmark.project %}
+                            {% with bookmark.project.media.count as media_count %}
+                              {% if media_count > 1 %}
+                                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
+                                  +{{ media_count|add:"-1" }} more
+                                </span>
+                              {% endif %}
+                            {% endwith %}
+                          {% endif %}
+                        </div>
+                      </div>
+                    </div>
+                  
+                </li>
+              {% endfor %}
+            </ul>
+            
+            {% if bookmarks.count > 3 %}
+              <div class="mt-4">
+                <a href="{% url 'my_bookmarks' %}" class="text-sm font-medium text-blue-600 hover:text-blue-500">View all ({{ bookmarks.count }})</a>
+              </div>
+            {% endif %}
+          {% else %}
+            <div class="text-center">
+              <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/>
+              </svg>
+              <h3 class="mt-2 text-sm font-medium text-gray-900">No bookmarked items</h3>
+              <p class="mt-1 text-sm text-gray-500">Save properties or projects you're interested in to find them easily later.</p>
+              <div class="mt-6">
+                <a href="{% url 'property_list' %}" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                  Browse Properties
+                </a>
+                <a href="{% url 'project_list' %}" class="ml-3 inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-blue-700 bg-blue-100 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                  Browse Projects
+                </a>
+              </div>
+            </div>
+          {% endif %}
+        </div>
+        
+       
+        <div class="bg-white shadow rounded-lg overflow-hidden">
+          <div class="px-6 py-5 border-b border-gray-200">
+            <div class="flex items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user-round-cog text-blue-600 mr-3">
+                <path d="m14.305 19.53.923-.382"/><path d="m15.228 16.852-.923-.383"/><path d="m16.852 15.228-.383-.923"/><path d="m16.852 20.772-.383.924"/><path d="m19.148 15.228.383-.923"/><path d="m19.53 21.696-.382-.924"/><path d="M2 21a8 8 0 0 1 10.434-7.62"/><path d="m20.772 16.852.924-.383"/><path d="m20.772 19.148.924.383"/><circle cx="10" cy="8" r="5"/><circle cx="18" cy="18" r="3"/>
+              </svg>
+              <h2 class="text-lg font-semibold text-gray-900">Account Security</h2>
+            </div>
+          </div>
+          
+          <div class="divide-y divide-gray-200">
+            <!-- Password Reset Card -->
+            <div class="p-6">
+              <div class="flex items-start justify-between">
+                <div class="flex-1">
+                  <div class="flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-key-round text-blue-500 mr-3">
+                      <path d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z"/>
+                      <circle cx="16.5" cy="7.5" r=".5" fill="currentColor"/>
+                    </svg>
+                    <h3 class="text-base font-medium text-gray-900">Password Management</h3>
+                  </div>
+                  <p class="mt-2 text-sm text-gray-500">Update your password regularly to keep your account secure.</p>
+                </div>
+                <div class="ml-4 flex-shrink-0">
+                  <a href="{% url 'change_password' %}" class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-full shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    Change Password
+                  </a>
+                </div>
+              </div>
+              <div class="mt-4">
+                <div class="flex items-center text-sm text-gray-500">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shield-check mr-1.5 text-green-500">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/>
+                    <path d="m9 12 2 2 4-4"/>
+                  </svg>
+                  Last changed: {{ request.user.last_password_change|date:"M d, Y"|default:"Never" }}
+                </div>
+              </div>
+            </div>
+          
+            
+            <!-- Account Deletion Card -->
+            <div class="p-6 bg-red-50">
+              <div class="flex items-start justify-between">
+                <div class="flex-1">
+                  <div class="flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-alert-triangle text-red-500 mr-3">
+                      <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/>
+                      <path d="M12 9v4"/><path d="M12 17h.01"/>
+                    </svg>
+                    <h3 class="text-base font-medium text-gray-900">Danger Zone</h3>
+                  </div>
+                  <p class="mt-2 text-sm text-gray-600">Permanently delete your account and all associated data.</p>
+                </div>
+                <div class="ml-4 flex-shrink-0">
+                  <button onclick="showModal()" type="button" class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-full shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                    Delete Account
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        <!-- Simple Delete Account Modal -->
+        <div id="deleteModal" class="hidden fixed inset-0 z-50 overflow-y-auto">
+          <!-- Blurred overlay -->
+          <div class="fixed inset-0 bg-black/50 backdrop-blur-sm" aria-hidden="true"></div>
+
+          <!-- Modal container -->
+          <div class="flex items-center justify-center min-h-screen px-4 text-center">
+            <!-- Invisible element for vertical centering -->
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+
+            <!-- Actual modal -->
+            <div class="inline-block align-middle bg-white rounded-lg px-6 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:max-w-lg w-full sm:p-6 z-50">
+              <div class="sm:flex sm:items-start">
+                <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
+                  <svg class="h-6 w-6 text-red-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M12 9v2m0 4h.01M5.06 20h13.88c1.54 0 2.5-1.67 1.73-3L13.73 4a2 2 0 00-3.46 0L3.34 17c-.77 1.33.19 3 1.72 3z" />
+                  </svg>
+                </div>
+                <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                  <h3 class="text-lg font-medium text-gray-900">Delete account</h3>
+                  <p class="mt-2 text-sm text-gray-500">
+                    Are you sure you want to delete your account? All of your data will be permanently removed. This action cannot be undone.
+                  </p>
+                </div>
+              </div>
+              <div class="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
+                <form method="POST" action="{% url 'delete_profile' %}">
+                  {% csrf_token %}
+                  <button type="submit"
+                    class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-white font-medium hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm">
+                    Delete
+                  </button>
+                </form>
+                <button onclick="closeModal()" type="button"
+                  class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-gray-700 font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 sm:mt-0 sm:w-auto sm:text-sm">
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+
+        <!-- Simple JavaScript for Modal Control -->
+        <script>
+          function showModal() {
+            document.getElementById('deleteModal').classList.remove('hidden');
+          }
+          
+          function closeModal() {
+            document.getElementById('deleteModal').classList.add('hidden');
+          }
+          
+          // Close modal when clicking outside
+          window.onclick = function(event) {
+            const modal = document.getElementById('deleteModal');
+            if (event.target === modal) {
+              closeModal();
+            }
+          }
+        </script>
+
+
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function previewImage(input) {
+    const preview = document.getElementById('profile-picture-preview');
+    if (input.files && input.files[0]) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        if (preview.tagName === 'IMG') {
+          preview.src = e.target.result;
+        } else {
+          // Replace the div with an img element
+          const newPreview = document.createElement('img');
+          newPreview.id = 'profile-picture-preview';
+          newPreview.className = 'h-12 w-12 rounded-full object-cover mr-4';
+          newPreview.src = e.target.result;
+          preview.parentNode.replaceChild(newPreview, preview);
+        }
+      };
+      reader.readAsDataURL(input.files[0]);
+    }
+  }
+</script>
+
+
+
+{% endblock %}
